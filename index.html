@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CoinView / টাকার মেশিন</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ================= বেসিক ও থিম সেটআপ ================= */
+        :root {
+            --primary: #0056d2; --secondary: #f0f4f8; --bg: #ffffff; --text: #333333; 
+            --border: #e2e8f0; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #e9ecef; font-family: 'Poppins', 'Noto Sans Bengali', sans-serif; color: var(--text); overflow-x: hidden; }
+        
+        body.lang-en .bn { display: none !important; }
+        body.lang-bn .en { display: none !important; }
+
+        .app-container {
+            max-width: 480px; margin: 0 auto; background: var(--bg); min-height: 100vh;
+            position: relative; padding-top: 70px; padding-bottom: 80px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+        }
+
+        /* ================= টপ নেভিগেশন ================= */
+        .top-nav {
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; border-bottom: 1px solid var(--border);
+        }
+        .nav-left { display: flex; align-items: center; gap: 10px; }
+        .menu-btn { font-size: 26px; cursor: pointer; color: var(--primary); }
+        .brand-info { display: flex; flex-direction: column; }
+        .brand-name { font-size: 16px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+        .slogan { font-size: 9px; color: #666; margin-top: -2px; font-weight: 600; }
+        
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .lang-toggle { font-size: 11px; font-weight: 800; background: var(--secondary); color: var(--primary); padding: 4px 8px; border-radius: 20px; cursor: pointer; border: 1px solid #d0dbe5; }
+        
+        .nav-icon-box { font-size: 22px; position: relative; cursor: pointer; }
+        .notif-badge { position: absolute; top: -2px; right: -5px; background: var(--danger); color: #fff; font-size: 9px; font-weight: bold; width: 15px; height: 15px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 1px solid #fff; }
+        .notif-dot { position: absolute; top: 2px; right: 0px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 1px solid #fff; }
+
+        /* ================= সাইডবার মেনু ================= */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1999; display: none; }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #fff; z-index: 2000; transition: left 0.3s ease; padding: 20px; overflow-y: auto; }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay.open { display: block; }
+        .close-sidebar { text-align: right; font-size: 24px; cursor: pointer; margin-bottom: 15px; color: #888; }
+        
+        .menu-item-1x1 { padding: 15px; border-radius: 12px; margin-bottom: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid; text-align: center; font-size: 14px; transition: 0.2s; }
+        .menu-item-1x1:active { transform: scale(0.98); }
+        .m-promo { background: #fff8e1; border-color: #ffe0b2; color: #f57c00; }
+        .m-ads { background: #e3f2fd; border-color: #bbdefb; color: #1976d2; }
+        
+        .menu-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .m-grid-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px 10px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; color: #475569; display: flex; flex-direction: column; gap: 5px; }
+        .m-complain { background: #fef2f2; border-color: #fecaca; color: #dc2626; margin-bottom: 30px; }
+
+        /* ================= পেজ কন্টেইনার ================= */
+        .page { display: none; padding: 15px; animation: fadeIn 0.3s ease-in-out; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: #fff; padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 15px; }
+        .page-title { font-size: 16px; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 15px; border-bottom: 2px dashed var(--border); padding-bottom: 10px; }
+
+        /* ================= হোমপেজ: স্লাইডার ও গ্রিড ================= */
+        .login-banner { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); text-align: center; cursor: pointer; color: #fff; }
+        .login-banner h3 { font-size: 16px; margin-bottom: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        
+        .slider-container { height: 135px; border-radius: 16px; margin-bottom: 15px; position: relative; border: 1px solid #e2e8f0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slide { min-width: 100%; height: 100%; scroll-snap-align: center; position: relative; display: flex; align-items: flex-end; padding: 15px; background-size: cover; background-position: center; }
+        .slide::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+        .slide-title { position: relative; color: #fff; font-size: 16px; font-weight: 800; z-index: 2; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
+
+        .anim-slider { height: 90px; border-radius: 16px; overflow: hidden; position: relative; margin-bottom: 15px; background: #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); cursor: pointer; display: none; }
+        .anim-slide { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 35px; opacity: 0; transition: opacity 0.8s ease; flex-direction: column;}
+        .anim-slide.active { opacity: 1; }
+        #as1 { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
+        #as2 { background: linear-gradient(45deg, #a1c4fd, #c2e9fb); }
+        #as3 { background: linear-gradient(45deg, #d4fc79, #96e6a1); }
+
+        .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .h-cat { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px 10px; text-align: center; font-weight: 800; color: #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;}
+        .h-cat .icon { font-size: 28px; }
+
+        /* ================= ডেইলি টাস্ক ডিজাইন ================= */
+        .task-header { display: flex; justify-content: space-between; background: var(--secondary); padding: 12px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; border: 1px solid var(--border); color: var(--primary); }
+        .task-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .task-banner { height: 80px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 15px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .task-info-bar { display: flex; justify-content: space-between; align-items: center; }
+        .task-coin { font-weight: 800; color: var(--warning); font-size: 15px; }
+        .task-btn { background: var(--primary); color: #fff; padding: 8px 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; }
+
+        /* ================= প্রোফাইল পেজ ও কাস্টমার সাপোর্ট ================= */
+        .profile-header { display: flex; align-items: center; gap: 15px; }
+        .profile-ring { width: 75px; height: 75px; border-radius: 50%; background: conic-gradient(#10b981 0% 40%, #3b82f6 40% 75%, #f59e0b 75% 90%, #e2e8f0 90% 100%); display: flex; justify-content: center; align-items: center; position: relative; }
+        .profile-inner { width: 63px; height: 63px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; }
+        .active-dot { position: absolute; bottom: 2px; right: 5px; width: 14px; height: 14px; background: #10b981; border-radius: 50%; border: 2px solid #fff; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        
+        .p-info { flex-grow: 1; }
+        .p-name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        .verified-tick { color: #00008B; font-size: 16px; }
+        .p-user { font-size: 12px; color: #64748b; }
+        .p-balance { text-align: right; }
+        .p-coin { font-size: 18px; font-weight: 800; color: #f59e0b; }
+        
+        .profile-grid-6 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .pg-item { border: 1.5px solid; padding: 12px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; gap: 5px; align-items: center; }
+        .pg-1 { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
+        .pg-2 { border-color: #bfdbfe; background: #eff6ff; color: #1e3a8a; }
+        .pg-3 { border-color: #fbcfe8; background: #fdf2f8; color: #831843; }
+        .pg-4 { border-color: #fed7aa; background: #fff7ed; color: #7c2d12; }
+        .pg-5 { border-color: #e2e8f0; background: #f8fafc; color: #334155; }
+        .pg-6 { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+
+        .support-box { border: 1.5px solid var(--primary); background: #f0f4ff; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        .support-icons { display: flex; justify-content: space-around; width: 100%; margin-top: 10px; }
+        .s-icon { text-align: center; font-size: 26px; cursor: pointer; }
+        .s-icon span { display: block; font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 5px; }
+
+        /* ================= ফর্ম ও অন্যান্য ================= */
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: inherit; font-size: 14px; outline: none; }
+        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .ref-box { background: #f8fafc; border: 2px dashed var(--primary); padding: 15px; text-align: center; border-radius: 12px; margin-bottom: 15px; }
+        .social-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 600; cursor: pointer; font-size: 13px; }
+        
+        /* ================= বটম নেভিগেশন ================= */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
+            background: #ffffff; display: flex; justify-content: space-around; padding: 10px 0 15px 0;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid var(--border);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; cursor: pointer; transition: 0.3s; width: 25%; }
+        .nav-item .icon { font-size: 22px; }
+        .nav-item.active { color: var(--primary); }
+
+        .modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index: 3000; }
+        .modal-box { background:#fff; padding:20px; border-radius:16px; width:90%; max-width:320px; text-align:center; }
+        .modal-box .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+
+        .grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .ad-cat { background: #f8fafc; border: 1px solid var(--border); padding: 15px 5px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .ad-cat .icon { font-size: 24px; margin-bottom: 5px; display: block; }
+    </style>
+</head>
+<body class="lang-bn">
+
+<div class="app-container">
+
+    <!-- ================= টপ নেভিগেশন ================= -->
+    <header class="top-nav">
+        <div class="nav-left">
+            <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+            <div class="brand-info">
+                <div class="brand-name">🪙 <span class="bn">টাকার মেশিন</span><span class="en">CoinView</span></div>
+                <div class="slogan"><span class="bn">টাকা থাকলে - জীবন সুন্দর</span><span class="en">Earn Reward Legally</span></div>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="lang-toggle" onclick="toggleLanguage()"><span class="bn">EN</span><span class="en">BN</span></div>
+            <div class="nav-icon-box" onclick="switchPage('messages')">💬<div class="notif-badge">2</div></div>
+            <div class="nav-icon-box" onclick="switchPage('notifications')">🔔<div class="notif-dot"></div></div>
+        </div>
+    </header>
+
+    <!-- ================= সাইডবার মেনু ================= -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="close-sidebar" onclick="toggleSidebar()">✖</div>
+        <div class="menu-item-1x1 m-promo" onclick="switchPage('promo'); toggleSidebar();">🎁 <span class="bn">প্রোমোশনাল অফার</span><span class="en">Promotional Offers</span></div>
+        <div class="menu-item-1x1 m-ads" onclick="switchPage('ads'); toggleSidebar();">📺 <span class="bn">বিজ্ঞাপন দেখুন</span><span class="en">Watch Ads</span></div>
+        <div class="menu-grid-2x2">
+            <div class="m-grid-item" onclick="switchPage('tutorial'); toggleSidebar();"><span>📖</span><span class="bn">টিউটোরিয়াল</span><span class="en">Tutorial</span></div>
+            <div class="m-grid-item" onclick="switchPage('my-work'); toggleSidebar();"><span>📊</span><span class="bn">আমার কাজ</span><span class="en">My Work</span></div>
+            <div class="m-grid-item" onclick="switchPage('referral'); toggleSidebar();"><span>🤝</span><span class="bn">রেফার প্রোগ্রাম</span><span class="en">Refer Program</span></div>
+            <div class="m-grid-item" onclick="switchPage('share'); toggleSidebar();"><span>📢</span><span class="bn">শেয়ার প্রোগ্রাম</span><span class="en">Share Program</span></div>
+        </div>
+        <div class="menu-item-1x1 m-complain" onclick="switchPage('complain'); toggleSidebar();">⚠️ <span class="bn">অভিযোগ বক্স</span><span class="en">Complain Box</span></div>
+    </div>
+
+    <!-- ================= হোম পেজ ================= -->
+    <div id="home-page" class="page active-page">
+        <div class="card login-banner" id="login-banner" onclick="switchPage('login')">
+            <h3><span class="bn">অ্যাকাউন্ট নেই বা লগইন করেননি?</span><span class="en">Not Logged In?</span></h3>
+            <p style="font-size: 12px;"><span class="bn">লগইন বা রেজিস্ট্রেশন করতে এখানে চাপ দিন</span><span class="en">Tap here to Login or Register</span></p>
+        </div>
+
+        <div class="slider-container" id="slider1">
+            <div class="slide" style="background-color: #ff9a9e;" onclick="switchPage('promo')"><div class="slide-title"><span class="bn">বড় ধামাকা অফার!</span><span class="en">Mega Offer!</span></div></div>
+            <div class="slide" style="background-color: #a18cd1;" onclick="switchPage('promo')"><div class="slide-title"><span class="bn">ডাবল পয়েন্ট জিতুন</span><span class="en">Win Double Points</span></div></div>
+            <div class="slide" style="background-color: #fbc2eb;" onclick="switchPage('daily-task')"><div class="slide-title"><span class="bn">নতুন টাস্ক যুক্ত হয়েছে</span><span class="en">New Tasks Added</span></div></div>
+        </div>
+
+        <div class="anim-slider" id="anim-slider" onclick="switchPage('ads')">
+            <div class="anim-slide active" id="as1">🎬🎁</div> 
+            <div class="anim-slide" id="as2">🤝💸</div> 
+            <div class="anim-slide" id="as3">🏆🚀</div> 
+        </div>
+
+        <div class="home-grid">
+            <div class="h-cat" onclick="openDailySignIn()">
+                <span class="icon">📅</span><span class="bn">দৈনিক সাইন ইন</span><span class="en">Daily Sign In</span>
+            </div>
+            <div class="h-cat" onclick="switchPage('daily-task')">
+                <span class="icon">🎯</span><span class="bn">দৈনিক টাস্ক</span><span class="en">Daily Task</span>
+            </div>
+            <div class="h-cat" onclick="switchPage('promo')">
+                <span class="icon">🎁</span><span class="bn">আজকের অফার</span><span class="en">Today's Offer</span>
+            </div>
+            <div class="h-cat" onclick="switchPage('referral')">
+                <span class="icon">👥</span><span class="bn">রেফারেল প্রোগ্রাম</span><span class="en">Referral Program</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= দৈনিক সাইন ইন (৩টি টাস্ক) ================= -->
+    <div id="daily-signin-page" class="page">
+        <div class="card">
+            <div class="page-title"><span class="bn">দৈনিক সাইন ইন টাস্ক</span><span class="en">Daily Sign In Tasks</span></div>
+            <p style="font-size:12px; color:#666; margin-bottom:15px; text-align:center;">
+                <span class="bn">পয়েন্ট পেতে নিচের ৩টি কাজ সম্পন্ন করুন।</span><span class="en">Complete the 3 tasks below to get points.</span>
+            </p>
+            
+            <div class="social-item" onclick="this.innerHTML='✈️ Telegram: Visit, React, Comment <span style=\'color:green; font-size:16px;\'>✅</span>'">
+                ✈️ Telegram: Visit, React, Comment <span style="color:red; font-size:16px;">❌</span>
+            </div>
+            <div class="social-item" onclick="this.innerHTML='📘 Facebook: Visit, Like, Share <span style=\'color:green; font-size:16px;\'>✅</span>'">
+                📘 Facebook: Visit, Like, Share <span style="color:red; font-size:16px;">❌</span>
+            </div>
+            <div class="social-item" onclick="this.innerHTML='▶️ YouTube: Watch, Like, Comment <span style=\'color:green; font-size:16px;\'>✅</span>'">
+                ▶️ YouTube: Watch, Like, Comment <span style="color:red; font-size:16px;">❌</span>
+            </div>
+
+            <button class="btn" style="margin-top:15px;" onclick="submitDailySignIn()">
+                <span class="bn">সাবমিট করুন</span><span class="en">Submit</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= লগইন / রেজিস্ট্রেশন পেজ ================= -->
+    <div id="login-page" class="page">
+        <div class="card">
+            <div class="page-title"><span class="bn">লগইন করুন</span><span class="en">Login</span></div>
+            <input type="text" placeholder="Username or Mobile">
+            <input type="password" placeholder="Password">
+            <button class="btn" onclick="doLogin()"><span class="bn">লগইন</span><span class="en">Login</span></button>
+            <p style="text-align: center; margin-top: 15px; font-size: 13px;">
+                <span class="bn">অ্যাকাউন্ট নেই?</span><span class="en">Don't have an account?</span> 
+                <b style="color: var(--primary); cursor:pointer;" onclick="switchPage('register')"><span class="bn">রেজিস্ট্রেশন করুন</span><span class="en">Register here</span></b>
+            </p>
+        </div>
+    </div>
+    
+    <div id="register-page" class="page">
+        <div class="card">
+            <div class="page-title"><span class="bn">রেজিস্ট্রেশন করুন</span><span class="en">Register</span></div>
+            <input type="text" placeholder="Full Name">
+            <input type="text" placeholder="Mobile Number">
+            <input type="password" placeholder="Password">
+            <button class="btn" onclick="doLogin()"><span class="bn">রেজিস্ট্রেশন সম্পন্ন করুন</span><span class="en">Complete Registration</span></button>
+        </div>
+    </div>
+
+    <!-- ================= ডেইলি টাস্ক (৫০ টি কাজ) ================= -->
+    <div id="daily-task-page" class="page">
+        <div class="page-title">🎯 <span class="bn">দৈনিক টাস্ক</span><span class="en">Daily Task</span></div>
+        <div class="task-header">
+            <div><span class="bn">বাকি কাজ:</span><span class="en">Remaining:</span> <span id="task-count">50</span>/50</div>
+            <div><span class="bn">ব্যালেন্স:</span><span class="en">Balance:</span> <span id="task-balance-show">500</span> 🪙</div>
+        </div>
+        <div id="task-list-container"></div>
+    </div>
+
+    <!-- ================= আজকের অফার (১০টি ব্যানার) ================= -->
+    <div id="promo-page" class="page">
+        <div class="card">
+            <div class="page-title">🎁 <span class="bn">আজকের স্পেশাল অফার</span><span class="en">Today's Special Offers</span></div>
+            <div id="promo-banners-container">
+                <!-- JS দিয়ে ১০টি ব্যানার জেনারেট হবে -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= রেফার প্রোগ্রাম (আপডেট) ================= -->
+    <div id="referral-page" class="page">
+        <div class="card">
+            <div class="page-title">🤝 <span class="bn">রেফার প্রোগ্রাম</span><span class="en">Refer Program</span></div>
+            
+            <div class="ref-box">
+                <p style="font-size:12px;"><span class="bn">আপনার রেফারেল কোড</span><span class="en">Your Referral Code</span></p>
+                <div style="font-size: 26px; font-weight: 800; color: var(--primary); margin: 5px 0;">TR-55</div>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <button class="btn" style="background:#475569;" onclick="alert('Link Copied Successfully!')">
+                    <span class="bn">কপি লিংক</span><span class="en">Copy Link</span>
+                </button>
+                <button class="btn" onclick="alert('Share options opened!')">
+                    <span class="bn">শেয়ার</span><span class="en">Share</span>
+                </button>
+            </div>
+
+            <hr style="border:0; border-top:1px dashed var(--border); margin:15px 0;">
+            
+            <!-- কারো রেফারে জয়েন করার অপশন -->
+            <div style="text-align:center; font-weight:bold; color:var(--primary); margin-bottom:10px; font-size:14px;">
+                <span class="bn">কারো রেফারে জয়েন করুন</span><span class="en">Join via Referral Code</span>
+            </div>
+            <input type="text" placeholder="Enter Code (e.g., TR-12)">
+            <button class="btn" style="background:var(--success);" onclick="alert('আপনি সফলভাবে রেফারে যুক্ত হয়েছেন!')">
+                <span class="bn">জয়েন করুন</span><span class="en">Join Now</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= শেয়ার প্রোগ্রাম (নতুন আপডেট) ================= -->
+    <div id="share-page" class="page">
+        <div class="card">
+            <div class="page-title">📢 <span class="bn">শেয়ার প্রোগ্রাম</span><span class="en">Share Program</span></div>
+            <p style="text-align:center; font-weight:bold; color:var(--primary); margin-bottom:15px;">My Code: TR-55</p>
+            
+            <div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:#333;">
+                <span class="bn">কোথায় শেয়ার করেছেন?</span><span class="en">Where did you share?</span>
+            </div>
+            <div class="social-item" onclick="this.innerHTML='Facebook <span style=\'color:green;\'>✅</span>'">Facebook <span>🔗</span></div>
+            <div class="social-item" onclick="this.innerHTML='WhatsApp <span style=\'color:green;\'>✅</span>'">WhatsApp <span>🔗</span></div>
+            <div class="social-item" onclick="this.innerHTML='Telegram <span style=\'color:green;\'>✅</span>'">Telegram <span>🔗</span></div>
+            
+            <hr style="border:0; border-top:1px dashed var(--border); margin:20px 0;">
+            
+            <div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:#333;">
+                <span class="bn">আপনার ইনভাইট করা ইউজার</span><span class="en">Users you invited</span>
+            </div>
+            <div style="font-size:12px; color:#475569; background:var(--secondary); padding:12px; border-radius:8px; margin-bottom:8px; font-weight:bold;">
+                👤 @user_102 <span style="float:right; font-weight:normal; color:#888;">(Joined: Today)</span>
+            </div>
+            <div style="font-size:12px; color:#475569; background:var(--secondary); padding:12px; border-radius:8px; font-weight:bold;">
+                👤 @user_550 <span style="float:right; font-weight:normal; color:#888;">(Joined: Yesterday)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= অভিযোগ বক্স ================= -->
+    <div id="complain-page" class="page">
+        <div class="card">
+            <div class="page-title">⚠️ <span class="bn">অভিযোগ বক্স</span><span class="en">Complain Box</span></div>
+            <input type="text" placeholder="Title / অভিযোগের শিরোনাম">
+            <textarea rows="4" placeholder="Details / বিস্তারিত"></textarea>
+            <div style="border:2px dashed #cbd5e1; padding:30px; text-align:center; border-radius:12px; margin-bottom:15px; cursor:pointer; background:#f8fafc;">
+                <span style="font-size:24px;">📸</span><br>
+                <span style="font-size:12px; color:#64748b;"><span class="bn">ছবি/ভিডিও আপলোড করুন</span><span class="en">Upload Image/Video</span></span>
+            </div>
+            <button class="btn" style="background:var(--danger);" onclick="alert('অভিযোগ জমা দেওয়া হয়েছে।')"><span class="bn">সাবমিট করুন</span><span class="en">Submit</span></button>
+        </div>
+    </div>
+
+    <!-- ================= অন্যান্য পেজ ================= -->
+    <div id="ads-page" class="page">
+        <div class="card">
+            <div class="page-title"><span class="bn">বিজ্ঞাপন দেখুন</span><span class="en">Watch Ads</span></div>
+            <div class="grid-3x3">
+                <div class="ad-cat" onclick="switchPage('daily-task')"><span class="icon">📺</span><span class="bn">ভিডিও অ্যাড</span></div>
+                <div class="ad-cat"><span class="icon">🖼️</span><span class="bn">ব্যানার অ্যাড</span></div>
+                <div class="ad-cat"><span class="icon">🌐</span><span class="bn">ওয়েবসাইট ভিজিট</span></div>
+                <div class="ad-cat"><span class="icon">📱</span><span class="bn">অ্যাপ ইন্সটল</span></div>
+                <div class="ad-cat"><span class="icon">🎮</span><span class="bn">গেম খেলুন</span></div>
+                <div class="ad-cat"><span class="icon">📝</span><span class="bn">সার্ভে করুন</span></div>
+                <div class="ad-cat"><span class="icon">👀</span><span class="bn">শর্ট ভিডিও</span></div>
+                <div class="ad-cat"><span class="icon">💬</span><span class="bn">ক্যাপচা এন্ট্রি</span></div>
+                <div class="ad-cat"><span class="icon">🎰</span><span class="bn">স্পিন এন্ড উইন</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorial-page" class="page"><div class="card"><div class="page-title">📖 <span class="bn">টিউটোরিয়াল</span><span class="en">Tutorial</span></div><p style="font-size:13px;"><span class="bn">টাস্ক অপশনে গিয়ে বিজ্ঞাপনে ক্লিক করুন...</span><span class="en">Go to tasks and click on ads...</span></p></div></div>
+    <div id="my-work-page" class="page"><div class="card"><div class="page-title">📊 <span class="bn">আমার কাজ</span><span class="en">My Work</span></div><p><span class="bn">মোট সম্পন্ন কাজ:</span><span class="en">Completed:</span> <span id="work-completed">0</span></p></div></div>
+    
+    <div id="notifications-page" class="page">
+        <div class="page-title">🔔 <span class="bn">নোটিফিকেশন</span></div>
+        <div class="card" onclick="switchPage('promo')" style="cursor:pointer; background:#fff8e1;">🎁 স্পেশাল অফার! চেক করুন।</div>
+    </div>
+    <div id="messages-page" class="page">
+        <div class="page-title">💬 <span class="bn">অ্যাডমিন মেসেজ</span></div>
+        <div class="card">👨‍💻 Admin: আপনার পেমেন্ট ডান!</div>
+    </div>
+
+    <!-- ================= প্রোফাইল পেজ ================= -->
+    <div id="profile-page" class="page">
+        <div class="card profile-header">
+            <div class="profile-ring"><div class="profile-inner">👤</div><div class="active-dot"></div></div>
+            <div class="p-info">
+                <div class="p-name"><span class="bn">আব্দুল্লাহ</span><span class="en">Abdullah</span> <span class="verified-tick">✓</span></div>
+                <div class="p-user">@user_9988</div>
+            </div>
+            <div class="p-balance">
+                <div class="p-coin"><span id="profile-balance-show">500</span> 🪙</div>
+                <div style="font-size:10px; color:#888;"><span class="bn">ব্যালেন্স</span><span class="en">Balance</span></div>
+            </div>
+        </div>
+
+        <div class="profile-grid-6">
+            <div class="pg-item pg-1" onclick="switchPage('personal-info')"><span>📝</span><span class="bn">পার্সোনাল তথ্য</span></div>
+            <div class="pg-item pg-2" onclick="switchPage('withdraw-manage')"><span>💳</span><span class="bn">উইথড্র ম্যানেজমেন্ট</span></div>
+            <div class="pg-item pg-3" onclick="switchPage('social-connect')"><span>🔗</span><span class="bn">সোশ্যাল কানেক্ট</span></div>
+            <div class="pg-item pg-4" onclick="switchPage('backup-channel')"><span>🛡️</span><span class="bn">ব্যাকাপ চ্যানেল</span></div>
+            <div class="pg-item pg-5"><span>⚙️</span><span class="bn">সেটিংস</span></div>
+            <div class="pg-item pg-6" onclick="document.getElementById('logoutModal').style.display='flex'"><span>🚪</span><span class="bn">লগ আউট</span></div>
+        </div>
+
+        <div class="support-box">
+            <div style="font-weight: 800; font-size: 16px; color: var(--primary);"><span class="bn">কাস্টমার সাপোর্ট</span></div>
+            <div class="support-icons">
+                <div class="s-icon">💬<span>Live Chat</span></div>
+                <div class="s-icon">✈️<span>Telegram</span></div>
+                <div class="s-icon">📞<span>Hotline</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Sub-pages -->
+    <div id="personal-info-page" class="page"><div class="card"><div class="page-title">পার্সোনাল তথ্য</div><input type="text" value="Abdullah"><button class="btn">Save</button></div></div>
+    <div id="withdraw-manage-page" class="page"><div class="card"><div class="page-title">উত্তোলন করুন</div><input type="number" placeholder="Amount"><button class="btn">Withdraw</button></div></div>
+    <div id="social-connect-page" class="page"><div class="card"><div class="page-title">সোশ্যাল মিডিয়া</div><div class="social-item">Facebook <span>🔗</span></div></div></div>
+    <div id="backup-channel-page" class="page"><div class="card"><div class="page-title">ব্যাকাপ চ্যানেল</div><div class="social-item">Telegram Backup <span>🔗</span></div></div></div>
+
+    <!-- ================= বটম নেভিগেশন ================= -->
+    <div class="bottom-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span class="bn">হোম</span><span class="en">Home</span></div>
+        <div class="nav-item" id="nav-referral" onclick="switchPage('referral')"><span class="icon">👥</span><span class="bn">রেফার</span><span class="en">Refer</span></div>
+        <div class="nav-item" id="nav-ads" onclick="switchPage('ads')"><span class="icon">📺</span><span class="bn">বিজ্ঞাপন</span><span class="en">Ads</span></div>
+        <div class="nav-item" id="nav-profile" onclick="switchProfile()"><span class="icon">👤</span><span class="bn">প্রোফাইল</span><span class="en">Profile</span></div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <h3><span class="bn">লগ আউট করতে চান?</span><span class="en">Want to Log Out?</span></h3>
+            <div class="btn-group">
+                <button class="btn" style="background:#cbd5e1; color:#333;" onclick="document.getElementById('logoutModal').style.display='none'"><span class="bn">না</span></button>
+                <button class="btn" style="background:var(--danger);" onclick="doLogout()"><span class="bn">হ্যাঁ</span></button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let isLoggedIn = false;
+    let currentLang = 'bn';
+    let userBalance = 500;
+    let remainingTasks = 50;
+    let completedTasks = 0;
+
+    function toggleLanguage() {
+        if(currentLang === 'bn') {
+            document.body.classList.remove('lang-bn'); document.body.classList.add('lang-en'); currentLang = 'en';
+        } else {
+            document.body.classList.remove('lang-en'); document.body.classList.add('lang-bn'); currentLang = 'bn';
+        }
+        generateTasks(); 
+        generatePromoBanners();
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('open');
+    }
+
+    function switchPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+        document.getElementById(`${pageId}-page`).classList.add('active-page');
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+        let navMap = {'home':'nav-home', 'referral':'nav-referral', 'ads':'nav-ads', 'profile':'nav-profile'};
+        if(navMap[pageId]) { document.getElementById(navMap[pageId]).classList.add('active'); }
+        window.scrollTo(0, 0);
+    }
+
+    function switchProfile() {
+        if(!isLoggedIn) switchPage('login'); else switchPage('profile');
+    }
+
+    function doLogin() {
+        isLoggedIn = true;
+        document.getElementById('login-banner').style.display = 'none';
+        document.getElementById('anim-slider').style.display = 'block'; 
+        switchPage('home');
+    }
+
+    function doLogout() {
+        isLoggedIn = false;
+        document.getElementById('logoutModal').style.display = 'none';
+        document.getElementById('login-banner').style.display = 'block';
+        document.getElementById('anim-slider').style.display = 'none'; 
+        switchPage('home');
+    }
+
+    // Sliders
+    let slider1 = document.getElementById('slider1');
+    setInterval(() => {
+        if(slider1.scrollLeft >= (slider1.scrollWidth - slider1.clientWidth - 10)) {
+            slider1.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            slider1.scrollBy({ left: slider1.clientWidth, behavior: 'smooth' });
+        }
+    }, 4000);
+
+    let s2 = 0;
+    const animSlides = document.querySelectorAll('.anim-slide');
+    setInterval(() => {
+        animSlides[s2].classList.remove('active');
+        s2 = (s2 + 1) % 3;
+        animSlides[s2].classList.add('active');
+    }, 3000);
+
+    // ================= Daily Sign In =================
+    function openDailySignIn() {
+        if(!isLoggedIn) { switchPage('login'); return; }
+        switchPage('daily-signin');
+    }
+
+    function submitDailySignIn() {
+        let successMsg = currentLang === 'bn' ? "আপনার দৈনিক সাইন ইন সফল হয়েছে! (+৫০ পয়েন্ট)" : "Daily Sign-In successful! (+50 Points)";
+        alert(successMsg);
+        userBalance += 50;
+        document.getElementById('task-balance-show').innerText = userBalance;
+        document.getElementById('profile-balance-show').innerText = userBalance;
+        switchPage('home');
+    }
+
+    // ================= Daily Tasks Generator =================
+    const taskBtnsBn = ["ক্লেইম অফার", "পুরষ্কার নিন", "ইন্সটল করুন", "আইফোন জিতুন", "৯০% ছাড়", "ফ্রি ডুয়েল কার্ড"];
+    const taskBtnsEn = ["Claim Offer", "Get Reward", "Install Now", "Win iPhone", "90% Off", "Free Dual Card"];
+    const gradients = ["linear-gradient(135deg, #f6d365 0%, #fda085 100%)", "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)"];
+
+    function generateTasks() {
+        let container = document.getElementById('task-list-container');
+        container.innerHTML = "";
+        for(let i = 1; i <= remainingTasks; i++) {
+            let btnText = currentLang === 'bn' ? taskBtnsBn[i % taskBtnsBn.length] : taskBtnsEn[i % taskBtnsEn.length];
+            let bannerText = currentLang === 'bn' ? "স্পেশাল টাস্ক - দ্রুত সম্পন্ন করুন!" : "Special Task - Complete Fast!";
+            let bg = gradients[i % gradients.length];
+            container.innerHTML += `
+                <div class="task-box" id="task-box-${i}">
+                    <div class="task-banner" style="background: ${bg};">${bannerText}</div>
+                    <div class="task-info-bar">
+                        <div class="task-coin">🎁 +20 Coins</div>
+                        <button class="task-btn" onclick="completeTask(${i})">${btnText}</button>
+                    </div>
+                </div>`;
+        }
+    }
+
+    function completeTask(id) {
+        let msg = currentLang === 'bn' ? "আপনার বিজ্ঞাপন দেখা সফল হয়েছে! (+২০ পয়েন্ট)" : "Ad watched successfully! (+20 Points)";
+        alert(msg);
+        userBalance += 20; remainingTasks--; completedTasks++;
+        document.getElementById('task-balance-show').innerText = userBalance;
+        document.getElementById('profile-balance-show').innerText = userBalance;
+        document.getElementById('task-count').innerText = remainingTasks;
+        document.getElementById('work-completed').innerText = completedTasks;
+        document.getElementById(`task-box-${id}`).style.display = 'none';
+    }
+
+    // ================= Promo Banners (10 Ads) =================
+    function generatePromoBanners() {
+        let pContainer = document.getElementById('promo-banners-container');
+        pContainer.innerHTML = "";
+        let promoText = currentLang === 'bn' ? "অফারটি গ্রহণ করুন" : "Claim This Offer";
+        for(let i = 1; i <= 10; i++) {
+            pContainer.innerHTML += `
+                <div style="width:100%; height:110px; background:${gradients[i % gradients.length]}; border-radius:12px; margin-bottom:12px; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; font-weight:800; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);" onclick="alert('Offer ${i} claimed!')">
+                    <span style="font-size:16px; margin-bottom:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.3);">Mega Banner Ad 0${i}</span>
+                    <button class="btn" style="width:auto; padding:5px 20px; font-size:12px; background:#fff; color:var(--primary);">${promoText}</button>
+                </div>`;
+        }
+    }
+
+    window.onload = () => {
+        generateTasks();
+        generatePromoBanners();
+    };
+
+</script>
+</body>
+</html>
