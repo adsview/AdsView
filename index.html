@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EarnHub - Light Mode</title>
+    
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
@@ -13,31 +15,38 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+    <!-- Monetag SDK Script for S2S Postback -->
+    <script src='//libtl.com/sdk.js' data-zone='11781683' data-sdk='show_11781683'></script>
+
     <style>
-        /* === আগের সমস্ত CSS একদম হুবহু রাখা হয়েছে === */
+        /* === UI & Design CSS === */
         :root { --bg-body: #e4e7ea; --bg-app: #f5f7fa; --primary: #4a6ee0; --text-dark: #1c2833; --text-muted: #7f8c8d; --border-color: #e2e8f0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         body { margin: 0; padding: 0; background-color: var(--bg-body); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        
         .app-container { width: 100%; max-width: 450px; height: 100%; background-color: var(--bg-app); display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background-color: #ffffff; border-bottom: 1px solid var(--border-color); z-index: 10; }
         .top-nav .nav-left, .top-nav .nav-right { display: flex; align-items: center; gap: 15px; }
         .top-nav i { font-size: 20px; color: var(--text-dark); cursor: pointer; transition: 0.2s;}
         .top-nav .logo { font-weight: bold; font-size: 18px; color: var(--text-dark); display: flex; align-items: center; gap: 5px; }
         .lang-toggle { display: flex; align-items: center; background: #e2e8f0; border-radius: 20px; padding: 2px 8px; font-size: 12px; font-weight: bold; cursor: pointer; color: var(--primary); }
+        
         .sidebar { position: absolute; top: 0; left: -300px; width: 290px; height: 100%; background: #f4f6fc; z-index: 100; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar.open { left: 0; }
         .sidebar-header-new { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px; background: #fff;}
         .sidebar-header-new h3 { margin: 0; color: #1a202c; font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px;}
         .sidebar-header-new i.close-btn { font-size: 26px; color: #ff007f; font-weight: 900; cursor: pointer; }
         .sidebar-scroll { flex: 1; overflow-y: auto; padding: 15px 20px; }
+        
         .sb-btn { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; }
         .sb-btn.green-grad { background: linear-gradient(90deg, #27ae60, #2ecc71); color: white; border: none; }
         .sb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .sb-grid-item { background: #fff; border-radius: 12px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; text-align: center; }
         .sb-grid-item i { font-size: 22px; }
         .sb-grid-item span { font-size: 11px; font-weight: 600; color: #2d3436; line-height: 1.2; }
+        
         .sb-social-row { display: flex; justify-content: space-between; gap: 10px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);}
         .sb-social-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex: 1; }
         .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; }
@@ -45,11 +54,14 @@
         .icon-circle.tg { background: #0984e3; }
         .icon-circle.fb { background: #e84393; }
         .sb-social-item span { font-size: 11px; font-weight: bold; color: #2d3436; }
+        
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .overlay.open { opacity: 1; pointer-events: auto; }
+        
         .main-content { flex: 1; position: relative; overflow: hidden; }
         .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
         .page.active { opacity: 1; pointer-events: auto; }
+        
         .profile-card { background-color: #ffffff; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex-shrink: 0; margin-bottom: 10px; }
         .user-info { display: flex; align-items: center; gap: 10px; flex: 1;}
         .tg-photo { width: 45px; height: 45px; border-radius: 50%; background: #34b7f1; color: white; font-size: 20px; display: flex; justify-content: center; align-items: center; overflow: hidden;}
@@ -57,24 +69,29 @@
         .user-details { display: flex; flex-direction: column; }
         .name-row strong { font-size: 15px; color: var(--text-dark);}
         .username { font-size: 12px; color: #1e88e5; font-weight: 500; }
+        
         .balance-section { background-color: #f1f5f9; padding: 6px 12px; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
         .bal-item { font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 5px;}
         .bal-item.tk { color: #27ae60; font-size: 15px;}
+        
         .ad-container { border-radius: 15px; padding: 15px; text-align: center; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; flex: 1; margin: 5px 0 10px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
         .ad-container h3 { margin: 0 0 10px; color: var(--text-dark); font-size: 15px; }
         .ad-thumbnail { width: 100%; height: 130px; border-radius: 12px; margin-bottom: 15px; background: linear-gradient(45deg, #1e293b, #334155); display: flex; justify-content: center; align-items: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .ad-thumbnail::after { content: 'AD'; position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: white; font-size: 10px; padding: 3px 8px; border-radius: 5px;}
         .ad-thumbnail i { font-size: 50px; color: #fff; } 
         .btn-ad { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3); }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #ffffff; padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex-shrink: 0; }
         .stat-box { display: flex; flex-direction: column; align-items: center; text-align: center; background: #f8fafc; padding: 8px 4px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .stat-box i { font-size: 16px; margin-bottom: 5px; }
         .stat-box .value { font-weight: bold; font-size: 13px; color: var(--text-dark); margin-bottom: 2px;}
         .stat-box .label { font-size: 10px; color: var(--text-muted); font-weight: 600;}
+        
         .profile-actions { display: flex; gap: 10px; margin: 10px 0; flex-shrink: 0; }
         .profile-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; color: white; cursor: pointer; }
         .btn-convert { background: linear-gradient(90deg, #f39c12, #e67e22); }
         .btn-withdraw { background: linear-gradient(90deg, #00b4db, #0083b0); }
+        
         .menu-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y:auto; padding-bottom:20px;}
         .menu-list li { background: #fff; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px; color: var(--text-dark); font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: var(--shadow); border-right: 1px solid #eee; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
         .menu-list li i { width: 20px; text-align: center; font-size: 16px; color: #555;}
@@ -86,26 +103,32 @@
         .menu-list li:nth-child(6) { border-left: 4px solid #bdc3c7; }
         .menu-list li.logout-btn { border-left: 4px solid #e74c3c; color: #e74c3c;}
         .menu-list li.logout-btn i { color: #e74c3c; }
+        
         .bottom-nav { display: flex; background-color: #ffffff; border-top: 1px solid var(--border-color); padding: 8px 0; z-index: 10; flex-shrink: 0; }
         .nav-item { flex: 1; text-align: center; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 12px; font-weight: 500; }
         .nav-item.active { color: var(--primary); }
+        
         .sub-page { position: absolute; top: 0; left: 100%; width: 100%; height: 100%; background-color: var(--bg-app); z-index: 50; transition: left 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
         .sub-page.active { left: 0; }
         .sub-header { display: flex; align-items: center; padding: 15px; background: white; border-bottom: 1px solid var(--border-color); gap: 15px; font-weight: bold; font-size: 16px; flex-shrink: 0;}
         .sub-header i { cursor: pointer; font-size: 18px; color: var(--text-dark); padding: 5px;}
         .sub-content { flex: 1; padding: 15px; overflow-y: auto; }
+        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold;}
         .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; outline:none;}
         .btn-save { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        
         .history-list { list-style: none; padding: 0; margin: 0; }
         .history-list li { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items:center; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
         .history-list li div span { display: block; font-size: 12px; color: #888; margin-top: 2px;}
         .history-list li strong { color: #27ae60; font-size: 14px;}
         .history-list li strong.minus { color: #e74c3c; }
+        
         .setting-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;}
+        
         #loader { display: none; margin-bottom: 8px; color: var(--primary); font-weight: bold; font-size: 12px;}
         .full-message-box { background: white; padding: 20px; border-radius: 10px; box-shadow: var(--shadow); line-height: 1.6; }
         .full-message-box h3 { margin-top: 0; font-size: 18px; }
@@ -452,7 +475,7 @@
 
     </div>
 
-    <!-- Firebase Integration Logic -->
+    <!-- Firebase & Logic Scripts -->
     <script>
         // === 1. Firebase Initialization ===
         const firebaseConfig = {
@@ -475,11 +498,9 @@
         
         let currentLang = 'bn'; 
         
-        // Demo Fallback User if opened outside Telegram
         let fallbackUser = { id: Math.floor(Math.random() * 100000), first_name: "Demo", username: "demo_user" };
         let tgUser = tg.initDataUnsafe?.user || fallbackUser;
         
-        // Data Structure
         let userData = {
             tgId: tgUser.id,
             fullName: `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim(),
@@ -494,46 +515,48 @@
 
         let userDocRef = db.collection('users').doc(tgUser.id.toString());
 
-        // Setup App Start
+        // Setup App Start & Real-time Listener (S2S Postback)
         async function initApp() {
             try {
-                // Fetch user from Firestore
+                // Check if new user, if so create database entry
                 const docSnap = await userDocRef.get();
-                
-                if (docSnap.exists) {
-                    // Existing User -> Load Data
-                    let dbData = docSnap.data();
-                    userData = { ...userData, ...dbData }; // Merge
-                } else {
-                    // New User -> Save to Database
+                if (!docSnap.exists) {
                     userData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                     await userDocRef.set(userData);
                 }
-                
-                // Set UI Elements
-                document.querySelectorAll('.displayFullName').forEach(el => el.innerText = userData.fullName);
-                document.querySelectorAll('.displayFullNameInput').forEach(el => el.value = userData.fullName);
-                document.querySelectorAll('.displayUserName').forEach(el => el.innerText = userData.username);
-                document.querySelectorAll('.displayUserNameInput').forEach(el => el.value = userData.username);
-                document.getElementById('userPhoneInput').value = userData.phone || "";
-                document.getElementById('userRefCodeDisplay').innerText = userData.referCode;
-                
-                if (userData.photo) {
-                    const imgHTML = `<img src="${userData.photo}" alt="user">`;
-                    document.getElementById('homeUserPhoto').innerHTML = imgHTML;
-                    document.getElementById('profileUserPhoto').innerHTML = imgHTML;
-                }
-                
-                updateUI();
+
+                // Real-time listener for Auto UI Update (Handles S2S Postback updates instantly)
+                userDocRef.onSnapshot((doc) => {
+                    if (doc.exists) {
+                        let dbData = doc.data();
+                        userData = { ...userData, ...dbData }; // Merge DB data
+                        
+                        // Set Static UI Elements
+                        document.querySelectorAll('.displayFullName').forEach(el => el.innerText = userData.fullName);
+                        document.querySelectorAll('.displayFullNameInput').forEach(el => el.value = userData.fullName);
+                        document.querySelectorAll('.displayUserName').forEach(el => el.innerText = userData.username);
+                        document.querySelectorAll('.displayUserNameInput').forEach(el => el.value = userData.username);
+                        document.getElementById('userPhoneInput').value = userData.phone || "";
+                        document.getElementById('userRefCodeDisplay').innerText = userData.referCode;
+                        
+                        if (userData.photo) {
+                            const imgHTML = `<img src="${userData.photo}" alt="user">`;
+                            document.getElementById('homeUserPhoto').innerHTML = imgHTML;
+                            document.getElementById('profileUserPhoto').innerHTML = imgHTML;
+                        }
+                        
+                        updateUI();
+                        
+                        // Remove Loading Screen
+                        document.getElementById('db-loader').style.display = 'none';
+                    }
+                });
+
                 fetchHistory();
                 fetchWithdrawals();
 
-                // Remove Loader
-                document.getElementById('db-loader').style.display = 'none';
-
             } catch (error) {
-                console.error("Firebase Error: ", error);
-                alert("ডাটাবেজে কানেক্ট হতে সমস্যা হচ্ছে। দয়া করে আবার চেষ্টা করুন।");
+                alert("Firebase Error: " + error.message);
             }
         }
 
@@ -548,64 +571,44 @@
             document.getElementById('gridRef').innerText = userData.referrals || 0;
         }
 
-        // === 4. Ads Logic with Firebase Update ===
+        // === 4. Ads Logic (Monetag S2S) ===
         async function watchAd() {
             const btn = document.getElementById('watchAdBtn');
             const loader = document.getElementById('loader');
             
             btn.disabled = true;
-            btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> বিজ্ঞাপন চলছে...' : '<i class="fa-solid fa-play"></i> Ad is playing...';
+            btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-spinner fa-spin"></i> বিজ্ঞাপন লোড হচ্ছে...' : '<i class="fa-solid fa-spinner fa-spin"></i> Loading Ad...';
 
-            // Simulate ad viewing (3 sec)
-            setTimeout(() => {
-                btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> ভেরিফাই হচ্ছে...' : '<i class="fa-solid fa-play"></i> Verifying...';
-                loader.style.display = 'block';
+            try {
+                // Check if Monetag script is fully loaded
+                if (typeof show_11781683 === 'function') {
+                    
+                    // Call Monetag Ad, pass the Telegram ID to server (ymid parameter)
+                    await show_11781683(userData.tgId.toString());
 
-                // Server Verification (2 sec)
-                setTimeout(async () => {
-                    try {
-                        const earnedCoins = 50;
-                        
-                        // Update Database
-                        await userDocRef.update({
-                            coins: firebase.firestore.FieldValue.increment(earnedCoins),
-                            adsWatched: firebase.firestore.FieldValue.increment(1),
-                            success: firebase.firestore.FieldValue.increment(1),
-                            earned: firebase.firestore.FieldValue.increment(earnedCoins)
-                        });
-
-                        // Add to Subcollection (History)
-                        await userDocRef.collection('history').add({
-                            titleBn: 'বিজ্ঞাপন দেখা',
-                            titleEn: 'Watched Ad',
-                            coin: `+${earnedCoins}`,
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-
-                        // Update Local Data
-                        userData.coins += earnedCoins;
-                        userData.adsWatched += 1;
-                        userData.success += 1;
-                        userData.earned += earnedCoins;
-                        
-                        updateUI();
-                        fetchHistory(); // Refresh history list
-                        
+                    // If ad is watched successfully
+                    btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-clock"></i> সার্ভার যাচাই করছে...' : '<i class="fa-solid fa-clock"></i> Verifying...';
+                    loader.style.display = 'block';
+                    
+                    // Wait for webhook (S2S) to add points and return UI back to normal
+                    setTimeout(() => {
                         loader.style.display = 'none';
                         btn.disabled = false;
-                        btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> বিজ্ঞাপন দেখুন' : '<i class="fa-solid fa-play"></i> Watch Ad';
-
-                        if(tg.showAlert) tg.showAlert(currentLang === 'bn' ? `অভিনন্দন! ${earnedCoins} কয়েন যোগ হয়েছে।` : `Congrats! ${earnedCoins} coins added.`);
-                        else alert(currentLang === 'bn' ? `অভিনন্দন! ${earnedCoins} কয়েন যোগ হয়েছে।` : `Congrats! ${earnedCoins} coins added.`);
+                        btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> আবার বিজ্ঞাপন দেখুন' : '<i class="fa-solid fa-play"></i> Watch Ad Again';
                         
-                    } catch (e) {
-                        loader.style.display = 'none';
-                        btn.disabled = false;
-                        btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> আবার চেষ্টা করুন' : '<i class="fa-solid fa-play"></i> Try Again';
-                        alert("সার্ভার এরর! পয়েন্ট যোগ করা যায়নি।");
-                    }
-                }, 2000);
-            }, 3000);
+                        if(tg.showAlert) tg.showAlert(currentLang === 'bn' ? "অ্যাড দেখা সম্পন্ন! পয়েন্ট চেক করুন।" : "Ad watched! Check your points.");
+                    }, 3000);
+
+                } else {
+                    throw new Error("Script not found");
+                }
+            } catch (error) {
+                // If user closes ad or ad is blocked
+                loader.style.display = 'none';
+                btn.disabled = false;
+                btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> বিজ্ঞাপন দেখুন' : '<i class="fa-solid fa-play"></i> Watch Ad';
+                alert(currentLang === 'bn' ? "এই মুহূর্তে বিজ্ঞাপন নেই বা আপনার ব্রাউজারে অ্যাড-ব্লকার চালু আছে।" : "No ad available or Ad-blocker is enabled.");
+            }
         }
 
         // === 5. History Fetching (Firestore) ===
@@ -615,17 +618,12 @@
             try {
                 const snapshot = await userDocRef.collection('history').orderBy('timestamp', 'desc').limit(20).get();
                 workHistoryDocs = [];
-                snapshot.forEach(doc => {
-                    workHistoryDocs.push(doc.data());
-                });
-                filterHistory(); // Render to HTML
-            } catch (error) {
-                console.log("Error fetching history:", error);
-            }
+                snapshot.forEach(doc => { workHistoryDocs.push(doc.data()); });
+                filterHistory(); 
+            } catch (error) { console.log(error); }
         }
 
         function filterHistory() {
-            // Note: Simplistic filtering since real date filtering requires complex queries. We'll do it locally for demo.
             const filter = document.getElementById('historyFilter').value;
             const list = document.getElementById('historyDataList');
             list.innerHTML = '';
@@ -637,7 +635,7 @@
 
             const now = new Date();
             let filtered = workHistoryDocs.filter(item => {
-                if(!item.timestamp) return true; // optimistic local add
+                if(!item.timestamp) return true; 
                 const date = item.timestamp.toDate();
                 if(filter === 'today') return date.getDate() === now.getDate() && date.getMonth() === now.getMonth();
                 if(filter === 'yesterday') return date.getDate() === (now.getDate()-1);
@@ -653,12 +651,7 @@
             filtered.forEach(item => {
                 let title = currentLang === 'bn' ? item.titleBn : item.titleEn;
                 let dateStr = item.timestamp ? item.timestamp.toDate().toLocaleString('bn-BD', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : 'Just now';
-                
-                list.innerHTML += `
-                    <li>
-                        <div><strong style="font-size:14px;">${title}</strong> <span>${dateStr}</span></div>
-                        <strong style="font-size:14px;">${item.coin} <i class="fa-solid fa-coins" style="font-size:12px;"></i></strong>
-                    </li>`;
+                list.innerHTML += `<li><div><strong style="font-size:14px;">${title}</strong> <span>${dateStr}</span></div><strong style="font-size:14px;">${item.coin} <i class="fa-solid fa-coins" style="font-size:12px;"></i></strong></li>`;
             });
         }
 
@@ -677,15 +670,10 @@
             let amountTk = inputCoins / 100;
             
             try {
-                // DB Update
                 await userDocRef.update({
                     coins: firebase.firestore.FieldValue.increment(-inputCoins),
                     balance: firebase.firestore.FieldValue.increment(amountTk)
                 });
-                
-                userData.coins -= inputCoins;
-                userData.balance += amountTk;
-                updateUI();
                 
                 document.getElementById('convertCoinInput').value = '';
                 document.getElementById('convertTkDisplay').innerText = "0.00";
@@ -706,19 +694,15 @@
             if(!wNumber || wNumber.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন।");
             
             try {
-                // Deduct Balance
                 await userDocRef.update({ balance: firebase.firestore.FieldValue.increment(-wAmount) });
-                userData.balance -= wAmount;
-                updateUI();
                 
-                // Add to Withdrawals collection
                 await userDocRef.collection('withdrawals').add({
                     amount: wAmount, method: wMethod, number: wNumber, status: 'Pending',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
                 document.getElementById('withdrawAmountInput').value = '';
-                fetchWithdrawals(); // Refresh List
+                fetchWithdrawals(); 
                 
                 alert(`আপনার ৳${wAmount} উত্তোলনের রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন চেক করে পেমেন্ট করবে।`);
                 closeTopSub('sub-withdraw');
@@ -748,7 +732,6 @@
             let num = document.getElementById('userPhoneInput').value;
             if(num) {
                 await userDocRef.update({ phone: num });
-                userData.phone = num;
                 alert("তথ্য সেভ হয়েছে!");
             }
         }
