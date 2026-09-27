@@ -1,625 +1,804 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CoinView / টাকার মেশিন</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Adsgram SDK -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <!-- Monetag SDK -->
-    <script src="https://alwingulla.com/88/tag.min.js" data-zone="11781683" async data-cfasync="false"></script>
+    <title>EarnHub - Light Mode</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Telegram Web App API -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Firebase SDK (v8 Compat for easy integration) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
-        /* ================= বেসিক ও থিম সেটআপ ================= */
-        :root {
-            --primary: #0056d2; --secondary: #f0f4f8; --bg: #ffffff; --text: #333333; 
-            --border: #e2e8f0; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #e9ecef; font-family: 'Poppins', 'Noto Sans Bengali', sans-serif; color: var(--text); overflow-x: hidden; }
-        
-        body.lang-en .bn { display: none !important; }
-        body.lang-bn .en { display: none !important; }
-
-        .app-container {
-            max-width: 480px; margin: 0 auto; background: var(--bg); min-height: 100vh;
-            position: relative; padding-top: 70px; padding-bottom: 80px; box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow-x: hidden;
-        }
-
-        /* ================= টপ নেভিগেশন ================= */
-        .top-nav {
-            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; border-bottom: 1px solid var(--border);
-        }
-        .nav-left { display: flex; align-items: center; gap: 10px; }
-        .menu-btn { font-size: 26px; cursor: pointer; color: var(--primary); }
-        .brand-info { display: flex; flex-direction: column; }
-        .brand-name { font-size: 16px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-        .slogan { font-size: 9px; color: #666; margin-top: -2px; font-weight: 600; }
-        
-        .nav-right { display: flex; align-items: center; gap: 12px; }
-        .lang-toggle { font-size: 11px; font-weight: 800; background: var(--secondary); color: var(--primary); padding: 4px 8px; border-radius: 20px; cursor: pointer; border: 1px solid #d0dbe5; }
-        
-        .nav-icon-box { font-size: 22px; position: relative; cursor: pointer; }
-        .notif-badge { position: absolute; top: -2px; right: -5px; background: var(--danger); color: #fff; font-size: 9px; font-weight: bold; width: 15px; height: 15px; display: flex; justify-content: center; align-items: center; border-radius: 50%; border: 1px solid #fff; }
-        .notif-dot { position: absolute; top: 2px; right: 0px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 1px solid #fff; }
-
-        /* ================= সাইডবার মেনু ================= */
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1999; display: none; }
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #fff; z-index: 2000; transition: left 0.3s ease; padding: 20px; overflow-y: auto; }
+        /* === আগের সমস্ত CSS একদম হুবহু রাখা হয়েছে === */
+        :root { --bg-body: #e4e7ea; --bg-app: #f5f7fa; --primary: #4a6ee0; --text-dark: #1c2833; --text-muted: #7f8c8d; --border-color: #e2e8f0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        body { margin: 0; padding: 0; background-color: var(--bg-body); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .app-container { width: 100%; max-width: 450px; height: 100%; background-color: var(--bg-app); display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background-color: #ffffff; border-bottom: 1px solid var(--border-color); z-index: 10; }
+        .top-nav .nav-left, .top-nav .nav-right { display: flex; align-items: center; gap: 15px; }
+        .top-nav i { font-size: 20px; color: var(--text-dark); cursor: pointer; transition: 0.2s;}
+        .top-nav .logo { font-weight: bold; font-size: 18px; color: var(--text-dark); display: flex; align-items: center; gap: 5px; }
+        .lang-toggle { display: flex; align-items: center; background: #e2e8f0; border-radius: 20px; padding: 2px 8px; font-size: 12px; font-weight: bold; cursor: pointer; color: var(--primary); }
+        .sidebar { position: absolute; top: 0; left: -300px; width: 290px; height: 100%; background: #f4f6fc; z-index: 100; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .sidebar.open { left: 0; }
-        .sidebar-overlay.open { display: block; }
-        .close-sidebar { text-align: right; font-size: 24px; cursor: pointer; margin-bottom: 15px; color: #888; }
-        
-        .menu-item-1x1 { padding: 15px; border-radius: 12px; margin-bottom: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid; text-align: center; font-size: 14px; transition: 0.2s; }
-        .menu-item-1x1:active { transform: scale(0.98); }
-        .m-promo { background: #fff8e1; border-color: #ffe0b2; color: #f57c00; }
-        .m-ads { background: #e3f2fd; border-color: #bbdefb; color: #1976d2; }
-        
-        .menu-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .m-grid-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px 10px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; color: #475569; display: flex; flex-direction: column; gap: 5px; }
-        .m-complain { background: #fef2f2; border-color: #fecaca; color: #dc2626; margin-bottom: 30px; }
-
-        /* ================= পেজ কন্টেইনার ================= */
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s ease-in-out; }
-        .active-page { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: #fff; padding: 15px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 15px; }
-        .page-title { font-size: 16px; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 15px; border-bottom: 2px dashed var(--border); padding-bottom: 10px; }
-
-        /* ================= হোমপেজ: স্লাইডার ও গ্রিড ================= */
-        .login-banner { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); text-align: center; cursor: pointer; color: #fff; }
-        .login-banner h3 { font-size: 16px; margin-bottom: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-        
-        .slider-container { height: 135px; border-radius: 16px; margin-bottom: 15px; position: relative; border: 1px solid #e2e8f0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
-        .slider-container::-webkit-scrollbar { display: none; }
-        .slide { min-width: 100%; height: 100%; scroll-snap-align: center; position: relative; display: flex; align-items: flex-end; padding: 15px; background-size: cover; background-position: center; }
-        .slide::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
-        .slide-title { position: relative; color: #fff; font-size: 16px; font-weight: 800; z-index: 2; text-shadow: 1px 1px 4px rgba(0,0,0,0.8); }
-
-        .anim-slider { height: 90px; border-radius: 16px; overflow: hidden; position: relative; margin-bottom: 15px; background: #000; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); cursor: pointer; display: none; }
-        .anim-slide { position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 35px; opacity: 0; transition: opacity 0.8s ease; flex-direction: column;}
-        .anim-slide.active { opacity: 1; }
-        #as1 { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
-        #as2 { background: linear-gradient(45deg, #a1c4fd, #c2e9fb); }
-        #as3 { background: linear-gradient(45deg, #d4fc79, #96e6a1); }
-
-        .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .h-cat { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px 10px; text-align: center; font-weight: 800; color: #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;}
-        .h-cat .icon { font-size: 28px; }
-
-        /* ================= ডেইলি টাস্ক ডিজাইন ================= */
-        .task-header { display: flex; justify-content: space-between; background: var(--secondary); padding: 12px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; border: 1px solid var(--border); color: var(--primary); }
-        .task-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .task-banner { height: 80px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 15px; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        .task-info-bar { display: flex; justify-content: space-between; align-items: center; }
-        .task-coin { font-weight: 800; color: var(--warning); font-size: 15px; }
-        .task-btn { background: var(--primary); color: #fff; padding: 8px 15px; border: none; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; }
-
-        /* ================= প্রোফাইল পেজ ও কাস্টমার সাপোর্ট ================= */
-        .profile-header { display: flex; align-items: center; gap: 15px; }
-        .profile-ring { width: 75px; height: 75px; border-radius: 50%; background: conic-gradient(#10b981 0% 40%, #3b82f6 40% 75%, #f59e0b 75% 90%, #e2e8f0 90% 100%); display: flex; justify-content: center; align-items: center; position: relative; }
-        .profile-inner { width: 63px; height: 63px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; }
-        .active-dot { position: absolute; bottom: 2px; right: 5px; width: 14px; height: 14px; background: #10b981; border-radius: 50%; border: 2px solid #fff; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        
-        .p-info { flex-grow: 1; }
-        .p-name { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .verified-tick { color: #00008B; font-size: 16px; }
-        .p-user { font-size: 12px; color: #64748b; }
-        .p-balance { text-align: right; }
-        .p-coin { font-size: 18px; font-weight: 800; color: #f59e0b; }
-        
-        .profile-grid-6 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .pg-item { border: 1.5px solid; padding: 12px; border-radius: 12px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; gap: 5px; align-items: center; }
-        .pg-1 { border-color: #bbf7d0; background: #f0fdf4; color: #166534; }
-        .pg-2 { border-color: #bfdbfe; background: #eff6ff; color: #1e3a8a; }
-        .pg-3 { border-color: #fbcfe8; background: #fdf2f8; color: #831843; }
-        .pg-4 { border-color: #fed7aa; background: #fff7ed; color: #7c2d12; }
-        .pg-5 { border-color: #e2e8f0; background: #f8fafc; color: #334155; }
-        .pg-6 { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
-
-        .support-box { border: 1.5px solid var(--primary); background: #f0f4ff; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
-        .support-icons { display: flex; justify-content: space-around; width: 100%; margin-top: 10px; }
-        .s-icon { text-align: center; font-size: 26px; cursor: pointer; }
-        .s-icon span { display: block; font-size: 10px; color: var(--primary); font-weight: 600; margin-top: 5px; }
-
-        /* ================= ফর্ম ও অন্যান্য ================= */
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-family: inherit; font-size: 14px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; }
-        .ref-box { background: #f8fafc; border: 2px dashed var(--primary); padding: 15px; text-align: center; border-radius: 12px; margin-bottom: 15px; }
-        .social-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-weight: 600; cursor: pointer; font-size: 13px; }
-        
-        /* ================= বটম নেভিগেশন ================= */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
-            background: #ffffff; display: flex; justify-content: space-around; padding: 10px 0 15px 0;
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid var(--border);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; cursor: pointer; transition: 0.3s; width: 25%; }
-        .nav-item .icon { font-size: 22px; }
+        .sidebar-header-new { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 10px; background: #fff;}
+        .sidebar-header-new h3 { margin: 0; color: #1a202c; font-weight: 900; font-size: 20px; display: flex; align-items: center; gap: 8px;}
+        .sidebar-header-new i.close-btn { font-size: 26px; color: #ff007f; font-weight: 900; cursor: pointer; }
+        .sidebar-scroll { flex: 1; overflow-y: auto; padding: 15px 20px; }
+        .sb-btn { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; }
+        .sb-btn.green-grad { background: linear-gradient(90deg, #27ae60, #2ecc71); color: white; border: none; }
+        .sb-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .sb-grid-item { background: #fff; border-radius: 12px; padding: 15px 5px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; text-align: center; }
+        .sb-grid-item i { font-size: 22px; }
+        .sb-grid-item span { font-size: 11px; font-weight: 600; color: #2d3436; line-height: 1.2; }
+        .sb-social-row { display: flex; justify-content: space-between; gap: 10px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);}
+        .sb-social-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex: 1; }
+        .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; }
+        .icon-circle.chat { background: #00cec9; }
+        .icon-circle.tg { background: #0984e3; }
+        .icon-circle.fb { background: #e84393; }
+        .sb-social-item span { font-size: 11px; font-weight: bold; color: #2d3436; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .overlay.open { opacity: 1; pointer-events: auto; }
+        .main-content { flex: 1; position: relative; overflow: hidden; }
+        .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 15px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
+        .page.active { opacity: 1; pointer-events: auto; }
+        .profile-card { background-color: #ffffff; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex-shrink: 0; margin-bottom: 10px; }
+        .user-info { display: flex; align-items: center; gap: 10px; flex: 1;}
+        .tg-photo { width: 45px; height: 45px; border-radius: 50%; background: #34b7f1; color: white; font-size: 20px; display: flex; justify-content: center; align-items: center; overflow: hidden;}
+        .tg-photo img {width: 100%; height: 100%; object-fit: cover;}
+        .user-details { display: flex; flex-direction: column; }
+        .name-row strong { font-size: 15px; color: var(--text-dark);}
+        .username { font-size: 12px; color: #1e88e5; font-weight: 500; }
+        .balance-section { background-color: #f1f5f9; padding: 6px 12px; border-radius: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .bal-item { font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 5px;}
+        .bal-item.tk { color: #27ae60; font-size: 15px;}
+        .ad-container { border-radius: 15px; padding: 15px; text-align: center; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; flex: 1; margin: 5px 0 10px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .ad-container h3 { margin: 0 0 10px; color: var(--text-dark); font-size: 15px; }
+        .ad-thumbnail { width: 100%; height: 130px; border-radius: 12px; margin-bottom: 15px; background: linear-gradient(45deg, #1e293b, #334155); display: flex; justify-content: center; align-items: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .ad-thumbnail::after { content: 'AD'; position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.2); color: white; font-size: 10px; padding: 3px 8px; border-radius: 5px;}
+        .ad-thumbnail i { font-size: 50px; color: #fff; } 
+        .btn-ad { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #ffffff; padding: 10px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex-shrink: 0; }
+        .stat-box { display: flex; flex-direction: column; align-items: center; text-align: center; background: #f8fafc; padding: 8px 4px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .stat-box i { font-size: 16px; margin-bottom: 5px; }
+        .stat-box .value { font-weight: bold; font-size: 13px; color: var(--text-dark); margin-bottom: 2px;}
+        .stat-box .label { font-size: 10px; color: var(--text-muted); font-weight: 600;}
+        .profile-actions { display: flex; gap: 10px; margin: 10px 0; flex-shrink: 0; }
+        .profile-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; color: white; cursor: pointer; }
+        .btn-convert { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .btn-withdraw { background: linear-gradient(90deg, #00b4db, #0083b0); }
+        .menu-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y:auto; padding-bottom:20px;}
+        .menu-list li { background: #fff; padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; gap: 15px; color: var(--text-dark); font-weight: bold; font-size: 13px; cursor: pointer; box-shadow: var(--shadow); border-right: 1px solid #eee; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        .menu-list li i { width: 20px; text-align: center; font-size: 16px; color: #555;}
+        .menu-list li:nth-child(1) { border-left: 4px solid #f1c40f; }
+        .menu-list li:nth-child(2) { border-left: 4px solid #3498db; }
+        .menu-list li:nth-child(3) { border-left: 4px solid #e84393; }
+        .menu-list li:nth-child(4) { border-left: 4px solid #00cec9; }
+        .menu-list li:nth-child(5) { border-left: 4px solid #8e44ad; }
+        .menu-list li:nth-child(6) { border-left: 4px solid #bdc3c7; }
+        .menu-list li.logout-btn { border-left: 4px solid #e74c3c; color: #e74c3c;}
+        .menu-list li.logout-btn i { color: #e74c3c; }
+        .bottom-nav { display: flex; background-color: #ffffff; border-top: 1px solid var(--border-color); padding: 8px 0; z-index: 10; flex-shrink: 0; }
+        .nav-item { flex: 1; text-align: center; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
+        .nav-item i { font-size: 20px; }
+        .nav-item span { font-size: 12px; font-weight: 500; }
         .nav-item.active { color: var(--primary); }
-
-        .modal-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index: 3000; }
-        .modal-box { background:#fff; padding:20px; border-radius:16px; width:90%; max-width:320px; text-align:center; }
-        .modal-box .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-
-        .grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .ad-cat { background: #f8fafc; border: 1px solid var(--border); padding: 15px 5px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; }
-        .ad-cat .icon { font-size: 24px; margin-bottom: 5px; display: block; }
+        .sub-page { position: absolute; top: 0; left: 100%; width: 100%; height: 100%; background-color: var(--bg-app); z-index: 50; transition: left 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
+        .sub-page.active { left: 0; }
+        .sub-header { display: flex; align-items: center; padding: 15px; background: white; border-bottom: 1px solid var(--border-color); gap: 15px; font-weight: bold; font-size: 16px; flex-shrink: 0;}
+        .sub-header i { cursor: pointer; font-size: 18px; color: var(--text-dark); padding: 5px;}
+        .sub-content { flex: 1; padding: 15px; overflow-y: auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 5px; font-weight: bold;}
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; outline:none;}
+        .btn-save { background: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-list li { background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items:center; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
+        .history-list li div span { display: block; font-size: 12px; color: #888; margin-top: 2px;}
+        .history-list li strong { color: #27ae60; font-size: 14px;}
+        .history-list li strong.minus { color: #e74c3c; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;}
+        #loader { display: none; margin-bottom: 8px; color: var(--primary); font-weight: bold; font-size: 12px;}
+        .full-message-box { background: white; padding: 20px; border-radius: 10px; box-shadow: var(--shadow); line-height: 1.6; }
+        .full-message-box h3 { margin-top: 0; font-size: 18px; }
+        .full-message-box p { font-size: 14px; color: #444; }
+        
+        /* Loading Overlay for Database Sync */
+        #db-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--primary); font-weight: bold; font-size: 18px;}
     </style>
 </head>
-<body class="lang-bn">
+<body>
 
-<div class="app-container">
-
-    <!-- ================= টপ নেভিগেশন ================= -->
-    <header class="top-nav">
-        <div class="nav-left">
-            <div class="menu-btn" onclick="toggleSidebar()">☰</div>
-            <div class="brand-info">
-                <div class="brand-name">🪙 <span class="bn">টাকার মেশিন</span><span class="en">CoinView</span></div>
-                <div class="slogan"><span class="bn">টাকা থাকলে - জীবন সুন্দর</span><span class="en">Earn Reward Legally</span></div>
-            </div>
-        </div>
-        <div class="nav-right">
-            <div class="lang-toggle" onclick="toggleLanguage()"><span class="bn">EN</span><span class="en">BN</span></div>
-            <div class="nav-icon-box" onclick="switchPage('messages')">💬<div class="notif-badge">2</div></div>
-            <div class="nav-icon-box" onclick="switchPage('notifications')">🔔<div class="notif-dot"></div></div>
-        </div>
-    </header>
-
-    <!-- ================= সাইডবার মেনু ================= -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-    <div class="sidebar" id="sidebar">
-        <div class="close-sidebar" onclick="toggleSidebar()">✖</div>
-        <div class="menu-item-1x1 m-promo" onclick="switchPage('promo'); toggleSidebar();">🎁 <span class="bn">প্রোমোশনাল অফার</span><span class="en">Promotional Offers</span></div>
-        <div class="menu-item-1x1 m-ads" onclick="switchPage('ads'); toggleSidebar();">📺 <span class="bn">বিজ্ঞাপন দেখুন</span><span class="en">Watch Ads</span></div>
-        <div class="menu-grid-2x2">
-            <div class="m-grid-item" onclick="switchPage('tutorial'); toggleSidebar();"><span>📖</span><span class="bn">টিউটোরিয়াল</span><span class="en">Tutorial</span></div>
-            <div class="m-grid-item" onclick="switchPage('my-work'); toggleSidebar();"><span>📊</span><span class="bn">আমার কাজ</span><span class="en">My Work</span></div>
-            <div class="m-grid-item" onclick="switchPage('referral'); toggleSidebar();"><span>🤝</span><span class="bn">রেফার প্রোগ্রাম</span><span class="en">Refer Program</span></div>
-            <div class="m-grid-item" onclick="switchPage('share'); toggleSidebar();"><span>📢</span><span class="bn">শেয়ার প্রোগ্রাম</span><span class="en">Share Program</span></div>
-        </div>
-        <div class="menu-item-1x1 m-complain" onclick="switchPage('complain'); toggleSidebar();">⚠️ <span class="bn">অভিযোগ বক্স</span><span class="en">Complain Box</span></div>
+    <!-- Initial Loading Screen -->
+    <div id="db-loader">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 40px; margin-bottom: 15px;"></i>
+        <span>সার্ভারের সাথে কানেক্ট হচ্ছে...</span>
     </div>
 
-    <!-- ================= হোম পেজ ================= -->
-    <div id="home-page" class="page active-page">
-        <div class="card login-banner" id="login-banner" onclick="switchPage('login')">
-            <h3><span class="bn">অ্যাকাউন্ট নেই বা লগইন করেননি?</span><span class="en">Not Logged In?</span></h3>
-            <p style="font-size: 12px;"><span class="bn">লগইন বা রেজিস্ট্রেশন করতে এখানে চাপ দিন</span><span class="en">Tap here to Login or Register</span></p>
-        </div>
+    <div class="app-container">
+        
+        <!-- Overlay -->
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-        <div class="slider-container" id="slider1">
-            <div class="slide" style="background-color: #ff9a9e;" onclick="switchPage('promo')"><div class="slide-title"><span class="bn">বড় ধামাকা অফার!</span><span class="en">Mega Offer!</span></div></div>
-            <div class="slide" style="background-color: #a18cd1;" onclick="switchPage('promo')"><div class="slide-title"><span class="bn">ডাবল পয়েন্ট জিতুন</span><span class="en">Win Double Points</span></div></div>
-            <div class="slide" style="background-color: #fbc2eb;" onclick="switchPage('daily-task')"><div class="slide-title"><span class="bn">নতুন টাস্ক যুক্ত হয়েছে</span><span class="en">New Tasks Added</span></div></div>
-        </div>
-
-        <div class="anim-slider" id="anim-slider" onclick="switchPage('ads')">
-            <div class="anim-slide active" id="as1">🎬🎁</div> 
-            <div class="anim-slide" id="as2">🤝💸</div> 
-            <div class="anim-slide" id="as3">🏆🚀</div> 
-        </div>
-
-        <div class="home-grid">
-            <div class="h-cat" onclick="openDailySignIn()">
-                <span class="icon">📅</span><span class="bn">দৈনিক সাইন ইন</span><span class="en">Daily Sign In</span>
-            </div>
-            <div class="h-cat" onclick="switchPage('daily-task')">
-                <span class="icon">🎯</span><span class="bn">দৈনিক টাস্ক</span><span class="en">Daily Task</span>
-            </div>
-            <div class="h-cat" onclick="switchPage('promo')">
-                <span class="icon">🎁</span><span class="bn">আজকের অফার</span><span class="en">Today's Offer</span>
-            </div>
-            <div class="h-cat" onclick="switchPage('referral')">
-                <span class="icon">👥</span><span class="bn">রেফারেল প্রোগ্রাম</span><span class="en">Referral Program</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= দৈনিক সাইন ইন (৩টি টাস্ক) ================= -->
-    <div id="daily-signin-page" class="page">
-        <div class="card">
-            <div class="page-title"><span class="bn">দৈনিক সাইন ইন টাস্ক</span><span class="en">Daily Sign In Tasks</span></div>
-            <p style="font-size:12px; color:#666; margin-bottom:15px; text-align:center;">
-                <span class="bn">পয়েন্ট পেতে নিচের ৩টি কাজ সম্পন্ন করুন।</span><span class="en">Complete the 3 tasks below to get points.</span>
-            </p>
-            
-            <div class="social-item" onclick="this.innerHTML='✈️ Telegram: Visit, React, Comment <span style=\'color:green; font-size:16px;\'>✅</span>'">
-                ✈️ Telegram: Visit, React, Comment <span style="color:red; font-size:16px;">❌</span>
-            </div>
-            <div class="social-item" onclick="this.innerHTML='📘 Facebook: Visit, Like, Share <span style=\'color:green; font-size:16px;\'>✅</span>'">
-                📘 Facebook: Visit, Like, Share <span style="color:red; font-size:16px;">❌</span>
-            </div>
-            <div class="social-item" onclick="this.innerHTML='▶️ YouTube: Watch, Like, Comment <span style=\'color:green; font-size:16px;\'>✅</span>'">
-                ▶️ YouTube: Watch, Like, Comment <span style="color:red; font-size:16px;">❌</span>
-            </div>
-
-            <button class="btn" style="margin-top:15px;" onclick="submitDailySignIn()">
-                <span class="bn">সাবমিট করুন</span><span class="en">Submit</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ================= লগইন / রেজিস্ট্রেশন পেজ ================= -->
-    <div id="login-page" class="page">
-        <div class="card">
-            <div class="page-title"><span class="bn">লগইন করুন</span><span class="en">Login</span></div>
-            <input type="text" placeholder="Username or Mobile">
-            <input type="password" placeholder="Password">
-            <button class="btn" onclick="doLogin()"><span class="bn">লগইন</span><span class="en">Login</span></button>
-            <p style="text-align: center; margin-top: 15px; font-size: 13px;">
-                <span class="bn">অ্যাকাউন্ট নেই?</span><span class="en">Don't have an account?</span> 
-                <b style="color: var(--primary); cursor:pointer;" onclick="switchPage('register')"><span class="bn">রেজিস্ট্রেশন করুন</span><span class="en">Register here</span></b>
-            </p>
-        </div>
-    </div>
-    
-    <div id="register-page" class="page">
-        <div class="card">
-            <div class="page-title"><span class="bn">রেজিস্ট্রেশন করুন</span><span class="en">Register</span></div>
-            <input type="text" placeholder="Full Name">
-            <input type="text" placeholder="Mobile Number">
-            <input type="password" placeholder="Password">
-            <button class="btn" onclick="doLogin()"><span class="bn">রেজিস্ট্রেশন সম্পন্ন করুন</span><span class="en">Complete Registration</span></button>
-        </div>
-    </div>
-
-    <!-- ================= ডেইলি টাস্ক (Adsgram av-ari-1 যুক্ত) ================= -->
-    <div id="daily-task-page" class="page">
-        <div class="page-title">🎯 <span class="bn">দৈনিক টাস্ক</span><span class="en">Daily Task</span></div>
-        <div class="task-header">
-            <div><span class="bn">বাকি কাজ:</span><span class="en">Remaining:</span> <span id="task-count">50</span>/50</div>
-            <div><span class="bn">ব্যালেন্স:</span><span class="en">Balance:</span> <span id="task-balance-show">500</span> 🪙</div>
-        </div>
-        <div id="task-list-container"></div>
-    </div>
-
-    <!-- ================= আজকের অফার (Monetag av-mri-1 যুক্ত) ================= -->
-    <div id="promo-page" class="page">
-        <div class="card">
-            <div class="page-title">🎁 <span class="bn">আজকের স্পেশাল অফার</span><span class="en">Today's Special Offers</span></div>
-            <div id="promo-banners-container">
-                <!-- JS দিয়ে ১০টি ব্যানার জেনারেট হবে -->
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= রেফার প্রোগ্রাম ================= -->
-    <div id="referral-page" class="page">
-        <div class="card">
-            <div class="page-title">🤝 <span class="bn">রেফার প্রোগ্রাম</span><span class="en">Refer Program</span></div>
-            
-            <div class="ref-box">
-                <p style="font-size:12px;"><span class="bn">আপনার রেফারেল কোড</span><span class="en">Your Referral Code</span></p>
-                <div style="font-size: 26px; font-weight: 800; color: var(--primary); margin: 5px 0;">TR-55</div>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header-new">
+                <h3>Game Hub <i class="fa-solid fa-circle-half-stroke" style="color:#7f8c8d; font-size: 14px;"></i></h3>
+                <i class="fa-solid fa-xmark close-btn" onclick="toggleSidebar()"></i>
             </div>
             
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <button class="btn" style="background:#475569;" onclick="alert('Link Copied Successfully!')">
-                    <span class="bn">কপি লিংক</span><span class="en">Copy Link</span>
-                </button>
-                <button class="btn" onclick="alert('Share options opened!')">
-                    <span class="bn">শেয়ার</span><span class="en">Share</span>
-                </button>
+            <div class="sidebar-scroll">
+                <div class="sb-btn" onclick="openSub('sub-history'); toggleSidebar();">
+                    <i class="fa-solid fa-chart-column" style="color: #3498db;"></i>
+                    <span class="lang" data-bn="কাজের ইতিহাস" data-en="Work History">কাজের ইতিহাস</span>
+                </div>
+                
+                <div class="sb-btn green-grad" onclick="openSub('sub-earning'); toggleSidebar();">
+                    <i class="fa-solid fa-sack-dollar" style="color: #f1c40f;"></i>
+                    <span class="lang" data-bn="আর্নিং পয়েন্ট" data-en="Earning Point">আর্নিং পয়েন্ট</span>
+                </div>
+                
+                <div class="sb-grid">
+                    <div class="sb-grid-item" onclick="openSub('sub-notifications'); toggleSidebar();"><i class="fa-solid fa-clipboard-list" style="color: #9b59b6;"></i><span class="lang" data-bn="নোটিশ বোর্ড" data-en="Notice Board">নোটিশ বোর্ড</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('বিজ্ঞাপন', 'fa-tv', 'Ads')"><i class="fa-solid fa-tv" style="color: #34495e;"></i><span class="lang" data-bn="বিজ্ঞাপন" data-en="Ads">বিজ্ঞাপন</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-refer'); toggleSidebar();"><i class="fa-solid fa-user-group" style="color: #3498db;"></i><span class="lang" data-bn="রেফার এন্ড আর্ন" data-en="Refer & Earn">রেফার এন্ড আর্ন</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('রিওয়ার্ড', 'fa-gift', 'Reward')"><i class="fa-solid fa-gift" style="color: #e74c3c;"></i><span class="lang" data-bn="রিওয়ার্ড" data-en="Reward">রিওয়ার্ড</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('লিডারবোর্ড', 'fa-trophy', 'Leaderboard')"><i class="fa-solid fa-trophy" style="color: #f1c40f;"></i><span class="lang" data-bn="লিডারবোর্ড" data-en="Leaderboard">লিডারবোর্ড</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('নিয়মাবলী', 'fa-scroll', 'Rules')"><i class="fa-solid fa-scroll" style="color: #d35400;"></i><span class="lang" data-bn="নিয়মাবলী" data-en="Rules">নিয়মাবলী</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('আমাদের সম্পর্কে', 'fa-circle-info', 'About Us')"><i class="fa-solid fa-circle-info" style="color: #7f8c8d;"></i><span class="lang" data-bn="আমাদের সম্পর্কে" data-en="About Us">আমাদের সম্পর্কে</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('যুক্ত হোন', 'fa-handshake', 'Join Us')"><i class="fa-solid fa-handshake" style="color: #f39c12;"></i><span class="lang" data-bn="যুক্ত হোন" data-en="Join Us">যুক্ত হোন</span></div>
+                    <div class="sb-grid-item" onclick="openGenericSub('অভিযোগ বক্স', 'fa-box-archive', 'Complaint Box')"><i class="fa-solid fa-box-archive" style="color: #e74c3c;"></i><span class="lang" data-bn="অভিযোগ বক্স" data-en="Complaint Box">অভিযোগ বক্স</span></div>
+                </div>
+                
+                <div class="sb-social-row">
+                    <div class="sb-social-item" onclick="openGenericSub('লাইভ চ্যাট', 'fa-comments', 'Live Chat')"><div class="icon-circle chat"><i class="fa-solid fa-comment-dots"></i></div><span class="lang" data-bn="লাইভ চ্যাট" data-en="Live Chat">লাইভ চ্যাট</span></div>
+                    <div class="sb-social-item" onclick="openGenericSub('টেলিগ্রাম', 'fa-telegram', 'Telegram')"><div class="icon-circle tg"><i class="fa-brands fa-telegram"></i></div><span class="lang" data-bn="টেলিগ্রাম" data-en="Telegram">টেলিগ্রাম</span></div>
+                    <div class="sb-social-item" onclick="openGenericSub('ম্যাসেঞ্জার', 'fa-facebook-messenger', 'Messenger')"><div class="icon-circle fb"><i class="fa-brands fa-facebook-messenger"></i></div><span class="lang" data-bn="ম্যাসেঞ্জার" data-en="Messenger">ম্যাসেঞ্জার</span></div>
+                </div>
             </div>
+        </div>
 
-            <hr style="border:0; border-top:1px dashed var(--border); margin:15px 0;">
+        <!-- Top Navigation -->
+        <header class="top-nav">
+            <div class="nav-left"><i class="fa-solid fa-bars" onclick="toggleSidebar()" style="color:#00b4db;"></i><div class="logo">Game Hub</div></div>
+            <div class="nav-right">
+                <div class="lang-toggle" onclick="toggleLanguage()"><i class="fa-solid fa-toggle-on" id="langIcon"></i><span id="langText">EN</span></div>
+                <i class="fa-solid fa-bell" style="color: #2c3e50; position: relative; cursor: pointer;" onclick="openSub('sub-notifications')"><span style="position: absolute; top: -5px; right: -5px; background: #ff007f; color: white; font-size: 8px; padding: 2px 4px; border-radius: 50%;">2</span></i>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
             
-            <div style="text-align:center; font-weight:bold; color:var(--primary); margin-bottom:10px; font-size:14px;">
-                <span class="bn">কারো রেফারে জয়েন করুন</span><span class="en">Join via Referral Code</span>
-            </div>
-            <input type="text" placeholder="Enter Code (e.g., TR-12)">
-            <button class="btn" style="background:var(--success);" onclick="alert('আপনি সফলভাবে রেফারে যুক্ত হয়েছেন!')">
-                <span class="bn">জয়েন করুন</span><span class="en">Join Now</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- ================= শেয়ার প্রোগ্রাম ================= -->
-    <div id="share-page" class="page">
-        <div class="card">
-            <div class="page-title">📢 <span class="bn">শেয়ার প্রোগ্রাম</span><span class="en">Share Program</span></div>
-            <p style="text-align:center; font-weight:bold; color:var(--primary); margin-bottom:15px;">My Code: TR-55</p>
-            
-            <div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:#333;">
-                <span class="bn">কোথায় শেয়ার করেছেন?</span><span class="en">Where did you share?</span>
-            </div>
-            <div class="social-item" onclick="this.innerHTML='Facebook <span style=\'color:green;\'>✅</span>'">Facebook <span>🔗</span></div>
-            <div class="social-item" onclick="this.innerHTML='WhatsApp <span style=\'color:green;\'>✅</span>'">WhatsApp <span>🔗</span></div>
-            <div class="social-item" onclick="this.innerHTML='Telegram <span style=\'color:green;\'>✅</span>'">Telegram <span>🔗</span></div>
-            
-            <hr style="border:0; border-top:1px dashed var(--border); margin:20px 0;">
-            
-            <div style="font-weight:bold; margin-bottom:10px; font-size:14px; color:#333;">
-                <span class="bn">আপনার ইনভাইট করা ইউজার</span><span class="en">Users you invited</span>
-            </div>
-            <div style="font-size:12px; color:#475569; background:var(--secondary); padding:12px; border-radius:8px; margin-bottom:8px; font-weight:bold;">
-                👤 @user_102 <span style="float:right; font-weight:normal; color:#888;"><span class="bn">(যুক্ত হয়েছে: আজ)</span><span class="en">(Joined: Today)</span></span>
-            </div>
-            <div style="font-size:12px; color:#475569; background:var(--secondary); padding:12px; border-radius:8px; margin-bottom:8px; font-weight:bold;">
-                👤 @user_550 <span style="float:right; font-weight:normal; color:#888;"><span class="bn">(যুক্ত হয়েছে: গতকাল)</span><span class="en">(Joined: Yesterday)</span></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= অভিযোগ বক্স ================= -->
-    <div id="complain-page" class="page">
-        <div class="card">
-            <div class="page-title">⚠️ <span class="bn">অভিযোগ বক্স</span><span class="en">Complain Box</span></div>
-            <input type="text" placeholder="Title / অভিযোগের শিরোনাম">
-            <textarea rows="4" placeholder="Details / বিস্তারিত"></textarea>
-            <div style="border:2px dashed #cbd5e1; padding:30px; text-align:center; border-radius:12px; margin-bottom:15px; cursor:pointer; background:#f8fafc;">
-                <span style="font-size:24px;">📸</span><br>
-                <span style="font-size:12px; color:#64748b;"><span class="bn">ছবি/ভিডিও আপলোড করুন</span><span class="en">Upload Image/Video</span></span>
-            </div>
-            <button class="btn" style="background:var(--danger);" onclick="alert('অভিযোগ জমা দেওয়া হয়েছে।')"><span class="bn">সাবমিট করুন</span><span class="en">Submit</span></button>
-        </div>
-    </div>
-
-    <!-- ================= অন্যান্য পেজ ================= -->
-    <div id="ads-page" class="page">
-        <div class="card">
-            <div class="page-title"><span class="bn">বিজ্ঞাপন দেখুন</span><span class="en">Watch Ads</span></div>
-            <div class="grid-3x3">
-                <div class="ad-cat" onclick="switchPage('daily-task')"><span class="icon">📺</span><span class="bn">ভিডিও অ্যাড</span><span class="en">Video Ad</span></div>
-                <div class="ad-cat"><span class="icon">🖼️</span><span class="bn">ব্যানার অ্যাড</span><span class="en">Banner Ad</span></div>
-                <div class="ad-cat"><span class="icon">🌐</span><span class="bn">ওয়েবসাইট ভিজিট</span><span class="en">Web Visit</span></div>
-                <div class="ad-cat"><span class="icon">📱</span><span class="bn">অ্যাপ ইন্সটল</span><span class="en">App Install</span></div>
-                <div class="ad-cat"><span class="icon">🎮</span><span class="bn">গেম খেলুন</span><span class="en">Play Game</span></div>
-                <div class="ad-cat"><span class="icon">📝</span><span class="bn">সার্ভে করুন</span><span class="en">Do Survey</span></div>
-                <div class="ad-cat"><span class="icon">👀</span><span class="bn">শর্ট ভিডিও</span><span class="en">Short Video</span></div>
-                <div class="ad-cat"><span class="icon">💬</span><span class="bn">ক্যাপচা এন্ট্রি</span><span class="en">Captcha</span></div>
-                <div class="ad-cat"><span class="icon">🎰</span><span class="bn">স্পিন এন্ড উইন</span><span class="en">Spin & Win</span></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="tutorial-page" class="page"><div class="card"><div class="page-title">📖 <span class="bn">টিউটোরিয়াল</span><span class="en">Tutorial</span></div><p style="font-size:13px;"><span class="bn">টাস্ক অপশনে গিয়ে বিজ্ঞাপনে ক্লিক করুন...</span><span class="en">Go to tasks and click on ads...</span></p></div></div>
-    <div id="my-work-page" class="page"><div class="card"><div class="page-title">📊 <span class="bn">আমার কাজ</span><span class="en">My Work</span></div><p><span class="bn">মোট সম্পন্ন কাজ:</span><span class="en">Completed Tasks:</span> <span id="work-completed">0</span></p></div></div>
-    
-    <div id="notifications-page" class="page">
-        <div class="page-title">🔔 <span class="bn">নোটিফিকেশন</span><span class="en">Notifications</span></div>
-        <div class="card" onclick="switchPage('promo')" style="cursor:pointer; background:#fff8e1;"><span class="bn">🎁 স্পেশাল অফার! চেক করুন।</span><span class="en">🎁 Special Offer! Check out.</span></div>
-    </div>
-    <div id="messages-page" class="page">
-        <div class="page-title">💬 <span class="bn">অ্যাডমিন মেসেজ</span><span class="en">Admin Messages</span></div>
-        <div class="card">👨‍💻 Admin: <span class="bn">আপনার পেমেন্ট ডান!</span><span class="en">Your payment is done!</span></div>
-    </div>
-
-    <!-- ================= প্রোফাইল পেজ ================= -->
-    <div id="profile-page" class="page">
-        <div class="card profile-header">
-            <div class="profile-ring"><div class="profile-inner">👤</div><div class="active-dot"></div></div>
-            <div class="p-info">
-                <div class="p-name"><span class="bn">আব্দুল্লাহ</span><span class="en">Abdullah</span> <span class="verified-tick">✓</span></div>
-                <div class="p-user">@user_9988</div>
-            </div>
-            <div class="p-balance">
-                <div class="p-coin"><span id="profile-balance-show">500</span> 🪙</div>
-                <div style="font-size:10px; color:#888;"><span class="bn">ব্যালেন্স</span><span class="en">Balance</span></div>
-            </div>
-        </div>
-
-        <div class="profile-grid-6">
-            <div class="pg-item pg-1" onclick="switchPage('personal-info')"><span>📝</span><span class="bn">পার্সোনাল তথ্য</span><span class="en">Personal Info</span></div>
-            <div class="pg-item pg-2" onclick="switchPage('withdraw-manage')"><span>💳</span><span class="bn">উইথড্র ম্যানেজমেন্ট</span><span class="en">Withdraw Mgmt</span></div>
-            <div class="pg-item pg-3" onclick="switchPage('social-connect')"><span>🔗</span><span class="bn">সোশ্যাল কানেক্ট</span><span class="en">Social Connect</span></div>
-            <div class="pg-item pg-4" onclick="switchPage('backup-channel')"><span>🛡️</span><span class="bn">ব্যাকাপ চ্যানেল</span><span class="en">Backup Channel</span></div>
-            <div class="pg-item pg-5"><span>⚙️</span><span class="bn">সেটিংস</span><span class="en">Settings</span></div>
-            <div class="pg-item pg-6" onclick="document.getElementById('logoutModal').style.display='flex'"><span>🚪</span><span class="bn">লগ আউট</span><span class="en">Logout</span></div>
-        </div>
-
-        <div class="support-box">
-            <div style="font-weight: 800; font-size: 16px; color: var(--primary);"><span class="bn">কাস্টমার সাপোর্ট</span><span class="en">Customer Support</span></div>
-            <div class="support-icons">
-                <div class="s-icon">💬<span>Live Chat</span></div>
-                <div class="s-icon">✈️<span>Telegram</span></div>
-                <div class="s-icon">📞<span>Hotline</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Profile Sub-pages -->
-    <div id="personal-info-page" class="page"><div class="card"><div class="page-title"><span class="bn">পার্সোনাল তথ্য</span><span class="en">Personal Info</span></div><input type="text" value="Abdullah"><button class="btn"><span class="bn">সংরক্ষণ করুন</span><span class="en">Save</span></button></div></div>
-    <div id="withdraw-manage-page" class="page"><div class="card"><div class="page-title"><span class="bn">উত্তোলন করুন</span><span class="en">Withdraw</span></div><input type="number" placeholder="Amount"><button class="btn"><span class="bn">উইথড্র</span><span class="en">Withdraw</span></button></div></div>
-    <div id="social-connect-page" class="page"><div class="card"><div class="page-title"><span class="bn">সোশ্যাল মিডিয়া</span><span class="en">Social Media</span></div><div class="social-item">Facebook <span>🔗</span></div></div></div>
-    <div id="backup-channel-page" class="page"><div class="card"><div class="page-title"><span class="bn">ব্যাকাপ চ্যানেল</span><span class="en">Backup Channel</span></div><div class="social-item">Telegram Backup <span>🔗</span></div></div></div>
-
-    <!-- ================= বটম নেভিগেশন ================= -->
-    <div class="bottom-nav">
-        <div class="nav-item active" id="nav-home" onclick="switchPage('home')"><span class="icon">🏠</span><span class="bn">হোম</span><span class="en">Home</span></div>
-        <div class="nav-item" id="nav-referral" onclick="switchPage('referral')"><span class="icon">👥</span><span class="bn">রেফার</span><span class="en">Refer</span></div>
-        <div class="nav-item" id="nav-ads" onclick="switchPage('ads')"><span class="icon">📺</span><span class="bn">বিজ্ঞাপন</span><span class="en">Ads</span></div>
-        <div class="nav-item" id="nav-profile" onclick="switchProfile()"><span class="icon">👤</span><span class="bn">প্রোফাইল</span><span class="en">Profile</span></div>
-    </div>
-
-    <!-- Logout Modal -->
-    <div class="modal-overlay" id="logoutModal">
-        <div class="modal-box">
-            <h3><span class="bn">লগ আউট করতে চান?</span><span class="en">Want to Log Out?</span></h3>
-            <div class="btn-group">
-                <button class="btn" style="background:#cbd5e1; color:#333;" onclick="document.getElementById('logoutModal').style.display='none'"><span class="bn">না</span><span class="en">No</span></button>
-                <button class="btn" style="background:var(--danger);" onclick="doLogout()"><span class="bn">হ্যাঁ</span><span class="en">Yes</span></button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    let isLoggedIn = false;
-    let currentLang = 'bn';
-    let userBalance = 500;
-    let remainingTasks = 50;
-    let completedTasks = 0;
-
-    // Adsgram Controller Initialization (blockId: 47504)
-    const adsgramController = window.Adsgram ? window.Adsgram.init({ blockId: "47504" }) : null;
-
-    function toggleLanguage() {
-        if(currentLang === 'bn') {
-            document.body.classList.remove('lang-bn'); document.body.classList.add('lang-en'); currentLang = 'en';
-        } else {
-            document.body.classList.remove('lang-en'); document.body.classList.add('lang-bn'); currentLang = 'bn';
-        }
-        generateTasks(); 
-        generatePromoBanners();
-    }
-
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('open');
-        document.getElementById('sidebar-overlay').classList.toggle('open');
-    }
-
-    function switchPage(pageId) {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
-        document.getElementById(`${pageId}-page`).classList.add('active-page');
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-        let navMap = {'home':'nav-home', 'referral':'nav-referral', 'ads':'nav-ads', 'profile':'nav-profile'};
-        if(navMap[pageId]) { document.getElementById(navMap[pageId]).classList.add('active'); }
-        window.scrollTo(0, 0);
-    }
-
-    function switchProfile() {
-        if(!isLoggedIn) switchPage('login'); else switchPage('profile');
-    }
-
-    function doLogin() {
-        isLoggedIn = true;
-        document.getElementById('login-banner').style.display = 'none';
-        document.getElementById('anim-slider').style.display = 'block'; 
-        switchPage('home');
-    }
-
-    function doLogout() {
-        isLoggedIn = false;
-        document.getElementById('logoutModal').style.display = 'none';
-        document.getElementById('login-banner').style.display = 'block';
-        document.getElementById('anim-slider').style.display = 'none'; 
-        switchPage('home');
-    }
-
-    // Sliders
-    let slider1 = document.getElementById('slider1');
-    setInterval(() => {
-        if(slider1.scrollLeft >= (slider1.scrollWidth - slider1.clientWidth - 10)) {
-            slider1.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-            slider1.scrollBy({ left: slider1.clientWidth, behavior: 'smooth' });
-        }
-    }, 4000);
-
-    let s2 = 0;
-    const animSlides = document.querySelectorAll('.anim-slide');
-    setInterval(() => {
-        animSlides[s2].classList.remove('active');
-        s2 = (s2 + 1) % 3;
-        animSlides[s2].classList.add('active');
-    }, 3000);
-
-    // ================= Daily Sign In =================
-    function openDailySignIn() {
-        if(!isLoggedIn) { switchPage('login'); return; }
-        switchPage('daily-signin');
-    }
-
-    function submitDailySignIn() {
-        let successMsg = currentLang === 'bn' ? "আপনার দৈনিক সাইন ইন সফল হয়েছে! (+৫০ পয়েন্ট)" : "Daily Sign-In successful! (+50 Points)";
-        alert(successMsg);
-        userBalance += 50;
-        document.getElementById('task-balance-show').innerText = userBalance;
-        document.getElementById('profile-balance-show').innerText = userBalance;
-        switchPage('home');
-    }
-
-    // ================= Daily Tasks Generator (av-ari-1 / Adsgram) =================
-    const taskBtnsBn = ["ক্লেইম অফার", "পুরষ্কার নিন", "ইন্সটল করুন", "আইফোন জিতুন", "৯০% ছাড়", "ফ্রি ডুয়েল কার্ড"];
-    const taskBtnsEn = ["Claim Offer", "Get Reward", "Install Now", "Win iPhone", "90% Off", "Free Dual Card"];
-    const gradients = ["linear-gradient(135deg, #f6d365 0%, #fda085 100%)", "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)"];
-
-    function generateTasks() {
-        let container = document.getElementById('task-list-container');
-        container.innerHTML = "";
-        for(let i = 1; i <= remainingTasks; i++) {
-            let btnText = currentLang === 'bn' ? taskBtnsBn[i % taskBtnsBn.length] : taskBtnsEn[i % taskBtnsEn.length];
-            let bannerText = currentLang === 'bn' ? "স্পেশাল টাস্ক - দ্রুত সম্পন্ন করুন!" : "Special Task - Complete Fast!";
-            let bg = gradients[i % gradients.length];
-            container.innerHTML += `
-                <div class="task-box" id="task-box-${i}">
-                    <div class="task-banner" style="background: ${bg};">${bannerText}</div>
-                    <div class="task-info-bar">
-                        <div class="task-coin">🎁 +20 Coins</div>
-                        <button class="task-btn" onclick="completeTaskWithAdsgram(${i})">${btnText}</button>
+            <!-- HOME PAGE -->
+            <section id="home-page" class="page active">
+                <div class="profile-card">
+                    <div class="user-info">
+                        <div id="homeUserPhoto" class="tg-photo"><i class="fa-regular fa-user"></i></div>
+                        <div class="user-details"><div class="name-row"><strong class="displayFullName">Loading...</strong></div><span class="username displayUserName">@loading</span></div>
                     </div>
-                </div>`;
-        }
-    }
+                    <div class="balance-section">
+                        <div class="bal-item"><i class="fa-solid fa-coins" style="color: #f1c40f;"></i> <span class="val-coins">0</span></div>
+                        <div class="bal-item tk">৳ <span class="val-bal">0.0</span></div>
+                    </div>
+                </div>
 
-    function completeTaskWithAdsgram(id) {
-        if (adsgramController) {
-            adsgramController.show().then((result) => {
-                let msg = currentLang === 'bn' ? "আপনার বিজ্ঞাপন দেখা সফল হয়েছে! (+২০ পয়েন্ট)" : "Ad watched successfully! (+20 Points)";
-                alert(msg);
-                userBalance += 20; remainingTasks--; completedTasks++;
-                document.getElementById('task-balance-show').innerText = userBalance;
-                document.getElementById('profile-balance-show').innerText = userBalance;
-                document.getElementById('task-count').innerText = remainingTasks;
-                document.getElementById('work-completed').innerText = completedTasks;
-                document.getElementById(`task-box-${id}`).style.display = 'none';
-            }).catch((result) => {
-                let errMsg = currentLang === 'bn' ? "বিজ্ঞাপনটি সম্পূর্ণ সম্পন্ন হয়নি।" : "Ad was not completed.";
-                alert(errMsg);
+                <div class="ad-container">
+                    <h3 class="lang" data-bn="কয়েন আয় করতে বিজ্ঞাপন দেখুন" data-en="Watch Ads to Earn Coins">কয়েন আয় করতে বিজ্ঞাপন দেখুন</h3>
+                    <div class="ad-thumbnail"><i class="fa-regular fa-circle-play"></i></div>
+                    <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> <span class="lang" data-bn="যাচাই করছে..." data-en="Verifying...">যাচাই করছে...</span></div>
+                    <button class="btn-ad" id="watchAdBtn" onclick="watchAd()"><i class="fa-solid fa-play"></i> <span class="lang" data-bn="বিজ্ঞাপন দেখুন" data-en="Watch Ad">বিজ্ঞাপন দেখুন</span></button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box"><i class="fa-regular fa-clock" style="color: #3498db;"></i><span class="value">0h</span><span class="label lang" data-bn="কাজের সময়" data-en="Work Time">কাজের সময়</span></div>
+                    <div class="stat-box"><i class="fa-solid fa-video" style="color: #9b59b6;"></i><span class="value" id="gridAds">0</span><span class="label lang" data-bn="বিজ্ঞাপন দেখা" data-en="Ads Watched">বিজ্ঞাপন দেখা</span></div>
+                    <div class="stat-box"><i class="fa-solid fa-check-circle" style="color: #2ecc71;"></i><span class="value" id="gridSuccess">0</span><span class="label lang" data-bn="সফল হয়েছে" data-en="Success">সফল হয়েছে</span></div>
+                    <div class="stat-box"><i class="fa-solid fa-times-circle" style="color: #e74c3c;"></i><span class="value" id="gridReject">0</span><span class="label lang" data-bn="রিজেক্ট হয়েছে" data-en="Rejected">রিজেক্ট হয়েছে</span></div>
+                    <div class="stat-box"><i class="fa-solid fa-coins" style="color: #f1c40f;"></i><span class="value" id="gridEarned">0</span><span class="label lang" data-bn="পয়েন্ট আয়" data-en="Earned Pts">পয়েন্ট আয়</span></div>
+                    <div class="stat-box"><i class="fa-solid fa-users" style="color: #1abc9c;"></i><span class="value" id="gridRef">0</span><span class="label lang" data-bn="রেফার" data-en="Referrals">রেফার</span></div>
+                </div>
+            </section>
+
+            <!-- PROFILE PAGE -->
+            <section id="profile-page" class="page">
+                <div class="profile-card">
+                    <div class="user-info">
+                        <div id="profileUserPhoto" class="tg-photo"><i class="fa-regular fa-user"></i></div>
+                        <div class="user-details"><div class="name-row"><strong class="displayFullName">Loading...</strong></div><span class="username displayUserName">@loading</span></div>
+                    </div>
+                    <div class="balance-section"><div class="bal-item"><i class="fa-solid fa-coins" style="color: #f1c40f;"></i> <span class="val-coins">0</span></div><div class="bal-item tk">৳ <span class="val-bal">0.0</span></div></div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="btn-convert" onclick="openSub('sub-convert')"><i class="fa-solid fa-right-left"></i> <span class="lang" data-bn="কয়েন রূপান্তর" data-en="Convert Coin">কয়েন রূপান্তর</span></button>
+                    <button class="btn-withdraw" onclick="openSub('sub-withdraw')"><i class="fa-solid fa-money-bill-transfer"></i> <span class="lang" data-bn="উত্তোলন করুন" data-en="Withdraw">উত্তোলন করুন</span></button>
+                </div>
+
+                <ul class="menu-list">
+                    <li onclick="openSub('sub-history')"><i class="fa-solid fa-chart-column"></i> <span class="lang" data-bn="কাজের ইতিহাস" data-en="Work History">কাজের ইতিহাস</span></li>
+                    <li onclick="openSub('sub-personal')"><i class="fa-solid fa-user"></i> <span class="lang" data-bn="ব্যক্তিগত তথ্য" data-en="Personal Info">ব্যক্তিগত তথ্য</span></li>
+                    <li onclick="openSub('sub-security')"><i class="fa-solid fa-shield-halved"></i> <span class="lang" data-bn="নিরাপত্তা কেন্দ্র" data-en="Security Center">নিরাপত্তা কেন্দ্র</span></li>
+                    <li onclick="openSub('sub-withdraw')"><i class="fa-solid fa-building-columns"></i> <span class="lang" data-bn="উত্তোলন ব্যবস্থাপনা" data-en="Withdrawal Mgt">উত্তোলন ব্যবস্থাপনা</span></li>
+                    <li onclick="openSub('sub-social')"><i class="fa-solid fa-link"></i> <span class="lang" data-bn="সোশ্যাল মিডিয়া যুক্ত" data-en="Link Social Media">সোশ্যাল মিডিয়া যুক্ত</span></li>
+                    <li onclick="openSub('sub-settings')"><i class="fa-solid fa-gear"></i> <span class="lang" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></li>
+                    <li class="logout-btn" onclick="confirmLogout()"><i class="fa-solid fa-door-open"></i> <span class="lang" data-bn="লগআউট" data-en="Logout">লগআউট</span></li>
+                </ul>
+            </section>
+            
+            <!-- ====== ALL SUB PAGES START ====== -->
+
+            <!-- Sidebar Generic Sub Page -->
+            <div id="sub-generic" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-generic')"></i><span id="generic-title">পেজ</span></div>
+                <div class="sub-content" style="display:flex; justify-content:center; align-items:center; flex-direction:column; color:#7f8c8d; height:100%;">
+                    <i id="generic-icon" class="fa-solid fa-box-open" style="font-size: 50px; margin-bottom: 20px; color:#bdc3c7;"></i>
+                    <h3 id="generic-msg">এই পেজটি কাজ চলছে...</h3>
+                </div>
+            </div>
+
+            <!-- Notice Board / Notifications Sub Page -->
+            <div id="sub-notifications" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-notifications')"></i><span class="lang" data-bn="নোটিশ বোর্ড" data-en="Notice Board">নোটিশ বোর্ড</span></div>
+                <div class="sub-content">
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: var(--shadow); cursor: pointer; margin-bottom: 12px;" onclick="viewMessage('welcomeMsg')">
+                        <h3 style="margin: 0 0 5px 0; font-size: 15px;" class="lang" data-bn="স্বাগতম মেসেজ" data-en="Welcome Message">স্বাগতম মেসেজ</h3>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="lang" data-bn="Game Hub অ্যাপে আপনাকে স্বাগতম..." data-en="Welcome to Game Hub App...">Game Hub অ্যাপে আপনাকে স্বাগতম...</p>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; box-shadow: var(--shadow); cursor: pointer;" onclick="viewMessage('warningMsg')">
+                        <h3 style="margin: 0 0 5px 0; font-size: 15px; color: #e74c3c;" class="lang" data-bn="সতর্কবার্তা" data-en="Warning">সতর্কবার্তা</h3>
+                        <p style="margin: 0; font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="lang" data-bn="অবৈধ উপায়ে অটো ক্লিকার ব্যবহার করলে..." data-en="Using auto clicker illegally...">অবৈধ উপায়ে অটো ক্লিকার ব্যবহার করলে...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Message View Sub Page -->
+            <div id="sub-message-view" class="sub-page" style="z-index: 60;">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-message-view')"></i><span class="lang" data-bn="মেসেজ বিস্তারিত" data-en="Message Details">মেসেজ বিস্তারিত</span></div>
+                <div class="sub-content">
+                    <div class="full-message-box" id="fullMessageContent"></div>
+                </div>
+            </div>
+
+            <!-- Work History Filter Sub Page -->
+            <div id="sub-history" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-history')"></i><span class="lang" data-bn="কাজের ইতিহাস" data-en="Work History">কাজের ইতিহাস</span></div>
+                <div class="sub-content">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <select id="historyFilter" class="form-control" onchange="filterHistory()" style="background: #e2e8f0; border:none; font-weight:bold;">
+                            <option value="today" class="lang" data-bn="আজকের কাজ" data-en="Today's Work">আজকের কাজ</option>
+                            <option value="yesterday" class="lang" data-bn="গতকালের কাজ" data-en="Yesterday's Work">গতকালের কাজ</option>
+                            <option value="month" class="lang" data-bn="এই মাসের কাজ" data-en="This Month">এই মাসের কাজ</option>
+                            <option value="year" class="lang" data-bn="এই বছরের কাজ" data-en="This Year">এই বছরের কাজ</option>
+                        </select>
+                    </div>
+                    <ul class="history-list" id="historyDataList">
+                        <li style="justify-content:center; color:#888;">লোড হচ্ছে...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Profile: Convert Coin Sub Page -->
+            <div id="sub-convert" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-convert')"></i><span class="lang" data-bn="কয়েন রূপান্তর" data-en="Convert Coin">কয়েন রূপান্তর</span></div>
+                <div class="sub-content">
+                    <div class="profile-card" style="margin-bottom: 20px; text-align:center; display:block;">
+                        <h3 style="margin:0 0 10px; color:var(--text-dark); font-size:16px;" class="lang" data-bn="বর্তমান কয়েন" data-en="Current Coin">বর্তমান কয়েন</h3>
+                        <h2 style="margin:0; color:#f39c12; font-size:24px;"><span class="val-coins">0</span> <i class="fa-solid fa-coins"></i></h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="lang" data-bn="কয়েন পরিমাণ (১০০ কয়েন = ১ টাকা)" data-en="Coin Amount (100 Coin = 1 Tk)">কয়েন পরিমাণ (১০০ কয়েন = ১ টাকা)</label>
+                        <input type="number" id="convertCoinInput" class="form-control lang-input" data-bn="কয়েন দিন" data-en="Enter Coins" placeholder="কয়েন দিন" oninput="calculateTk()">
+                    </div>
+                    <div style="text-align:center; padding:15px; background:#f1f5f9; border-radius:10px; margin-bottom:15px;">
+                        <span style="font-size:14px; color:#555;" class="lang" data-bn="আপনি পাবেন" data-en="You will get">আপনি পাবেন</span>
+                        <h2 style="margin:10px 0 0; color:#27ae60; font-size:24px;">৳ <span id="convertTkDisplay">0.00</span></h2>
+                    </div>
+                    <button class="btn-save lang" data-bn="কনভার্ট করুন" data-en="Convert" style="background: linear-gradient(90deg, #f39c12, #e67e22);" onclick="processConvert()">কনভার্ট করুন</button>
+                </div>
+            </div>
+
+            <!-- Profile: Withdraw Sub Page -->
+            <div id="sub-withdraw" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw')"></i><span class="lang" data-bn="উত্তোলন" data-en="Withdraw">উত্তোলন</span></div>
+                <div class="sub-content">
+                    <div class="profile-card" style="display:block; margin-bottom:20px;">
+                        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:10px;">
+                            <strong style="color:var(--text-dark); font-size:15px;" class="lang" data-bn="সেভ করা একাউন্ট" data-en="Saved Account">সেভ করা একাউন্ট</strong>
+                            <span style="background:#ff007f; color:white; padding:3px 8px; border-radius:10px; font-size:11px;">Default</span>
+                        </div>
+                        <p style="margin:5px 0; font-size:14px;"><strong class="lang" data-bn="নাম:" data-en="Name:">নাম:</strong> <span class="displayFullName">Loading...</span></p>
+                        <p style="margin:5px 0; font-size:14px;"><strong class="lang" data-bn="নাম্বার:" data-en="Number:">নাম্বার:</strong> <input type="number" id="wdNumber" class="form-control" placeholder="017..." style="display:inline-block; width:150px; padding:5px; margin-left:10px;"></p>
+                        <p style="margin:5px 0; font-size:14px;"><strong class="lang" data-bn="মেথড:" data-en="Method:">মেথড:</strong> 
+                            <select id="wdMethod" class="form-control" style="display:inline-block; width:150px; padding:5px; margin-left:10px;">
+                                <option value="bKash">bKash (বিকাশ)</option>
+                                <option value="Nagad">Nagad (নগদ)</option>
+                                <option value="Rocket">Rocket (রকেট)</option>
+                            </select>
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="lang" data-bn="উত্তোলনের পরিমাণ (৳)" data-en="Withdraw Amount (৳)">উত্তোলনের পরিমাণ (৳)</label>
+                        <input type="number" id="withdrawAmountInput" class="form-control lang-input" data-bn="টাকার পরিমাণ লিখুন" data-en="Enter Amount" placeholder="টাকার পরিমাণ লিখুন">
+                    </div>
+                    <button class="btn-save lang" data-bn="উত্তোলন করুন" data-en="Withdraw" style="background: linear-gradient(90deg, #00b4db, #0083b0); margin-bottom:15px;" onclick="processWithdraw()">উত্তোলন করুন</button>
+                    <button class="btn-save lang" data-bn="উত্তোলনের ইতিহাস দেখুন" data-en="View Withdraw History" style="background: #34495e;" onclick="openSub('sub-withdraw-history')"><i class="fa-solid fa-clock-rotate-left"></i> উত্তোলনের ইতিহাস দেখুন</button>
+                </div>
+            </div>
+
+            <!-- Withdraw History Sub Page -->
+            <div id="sub-withdraw-history" class="sub-page" style="z-index: 60;">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw-history')"></i><span class="lang" data-bn="উত্তোলনের ইতিহাস" data-en="Withdraw History">উত্তোলনের ইতিহাস</span></div>
+                <div class="sub-content">
+                    <ul class="history-list" id="withdrawHistoryList">
+                        <li style="justify-content:center; color:#888;">লোড হচ্ছে...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sidebar/Profile: Referral Sub Page -->
+            <div id="sub-refer" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-refer')"></i><span class="lang" data-bn="রেফার সিস্টেম" data-en="Refer System">রেফার সিস্টেম</span></div>
+                <div class="sub-content">
+                    <div style="background:#fff; border:2px dashed #3498db; padding:20px; border-radius:12px; text-align:center; margin-bottom:15px;">
+                        <p style="margin:0 0 10px; color:#555; font-size:14px;" class="lang" data-bn="আপনার রেফার কোড" data-en="Your Referral Code">আপনার রেফার কোড</p>
+                        <h1 id="userRefCodeDisplay" style="margin:0 0 15px; color:#2c3e50; font-size:32px; letter-spacing:2px;">AV-00</h1>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-save lang" data-bn="কপি কোড" data-en="Copy Code" style="margin:0; flex:1; background:#3498db; font-size:14px;" onclick="copyRef()"><i class="fa-regular fa-copy"></i> কপি কোড</button>
+                            <button class="btn-save lang" data-bn="শেয়ার করুন" data-en="Share" style="margin:0; flex:1; background:#e84393; font-size:14px;" onclick="shareRef()"><i class="fa-solid fa-share-nodes"></i> শেয়ার করুন</button>
+                        </div>
+                    </div>
+                    <div style="background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.05); margin-bottom:15px; border:1px solid #eee;">
+                        <p style="margin:0 0 10px; color:#555; font-size:14px; font-weight:bold;" class="lang" data-bn="অন্যের রেফারে জয়েন করুন" data-en="Join via Referral">অন্যের রেফারে জয়েন করুন</p>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="joinRefInput" class="form-control lang-input" data-bn="রেফার কোড দিন" data-en="Enter Code" placeholder="রেফার কোড দিন" style="margin:0;">
+                            <button class="btn-save" style="margin:0; width:auto; padding:0 20px;" onclick="joinRef()"><i class="fa-solid fa-check"></i></button>
+                        </div>
+                    </div>
+                    <button class="btn-save lang" data-bn="রেফার হিস্ট্রি দেখুন" data-en="View Refer History" style="background: #27ae60;" onclick="openSub('sub-refer-history')"><i class="fa-solid fa-users-viewfinder"></i> রেফার হিস্ট্রি দেখুন</button>
+                </div>
+            </div>
+
+            <!-- Refer History Sub Page -->
+            <div id="sub-refer-history" class="sub-page" style="z-index: 60;">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-refer-history')"></i><span class="lang" data-bn="রেফার হিস্ট্রি" data-en="Refer History">রেফার হিস্ট্রি</span></div>
+                <div class="sub-content">
+                    <ul class="history-list" id="referHistoryList">
+                        <li style="justify-content:center; color:#888;">লোড হচ্ছে...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Earning Point Sub Page -->
+            <div id="sub-earning" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-earning')"></i><span class="lang" data-bn="আর্নিং পয়েন্ট" data-en="Earning Point">আর্নিং পয়েন্ট</span></div>
+                <div class="sub-content">
+                    <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); padding: 25px 20px; border-radius: 12px; color: white; text-align: center; margin-bottom: 20px;">
+                        <i class="fa-solid fa-sack-dollar" style="font-size: 45px; margin-bottom: 10px;"></i>
+                        <h2 style="font-size:28px; margin:0;"><span class="val-coins">0</span> পয়েন্ট</h2>
+                        <p style="margin:5px 0 0; font-size: 14px; opacity:0.9;" class="lang" data-bn="আপনার মোট পয়েন্ট" data-en="Your Total Points">আপনার মোট পয়েন্ট</p>
+                    </div>
+                    <button class="btn-save lang" data-bn="পয়েন্ট কনভার্ট করুন" data-en="Convert Points" style="background:#f39c12;" onclick="openSub('sub-convert')">পয়েন্ট কনভার্ট করুন</button>
+                </div>
+            </div>
+            
+            <!-- Profile: Personal Info Sub Page -->
+            <div id="sub-personal" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-personal')"></i><span class="lang" data-bn="ব্যক্তিগত তথ্য" data-en="Personal Info">ব্যক্তিগত তথ্য</span></div>
+                <div class="sub-content">
+                    <div class="form-group"><label class="lang" data-bn="পুরো নাম" data-en="Full Name">পুরো নাম</label><input type="text" class="form-control displayFullNameInput"></div>
+                    <div class="form-group"><label class="lang" data-bn="ইউজারনেম" data-en="Username">ইউজারনেম</label><input type="text" class="form-control displayUserNameInput" readonly style="background:#f5f5f5;"></div>
+                    <div class="form-group"><label class="lang" data-bn="ফোন নাম্বার" data-en="Phone Number">ফোন নাম্বার</label><input type="tel" id="userPhoneInput" class="form-control" placeholder="017..."></div>
+                    <button class="btn-save lang" data-bn="সেভ করুন" data-en="Save" onclick="savePersonalInfo()">সেভ করুন</button>
+                </div>
+            </div>
+
+            <!-- Profile: Security Sub Page -->
+            <div id="sub-security" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-security')"></i><span class="lang" data-bn="নিরাপত্তা কেন্দ্র" data-en="Security Center">নিরাপত্তা কেন্দ্র</span></div>
+                <div class="sub-content">
+                    <div class="form-group"><label class="lang" data-bn="বর্তমান পাসওয়ার্ড" data-en="Current Password">বর্তমান পাসওয়ার্ড</label><input type="password" class="form-control" placeholder="••••••••"></div>
+                    <div class="form-group"><label class="lang" data-bn="নতুন পাসওয়ার্ড" data-en="New Password">নতুন পাসওয়ার্ড</label><input type="password" class="form-control" placeholder="••••••••"></div>
+                    <button class="btn-save lang" data-bn="পাসওয়ার্ড পরিবর্তন করুন" data-en="Change Password" onclick="closeTopSub('sub-security')">পাসওয়ার্ড পরিবর্তন করুন</button>
+                </div>
+            </div>
+
+            <!-- Profile: Social Sub Page -->
+            <div id="sub-social" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-social')"></i><span class="lang" data-bn="সোশ্যাল মিডিয়া" data-en="Social Media">সোশ্যাল মিডিয়া</span></div>
+                <div class="sub-content">
+                    <button class="btn-save lang" data-bn="কানেক্ট টেলিগ্রাম" data-en="Connect Telegram" style="background: #34b7f1;"><i class="fa-brands fa-telegram" style="font-size:20px;"></i> কানেক্ট টেলিগ্রাম</button>
+                    <button class="btn-save lang" data-bn="কানেক্ট ফেসবুক" data-en="Connect Facebook" style="background: #3b5998;"><i class="fa-brands fa-facebook" style="font-size:20px;"></i> কানেক্ট ফেসবুক</button>
+                </div>
+            </div>
+
+            <!-- Profile: Settings Sub Page -->
+            <div id="sub-settings" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-settings')"></i><span class="lang" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></div>
+                <div class="sub-content">
+                    <div class="setting-item"><span class="lang" data-bn="সাউন্ড অন/অফ" data-en="Sound On/Off">সাউন্ড অন/অফ</span><input type="checkbox" checked style="width: 20px; height: 20px;"></div>
+                    <div class="setting-item"><span class="lang" data-bn="নোটিফিকেশন" data-en="Notifications">নোটিফিকেশন</span><input type="checkbox" checked style="width: 20px; height: 20px;"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation -->
+        <footer class="bottom-nav">
+            <div class="nav-item active" onclick="switchPage('home', this)">
+                <i class="fa-solid fa-house"></i>
+                <span class="lang" data-bn="হোম" data-en="Home">হোম</span>
+            </div>
+            
+            <div class="nav-item" onclick="openSub('sub-earning')">
+                <i class="fa-solid fa-sack-dollar" style="font-size:30px; color:#27ae60; padding:10px; margin-top:-25px; background:white; border-radius:50%; box-shadow:0 -2px 5px rgba(0,0,0,0.1);"></i>
+                <span class="lang" data-bn="আর্নিং" data-en="Earning" style="margin-top: 5px;">আর্নিং</span>
+            </div>
+            
+            <div class="nav-item" onclick="switchPage('profile', this)">
+                <i class="fa-solid fa-user"></i>
+                <span class="lang" data-bn="প্রোফাইল" data-en="Profile">প্রোফাইল</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Firebase Integration Logic -->
+    <script>
+        // === 1. Firebase Initialization ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgoCysMy9TfAg8JtQq6cScIFONZIgprZ8",
+            authDomain: "adsviewbot.firebaseapp.com",
+            projectId: "adsviewbot",
+            storageBucket: "adsviewbot.firebasestorage.app",
+            messagingSenderId: "575329461125",
+            appId: "1:575329461125:web:d6e603e651d611d92d1aec"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // === 2. Telegram Web App & User Logic ===
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+        
+        let currentLang = 'bn'; 
+        
+        // Demo Fallback User if opened outside Telegram
+        let fallbackUser = { id: Math.floor(Math.random() * 100000), first_name: "Demo", username: "demo_user" };
+        let tgUser = tg.initDataUnsafe?.user || fallbackUser;
+        
+        // Data Structure
+        let userData = {
+            tgId: tgUser.id,
+            fullName: `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim(),
+            username: tgUser.username ? `@${tgUser.username}` : `@id${tgUser.id}`,
+            photo: tgUser.photo_url || '',
+            coins: 0,
+            balance: 0.0,
+            referCode: `AV-${tgUser.id.toString().slice(-4)}`,
+            adsWatched: 0, success: 0, reject: 0, earned: 0, referrals: 0,
+            phone: ''
+        };
+
+        let userDocRef = db.collection('users').doc(tgUser.id.toString());
+
+        // Setup App Start
+        async function initApp() {
+            try {
+                // Fetch user from Firestore
+                const docSnap = await userDocRef.get();
+                
+                if (docSnap.exists) {
+                    // Existing User -> Load Data
+                    let dbData = docSnap.data();
+                    userData = { ...userData, ...dbData }; // Merge
+                } else {
+                    // New User -> Save to Database
+                    userData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await userDocRef.set(userData);
+                }
+                
+                // Set UI Elements
+                document.querySelectorAll('.displayFullName').forEach(el => el.innerText = userData.fullName);
+                document.querySelectorAll('.displayFullNameInput').forEach(el => el.value = userData.fullName);
+                document.querySelectorAll('.displayUserName').forEach(el => el.innerText = userData.username);
+                document.querySelectorAll('.displayUserNameInput').forEach(el => el.value = userData.username);
+                document.getElementById('userPhoneInput').value = userData.phone || "";
+                document.getElementById('userRefCodeDisplay').innerText = userData.referCode;
+                
+                if (userData.photo) {
+                    const imgHTML = `<img src="${userData.photo}" alt="user">`;
+                    document.getElementById('homeUserPhoto').innerHTML = imgHTML;
+                    document.getElementById('profileUserPhoto').innerHTML = imgHTML;
+                }
+                
+                updateUI();
+                fetchHistory();
+                fetchWithdrawals();
+
+                // Remove Loader
+                document.getElementById('db-loader').style.display = 'none';
+
+            } catch (error) {
+                console.error("Firebase Error: ", error);
+                alert("ডাটাবেজে কানেক্ট হতে সমস্যা হচ্ছে। দয়া করে আবার চেষ্টা করুন।");
+            }
+        }
+
+        // === 3. UI Update Functions ===
+        function updateUI() {
+            document.querySelectorAll('.val-bal').forEach(el => el.innerText = (userData.balance || 0).toFixed(2));
+            document.querySelectorAll('.val-coins').forEach(el => el.innerText = userData.coins || 0);
+            document.getElementById('gridAds').innerText = userData.adsWatched || 0;
+            document.getElementById('gridSuccess').innerText = userData.success || 0;
+            document.getElementById('gridReject').innerText = userData.reject || 0;
+            document.getElementById('gridEarned').innerText = "+" + (userData.earned || 0);
+            document.getElementById('gridRef').innerText = userData.referrals || 0;
+        }
+
+        // === 4. Ads Logic with Firebase Update ===
+        async function watchAd() {
+            const btn = document.getElementById('watchAdBtn');
+            const loader = document.getElementById('loader');
+            
+            btn.disabled = true;
+            btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> বিজ্ঞাপন চলছে...' : '<i class="fa-solid fa-play"></i> Ad is playing...';
+
+            // Simulate ad viewing (3 sec)
+            setTimeout(() => {
+                btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> ভেরিফাই হচ্ছে...' : '<i class="fa-solid fa-play"></i> Verifying...';
+                loader.style.display = 'block';
+
+                // Server Verification (2 sec)
+                setTimeout(async () => {
+                    try {
+                        const earnedCoins = 50;
+                        
+                        // Update Database
+                        await userDocRef.update({
+                            coins: firebase.firestore.FieldValue.increment(earnedCoins),
+                            adsWatched: firebase.firestore.FieldValue.increment(1),
+                            success: firebase.firestore.FieldValue.increment(1),
+                            earned: firebase.firestore.FieldValue.increment(earnedCoins)
+                        });
+
+                        // Add to Subcollection (History)
+                        await userDocRef.collection('history').add({
+                            titleBn: 'বিজ্ঞাপন দেখা',
+                            titleEn: 'Watched Ad',
+                            coin: `+${earnedCoins}`,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        // Update Local Data
+                        userData.coins += earnedCoins;
+                        userData.adsWatched += 1;
+                        userData.success += 1;
+                        userData.earned += earnedCoins;
+                        
+                        updateUI();
+                        fetchHistory(); // Refresh history list
+                        
+                        loader.style.display = 'none';
+                        btn.disabled = false;
+                        btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> বিজ্ঞাপন দেখুন' : '<i class="fa-solid fa-play"></i> Watch Ad';
+
+                        if(tg.showAlert) tg.showAlert(currentLang === 'bn' ? `অভিনন্দন! ${earnedCoins} কয়েন যোগ হয়েছে।` : `Congrats! ${earnedCoins} coins added.`);
+                        else alert(currentLang === 'bn' ? `অভিনন্দন! ${earnedCoins} কয়েন যোগ হয়েছে।` : `Congrats! ${earnedCoins} coins added.`);
+                        
+                    } catch (e) {
+                        loader.style.display = 'none';
+                        btn.disabled = false;
+                        btn.innerHTML = currentLang === 'bn' ? '<i class="fa-solid fa-play"></i> আবার চেষ্টা করুন' : '<i class="fa-solid fa-play"></i> Try Again';
+                        alert("সার্ভার এরর! পয়েন্ট যোগ করা যায়নি।");
+                    }
+                }, 2000);
+            }, 3000);
+        }
+
+        // === 5. History Fetching (Firestore) ===
+        let workHistoryDocs = [];
+        
+        async function fetchHistory() {
+            try {
+                const snapshot = await userDocRef.collection('history').orderBy('timestamp', 'desc').limit(20).get();
+                workHistoryDocs = [];
+                snapshot.forEach(doc => {
+                    workHistoryDocs.push(doc.data());
+                });
+                filterHistory(); // Render to HTML
+            } catch (error) {
+                console.log("Error fetching history:", error);
+            }
+        }
+
+        function filterHistory() {
+            // Note: Simplistic filtering since real date filtering requires complex queries. We'll do it locally for demo.
+            const filter = document.getElementById('historyFilter').value;
+            const list = document.getElementById('historyDataList');
+            list.innerHTML = '';
+            
+            if(workHistoryDocs.length === 0) {
+                list.innerHTML = `<li style="justify-content:center; color:#888;">${currentLang === 'bn' ? 'কোনো কাজের ইতিহাস নেই' : 'No history found'}</li>`;
+                return;
+            }
+
+            const now = new Date();
+            let filtered = workHistoryDocs.filter(item => {
+                if(!item.timestamp) return true; // optimistic local add
+                const date = item.timestamp.toDate();
+                if(filter === 'today') return date.getDate() === now.getDate() && date.getMonth() === now.getMonth();
+                if(filter === 'yesterday') return date.getDate() === (now.getDate()-1);
+                if(filter === 'month') return date.getMonth() === now.getMonth();
+                return true; 
             });
-        } else {
-            let loadMsg = currentLang === 'bn' ? "Adsgram SDK লোড হয়নি। অনুগ্রহ করে ইন্টারনেট কানেকশন চেক করুন।" : "Adsgram SDK not loaded.";
-            alert(loadMsg);
-        }
-    }
+            
+            if(filtered.length === 0) {
+                list.innerHTML = `<li style="justify-content:center; color:#888;">${currentLang === 'bn' ? 'কোনো ডাটা পাওয়া যায়নি' : 'No data found'}</li>`;
+                return;
+            }
 
-    // ================= Promo Banners (av-mri-1 / Monetag) =================
-    function generatePromoBanners() {
-        let pContainer = document.getElementById('promo-banners-container');
-        pContainer.innerHTML = "";
-        let promoText = currentLang === 'bn' ? "অফারটি গ্রহণ করুন" : "Claim This Offer";
-        for(let i = 1; i <= 10; i++) {
-            pContainer.innerHTML += `
-                <div style="width:100%; height:110px; background:${gradients[i % gradients.length]}; border-radius:12px; margin-bottom:12px; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; font-weight:800; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.1);" onclick="completePromoWithMonetag(${i})">
-                    <span style="font-size:16px; margin-bottom:10px; text-shadow:1px 1px 2px rgba(0,0,0,0.3);">Mega Banner Ad 0${i}</span>
-                    <button class="btn" style="width:auto; padding:5px 20px; font-size:12px; background:#fff; color:var(--primary);">${promoText}</button>
-                </div>`;
-        }
-    }
-
-    function completePromoWithMonetag(i) {
-        if (typeof show_11781683 === 'function') {
-            show_11781683().then(() => {
-                let msg = currentLang === 'bn' ? `Offer ${i} claimed! (+30 Points)` : `Offer ${i} claimed! (+30 Points)`;
-                alert(msg);
-                userBalance += 30;
-                document.getElementById('task-balance-show').innerText = userBalance;
-                document.getElementById('profile-balance-show').innerText = userBalance;
-            }).catch((e) => {
-                let errMsg = currentLang === 'bn' ? "বিজ্ঞাপনটি সম্পূর্ণ দেখা হয়নি।" : "Ad view incomplete.";
-                alert(errMsg);
+            filtered.forEach(item => {
+                let title = currentLang === 'bn' ? item.titleBn : item.titleEn;
+                let dateStr = item.timestamp ? item.timestamp.toDate().toLocaleString('bn-BD', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : 'Just now';
+                
+                list.innerHTML += `
+                    <li>
+                        <div><strong style="font-size:14px;">${title}</strong> <span>${dateStr}</span></div>
+                        <strong style="font-size:14px;">${item.coin} <i class="fa-solid fa-coins" style="font-size:12px;"></i></strong>
+                    </li>`;
             });
-        } else {
-            let loadMsg = currentLang === 'bn' ? "Monetag অ্যাড লোড হতে একটু সময় লাগছে।" : "Monetag ad loading...";
-            alert(loadMsg);
         }
-    }
 
-    window.onload = () => {
-        generateTasks();
-        generatePromoBanners();
-    };
+        // === 6. Coin Convert Logic ===
+        function calculateTk() {
+            let inputCoins = document.getElementById('convertCoinInput').value;
+            let tk = (inputCoins / 100).toFixed(2);
+            document.getElementById('convertTkDisplay').innerText = tk > 0 ? tk : "0.00";
+        }
 
-</script>
+        async function processConvert() {
+            let inputCoins = parseInt(document.getElementById('convertCoinInput').value);
+            if(isNaN(inputCoins) || inputCoins <= 0) return alert(currentLang === 'bn' ? "সঠিক কয়েন দিন।" : "Enter valid coins.");
+            if(inputCoins > userData.coins) return alert(currentLang === 'bn' ? "পর্যাপ্ত কয়েন নেই!" : "Not enough coins!");
+            
+            let amountTk = inputCoins / 100;
+            
+            try {
+                // DB Update
+                await userDocRef.update({
+                    coins: firebase.firestore.FieldValue.increment(-inputCoins),
+                    balance: firebase.firestore.FieldValue.increment(amountTk)
+                });
+                
+                userData.coins -= inputCoins;
+                userData.balance += amountTk;
+                updateUI();
+                
+                document.getElementById('convertCoinInput').value = '';
+                document.getElementById('convertTkDisplay').innerText = "0.00";
+                
+                alert(currentLang === 'bn' ? `সফলভাবে ${inputCoins} কয়েন কনভার্ট করে ৳${amountTk.toFixed(2)} যুক্ত হয়েছে!` : `Successfully converted!`);
+                closeTopSub('sub-convert');
+            } catch (e) { alert("Error occurred!"); }
+        }
+
+        // === 7. Withdraw System ===
+        async function processWithdraw() {
+            let wAmount = parseFloat(document.getElementById('withdrawAmountInput').value);
+            let wNumber = document.getElementById('wdNumber').value;
+            let wMethod = document.getElementById('wdMethod').value;
+            
+            if(isNaN(wAmount) || wAmount < 50) return alert("ন্যূনতম ৫০ টাকা উত্তোলন করতে পারবেন।");
+            if(wAmount > userData.balance) return alert("পর্যাপ্ত ব্যালেন্স নেই!");
+            if(!wNumber || wNumber.length < 11) return alert("সঠিক মোবাইল নাম্বার দিন।");
+            
+            try {
+                // Deduct Balance
+                await userDocRef.update({ balance: firebase.firestore.FieldValue.increment(-wAmount) });
+                userData.balance -= wAmount;
+                updateUI();
+                
+                // Add to Withdrawals collection
+                await userDocRef.collection('withdrawals').add({
+                    amount: wAmount, method: wMethod, number: wNumber, status: 'Pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                document.getElementById('withdrawAmountInput').value = '';
+                fetchWithdrawals(); // Refresh List
+                
+                alert(`আপনার ৳${wAmount} উত্তোলনের রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন চেক করে পেমেন্ট করবে।`);
+                closeTopSub('sub-withdraw');
+            } catch (e) { alert("Error"); }
+        }
+
+        async function fetchWithdrawals() {
+            try {
+                const snapshot = await userDocRef.collection('withdrawals').orderBy('timestamp', 'desc').get();
+                const list = document.getElementById('withdrawHistoryList');
+                list.innerHTML = '';
+                
+                if(snapshot.empty) {
+                    list.innerHTML = `<li style="justify-content:center; color:#888;">কোনো হিস্ট্রি নেই</li>`;
+                    return;
+                }
+                
+                snapshot.forEach(doc => {
+                    let data = doc.data();
+                    let dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString('bn-BD', {day:'numeric', month:'short'}) : 'Now';
+                    list.innerHTML += `<li><div><strong style="font-size:14px;">${data.method} - <span style="font-size:12px;color:#f39c12;">${data.status}</span></strong> <span>${dateStr} | ${data.number}</span></div><strong class="minus">-৳ ${data.amount.toFixed(1)}</strong></li>`;
+                });
+            } catch (error) { console.log(error); }
+        }
+
+        async function savePersonalInfo() {
+            let num = document.getElementById('userPhoneInput').value;
+            if(num) {
+                await userDocRef.update({ phone: num });
+                userData.phone = num;
+                alert("তথ্য সেভ হয়েছে!");
+            }
+        }
+
+        // === Navigation & Sidebar Logic ===
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); }
+        function openSub(id) { document.getElementById(id).classList.add('active'); }
+        function closeTopSub(id) { document.getElementById(id).classList.remove('active'); }
+        function closeAllSubs() { document.querySelectorAll('.sub-page').forEach(page => page.classList.remove('active')); }
+        
+        function openGenericSub(titleBn, iconClass, titleEn) {
+            let title = currentLang === 'bn' ? titleBn : titleEn;
+            document.getElementById('generic-title').innerText = title;
+            document.getElementById('generic-icon').className = `fa-solid ${iconClass}`;
+            document.getElementById('generic-msg').innerText = currentLang === 'bn' ? `${titleBn} পেজটির কাজ চলছে...` : `${titleEn} Page is under construction...`;
+            openSub('sub-generic');
+            toggleSidebar();
+        }
+
+        function switchPage(pageId, element) {
+            closeAllSubs(); 
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(`${pageId}-page`).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'bn' ? 'en' : 'bn';
+            document.getElementById('langText').innerText = currentLang === 'bn' ? 'EN' : 'বাং';
+            document.querySelectorAll('.lang').forEach(el => { if(el.getAttribute(`data-${currentLang}`)) { el.innerText = el.getAttribute(`data-${currentLang}`); }});
+            document.querySelectorAll('.lang-input').forEach(el => { if(el.getAttribute(`data-${currentLang}`)) { el.placeholder = el.getAttribute(`data-${currentLang}`); }});
+            filterHistory();
+        }
+
+        function viewMessage(msgId) {
+            const contentBox = document.getElementById('fullMessageContent');
+            if(msgId === 'welcomeMsg') { contentBox.innerHTML = `<h3 style="color:var(--primary);">${currentLang === 'bn' ? 'স্বাগতম মেসেজ' : 'Welcome'}</h3><p>${currentLang === 'bn' ? 'Game Hub অ্যাপে আপনাকে স্বাগতম। কাজের নিয়মাবলি জানতে আমাদের টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।' : 'Welcome to Game Hub App. Stay connected!'}</p>`; } 
+            else if (msgId === 'warningMsg') { contentBox.innerHTML = `<h3 style="color:#e74c3c;">${currentLang === 'bn' ? 'সতর্কবার্তা' : 'Warning'}</h3><p>${currentLang === 'bn' ? 'কোনো অবৈধ উপায়ে অটো ক্লিকার বা ভিপিএন ব্যবহার করলে আপনার একাউন্ট স্থায়ীভাবে ব্যান করা হবে।' : 'If you use auto clicker or VPN, your account will be banned.'}</p>`; }
+            openSub('sub-message-view');
+        }
+
+        function copyRef() { navigator.clipboard.writeText(userData.referCode).then(() => { alert("রেফার কোড কপি হয়েছে!"); }); }
+        function shareRef() {
+            let text = `EarnHub - এ যুক্ত হোন! আমার রেফার কোড: ${userData.referCode}`;
+            if (navigator.share) { navigator.share({ title: 'EarnHub', text: text }); } else { alert("শেয়ার অপশন এই ডিভাইসে সাপোর্ট করছে না।"); }
+        }
+
+        // Call Initialization on Load
+        window.onload = () => { initApp(); };
+    </script>
 </body>
 </html>
