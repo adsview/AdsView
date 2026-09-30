@@ -29,7 +29,9 @@
         .top-nav .nav-left, .top-nav .nav-right { display: flex; align-items: center; gap: 12px; }
         .top-nav i { font-size: 20px; color: var(--text-dark); cursor: pointer; transition: 0.2s;}
         
+        /* Logo from GitHub repository */
         .logo-img { height: 32px; width: auto; object-fit: contain; }
+        
         .lang-toggle { display: flex; align-items: center; background: #e2e8f0; border-radius: 20px; padding: 2px 8px; font-size: 12px; font-weight: bold; cursor: pointer; color: var(--primary); }
         
         /* Sidebar */
@@ -106,7 +108,7 @@
         .p-menu-item i { font-size: 20px; color: var(--primary); }
         .p-menu-item span { font-size: 10px; font-weight: 700; color: #333; line-height: 1.2; }
         
-        /* Profile Top Actions */
+        /* Profile Top Actions (Convert & Withdraw banner buttons) */
         .profile-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px; flex-shrink: 0; }
         .p-act-btn { padding: 10px; border-radius: 10px; border: none; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; box-shadow: var(--shadow); }
         .btn-conv { background: linear-gradient(135deg, #f59e0b, #d97706); }
@@ -141,7 +143,7 @@
         
         <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar (Icons only for social without titles) -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header-new">
                 <h3 class="lang" data-bn="মেনু" data-en="Menu">মেনু</h3>
@@ -160,6 +162,7 @@
                     <div class="sb-grid-item" onclick="toggleSidebar();"><i class="fa-solid fa-scroll" style="color: #d35400;"></i><span class="lang" data-bn="নিয়মাবলী" data-en="Rules">নিয়মাবলী</span></div>
                 </div>
                 
+                <!-- Social Icons Without Titles -->
                 <div class="sb-social-row">
                     <div class="icon-circle" style="background:#00cec9;"><i class="fa-solid fa-comment-dots"></i></div>
                     <div class="icon-circle" style="background:#0984e3;"><i class="fa-brands fa-telegram"></i></div>
@@ -172,6 +175,7 @@
         <header class="top-nav">
             <div class="nav-left">
                 <i class="fa-solid fa-bars" onclick="toggleSidebar()" style="color:var(--primary);"></i>
+                <!-- GitHub Logo Asset Path -->
                 <img src="logo.png" class="logo-img" alt="AdsView" onerror="this.src='https://via.placeholder.com/120x32?text=AdsView'">
             </div>
             <div class="nav-right">
@@ -202,6 +206,7 @@
                     <marquee style="font-size: 11px; color: #e65100; font-weight: 700;" scrollamount="4">AdsView-তে আপনাকে স্বাগতম! শর্টকাট থেকে যেকোনো অ্যাড দেখে আয় করুন।</marquee>
                 </div>
 
+                <!-- Shortcuts Grid -->
                 <div class="shortcut-grid">
                     <div class="shortcut-btn" onclick="openSub('sub-ads-direct')">
                         <i class="fa-solid fa-link" style="color: #3b82f6;"></i>
@@ -221,6 +226,7 @@
                     </div>
                 </div>
 
+                <!-- Homepage Quick Ad Container -->
                 <div class="ad-container">
                     <h3 class="lang" data-bn="কয়েন আয় করতে বিজ্ঞাপন দেখুন" data-en="Watch Ads to Earn Coins">কয়েন আয় করতে বিজ্ঞাপন দেখুন</h3>
                     <div class="ad-thumbnail"><i class="fa-regular fa-circle-play"></i></div>
@@ -240,7 +246,7 @@
                 </div>
             </section>
 
-            <!-- ====== EARNING PAGE ====== -->
+            <!-- ====== EARNING PAGE (6 Containers Grid) ====== -->
             <section id="earning-page" class="page">
                 <div class="profile-card" style="margin-bottom: 10px;">
                     <div class="user-info">
@@ -249,6 +255,7 @@
                     </div>
                 </div>
 
+                <!-- 6 Containers Grid -->
                 <div class="earning-grid">
                     <div class="earn-card" onclick="openSub('sub-ads-direct')">
                         <i class="fa-solid fa-link" style="color: #3b82f6;"></i>
@@ -283,7 +290,7 @@
                 </div>
             </section>
 
-            <!-- ====== PROFILE PAGE ====== -->
+            <!-- ====== PROFILE PAGE (Screenshot Style & No Scrolling) ====== -->
             <section id="profile-page" class="page">
                 <div class="profile-card" style="margin-bottom: 8px;">
                     <div class="user-info">
@@ -296,11 +303,13 @@
                     </div>
                 </div>
 
+                <!-- Convert & Withdraw Buttons -->
                 <div class="profile-actions-grid">
                     <button class="p-act-btn btn-conv" onclick="openSub('sub-convert')"><i class="fa-solid fa-right-left"></i> <span class="lang" data-bn="কনভার্ট" data-en="Convert">কনভার্ট</span></button>
                     <button class="p-act-btn btn-wd" onclick="openSub('sub-withdraw')"><i class="fa-solid fa-money-bill-transfer"></i> <span class="lang" data-bn="উত্তোলন" data-en="Withdraw">উত্তোলন</span></button>
                 </div>
 
+                <!-- Grid Menu Style (Screenshot inspired) -->
                 <div class="profile-menu-grid">
                     <div class="p-menu-item" onclick="openSub('sub-history')"><i class="fa-solid fa-chart-column"></i><span class="lang" data-bn="কাজের ইতিহাস" data-en="History">কাজের ইতিহাস</span></div>
                     <div class="p-menu-item" onclick="openSub('sub-withdraw-history')"><i class="fa-solid fa-wallet"></i><span class="lang" data-bn="উত্তোলন হিস্ট্রি" data-en="Wd History">উত্তোলন হিস্ট্রি</span></div>
@@ -475,12 +484,10 @@
         };
 
         window.onload = () => { 
-            // Fixed loading screen hang issue
-            const loaderDiv = document.getElementById('db-loader');
-            if(loaderDiv) {
-                loaderDiv.style.display = 'none';
-            }
-            updateUI();
+            setTimeout(() => {
+                document.getElementById('db-loader').style.display = 'none';
+                updateUI();
+            }, 500); 
         };
 
         function updateUI() {
@@ -499,10 +506,9 @@
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             document.getElementById(`${pageId}-page`).classList.add('active');
-            
-            if(element) {
-                element.classList.add('active');
-            } else {
+            if(element) element.classList.add('active');
+            else {
+                // If triggered programmatically from bottom nav
                 if(pageId === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
                 if(pageId === 'earning') document.querySelectorAll('.nav-item')[1].classList.add('active');
                 if(pageId === 'profile') document.querySelectorAll('.nav-item')[2].classList.add('active');
