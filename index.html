@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AdsView - Reward App</title>
+    <title id="appTitle">AdsView - Watch Ads & Earn Reward</title>
     
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,8 +15,11 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
+    <!-- Monetag Official SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='11781683' data-sdk='show_11781683'></script>
+
     <style>
-        :root { --bg-body: #e4e7ea; --bg-app: #f5f7fa; --primary: #4a6ee0; --text-dark: #1c2833; --text-muted: #7f8c8d; --border-color: #e2e8f0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        :root { --bg-body: #e4e7ea; --bg-app: #f5f7fa; --primary: #3b82f6; --text-dark: #1e293b; --text-muted: #64748b; --border-color: #e2e8f0; --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -27,10 +30,14 @@
         /* Top Nav */
         .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: #ffffff; border-bottom: 1px solid var(--border-color); z-index: 10; flex-shrink: 0;}
         .top-nav .nav-left, .top-nav .nav-right { display: flex; align-items: center; gap: 12px; }
-        .top-nav i { font-size: 20px; color: var(--text-dark); cursor: pointer; transition: 0.2s;}
+        .top-nav i { font-size: 24px; color: var(--text-dark); cursor: pointer; transition: 0.2s;}
         
-        .logo-img { height: 28px; width: auto; object-fit: contain; }
-        .lang-toggle { display: flex; align-items: center; background: #e2e8f0; border-radius: 20px; padding: 2px 8px; font-size: 12px; font-weight: bold; cursor: pointer; color: var(--primary); }
+        .app-brand { display: flex; flex-direction: column; line-height: 1.1; }
+        .app-brand .brand-title { font-size: 16px; font-weight: 900; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .app-brand .brand-tagline { font-size: 9px; color: var(--text-muted); font-weight: 600; }
+
+        .top-nav .nav-right i { font-size: 22px; }
+        .lang-toggle { display: flex; align-items: center; background: #e2e8f0; border-radius: 20px; padding: 4px 10px; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--primary); }
         
         /* Sidebar */
         .sidebar { position: absolute; top: 0; left: -300px; width: 290px; height: 100%; background: #f4f6fc; z-index: 100; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
@@ -39,27 +46,28 @@
         .sidebar-header-new h3 { margin: 0; color: #1a202c; font-weight: 900; font-size: 20px;}
         .sidebar-header-new i.close-btn { font-size: 26px; color: #ff007f; font-weight: 900; cursor: pointer; }
         .sidebar-scroll { flex: 1; overflow-y: auto; padding: 15px 20px; }
-        .sb-btn { background: #fff; padding: 12px; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; }
-        .sb-btn.green-grad { background: linear-gradient(90deg, #27ae60, #2ecc71); color: white; border: none; }
         
-        /* Hamburger 4x3 Grid Style */
-        .sb-grid-4x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .sb-grid-item { background: #fff; border-radius: 10px; padding: 12px 4px; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; text-align: center; }
-        .sb-grid-item i { font-size: 18px; }
-        .sb-grid-item span { font-size: 10px; font-weight: 700; color: #2d3436; line-height: 1.2; }
+        .sb-banner-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .sb-banner-box { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 12px 8px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: var(--shadow); }
         
-        .sb-social-row { display: flex; justify-content: space-around; background: #fff; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);}
-        .icon-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 16px; cursor: pointer; }
+        .sb-grid-2x2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .sb-grid-item { background: #fff; border-radius: 10px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); cursor: pointer; border: 1px solid #edf2f7; text-align: center; }
+        .sb-grid-item i { font-size: 20px; color: var(--primary); }
+        .sb-grid-item span { font-size: 10px; font-weight: 700; color: #2d3436; }
         
+        .sb-social-large { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .sb-social-row { display: flex; justify-content: space-around; }
+        .icon-circle-large { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s; }
+        .icon-circle-large:active { transform: scale(0.9); }
+
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .overlay.open { opacity: 1; pointer-events: auto; }
         
-        /* Main Content & No Scrolling Layout */
+        /* Main Content */
         .main-content { flex: 1; position: relative; overflow: hidden; }
         .page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 10px 15px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
         .page.active { opacity: 1; pointer-events: auto; }
         
-        /* Sub Pages */
         .sub-page { position: absolute; top: 0; left: 100%; width: 100%; height: 100%; background-color: var(--bg-app); z-index: 50; transition: left 0.3s ease; display: flex; flex-direction: column; overflow: hidden; }
         .sub-page.active { left: 0; }
         .sub-header { display: flex; align-items: center; padding: 15px; background: white; border-bottom: 1px solid var(--border-color); gap: 15px; font-weight: bold; font-size: 16px; flex-shrink: 0;}
@@ -80,14 +88,12 @@
         
         .announcement { background: #fff3e0; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; border: 1px solid #ffe0b2; flex-shrink: 0; box-shadow: var(--shadow);}
         
-        /* Shortcuts */
         .shortcut-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
-        .shortcut-btn { background: #ffffff; padding: 8px 2px; border-radius: 8px; text-align: center; cursor: pointer; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: 0.2s;}
-        .shortcut-btn:active { transform: scale(0.95); }
-        .shortcut-btn i { font-size: 18px; margin-bottom: 4px; }
+        .shortcut-btn { background: #ffffff; padding: 10px 2px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .shortcut-btn:active { transform: scale(0.88) rotate(-3deg); }
+        .shortcut-btn i { font-size: 20px; margin-bottom: 4px; }
         .shortcut-btn span { display: block; font-size: 9px; font-weight: 700; color: #555; }
         
-        /* Compact Ad Container */
         .ad-container { border-radius: 12px; padding: 12px; text-align: center; background-color: #ffffff; display: flex; flex-direction: column; justify-content: center; flex: 1; margin-bottom: 8px; box-shadow: var(--shadow); border: 1px solid var(--border-color); overflow: hidden;}
         .ad-container h3 { margin: 0 0 8px; color: var(--text-dark); font-size: 14px; }
         .ad-thumbnail { width: 100%; flex: 1; min-height: 70px; max-height: 100px; border-radius: 10px; margin-bottom: 10px; background: linear-gradient(45deg, #1e293b, #334155); display: flex; justify-content: center; align-items: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -95,47 +101,47 @@
         .ad-thumbnail i { font-size: 35px; color: #fff; } 
         .btn-ad { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3); }
         
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #ffffff; padding: 8px; border-radius: 10px; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex-shrink: 0; }
         .stat-box { display: flex; flex-direction: column; align-items: center; text-align: center; background: #f8fafc; padding: 6px 2px; border-radius: 6px; border: 1px solid #e2e8f0; }
         .stat-box i { font-size: 14px; margin-bottom: 3px; }
         .stat-box .value { font-weight: bold; font-size: 12px; color: var(--text-dark); margin-bottom: 1px;}
         .stat-box .label { font-size: 9px; color: var(--text-muted); font-weight: 700;}
         
-        /* Profile Page 4x3 Grid Layout (No Scrolling) */
-        .profile-menu-grid-4x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; flex: 1; overflow: hidden; }
-        .p-menu-item { background: #ffffff; padding: 10px 5px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid var(--border-color); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-        .p-menu-item i { font-size: 20px; color: var(--primary); }
-        .p-menu-item span { font-size: 10px; font-weight: 700; color: #333; line-height: 1.2; }
-        
-        /* Profile Top Actions */
-        .profile-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 5px; flex-shrink: 0; }
+        .earn-large-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; flex-shrink: 0; margin-bottom: 10px; }
+        .earn-card-large { background: #ffffff; padding: 18px 12px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; }
+        .earn-card-large i { font-size: 32px; color: var(--primary); }
+        .earn-card-large h4 { margin: 0; font-size: 14px; color: var(--text-dark); }
+        .earn-card-large span { font-size: 11px; color: #27ae60; font-weight: bold; background: #e8f8f5; padding: 2px 8px; border-radius: 6px; }
+
+        .profile-menu-list { display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; padding-bottom: 10px; }
+        .p-list-item { background: #ffffff; padding: 12px 15px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: 0.2s; }
+        .p-list-item:active { transform: scale(0.98); }
+        .p-list-left { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 13px; color: var(--text-dark); }
+        .p-list-left i { font-size: 18px; color: var(--primary); width: 24px; text-align: center; }
+
+        .profile-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; flex-shrink: 0; }
         .p-act-btn { padding: 10px; border-radius: 10px; border: none; font-weight: bold; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; box-shadow: var(--shadow); }
         .btn-conv { background: linear-gradient(135deg, #f59e0b, #d97706); }
         .btn-wd { background: linear-gradient(135deg, #10b981, #059669); }
 
-        /* Earning Page 4x2 Cards Grid */
-        .earning-grid-4x2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex-shrink: 0; margin-bottom: 8px; }
-        .earn-card-box { background: #ffffff; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid var(--border-color); box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .earn-card-box i { font-size: 22px; color: var(--primary); }
-        .earn-card-box div { text-align: left; }
-        .earn-card-box h4 { margin: 0; font-size: 12px; color: var(--text-dark); }
-        .earn-card-box span { font-size: 9px; color: #27ae60; font-weight: bold; }
+        .slider-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scroll-snap-type: x mandatory; }
+        .slide-card { min-width: 220px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 15px; border-radius: 12px; scroll-snap-align: start; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 5px; }
+        .slide-card.bkash { background: linear-gradient(135deg, #e91e63, #c2185b); }
+        .slide-card.nagad { background: linear-gradient(135deg, #ff9800, #f57c00); }
+        .slide-card.rocket { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
 
-        /* Bottom Navigation Fixed */
         .bottom-nav { display: flex; background-color: #ffffff; border-top: 1px solid var(--border-color); padding: 8px 0; z-index: 100; flex-shrink: 0; position: relative; width: 100%;}
         .nav-item { flex: 1; text-align: center; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 11px; font-weight: 500; }
         .nav-item.active { color: var(--primary); }
         
-        #loader { display: none; margin-bottom: 5px; color: var(--primary); font-weight: bold; font-size: 12px;}
         #db-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--primary); font-weight: bold; font-size: 18px;}
     </style>
 </head>
 <body>
 
-    <div id="db-loader" style="display: none;">
+    <div id="db-loader">
         <i class="fa-solid fa-spinner fa-spin" style="font-size: 40px; margin-bottom: 15px;"></i>
         <span>সার্ভারের সাথে কানেক্ট হচ্ছে...</span>
     </div>
@@ -144,42 +150,48 @@
         
         <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar with 4x3 Grid Menu -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header-new">
                 <h3 class="lang" data-bn="মেনু" data-en="Menu">মেনু</h3>
                 <i class="fa-solid fa-xmark close-btn" onclick="toggleSidebar()"></i>
             </div>
             <div class="sidebar-scroll">
-                <div class="sb-btn" onclick="openSub('sub-history'); toggleSidebar();"><i class="fa-solid fa-chart-column" style="color: #3498db;"></i><span class="lang" data-bn="কাজের ইতিহাস" data-en="Work History">কাজের ইতিহাস</span></div>
-                <div class="sb-btn green-grad" onclick="openSub('sub-convert'); toggleSidebar();"><i class="fa-solid fa-sack-dollar" style="color: #f1c40f;"></i><span class="lang" data-bn="আর্নিং পয়েন্ট" data-en="Earning Point">আর্নিং পয়েন্ট</span></div>
-                
-                <!-- 4x3 Grid Layout in Sidebar -->
-                <div class="sb-grid-4x3">
+                <div class="sb-banner-row">
+                    <div class="sb-banner-box" onclick="switchPage('home', document.querySelectorAll('.nav-item')[0]); toggleSidebar();">Dashboard</div>
+                    <div class="sb-banner-box" style="background:linear-gradient(135deg, #10b981, #059669);" onclick="openSub('sub-history'); toggleSidebar();">Recent Work</div>
+                </div>
+
+                <div class="sb-grid-2x2">
+                    <div class="sb-grid-item" onclick="openSub('sub-history'); toggleSidebar();"><i class="fa-solid fa-chart-column"></i><span class="lang" data-bn="কাজের ইতিহাস" data-en="History">কাজের ইতিহাস</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-convert'); toggleSidebar();"><i class="fa-solid fa-sack-dollar" style="color: #f59e0b;"></i><span class="lang" data-bn="আর্নিং পয়েন্ট" data-en="Earnings">আর্নিং পয়েন্ট</span></div>
                     <div class="sb-grid-item" onclick="openSub('sub-notifications'); toggleSidebar();"><i class="fa-solid fa-clipboard-list" style="color: #9b59b6;"></i><span class="lang" data-bn="নোটিশ বোর্ড" data-en="Notice">নোটিশ বোর্ড</span></div>
                     <div class="sb-grid-item" onclick="openSub('sub-ads-direct'); toggleSidebar();"><i class="fa-solid fa-tv" style="color: #34495e;"></i><span class="lang" data-bn="বিজ্ঞাপন" data-en="Ads">বিজ্ঞাপন</span></div>
-                    <div class="sb-grid-item" onclick="openSub('sub-refer'); toggleSidebar();"><i class="fa-solid fa-user-group" style="color: #3498db;"></i><span class="lang" data-bn="রেফার" data-en="Refer">রেফার</span></div>
-                    <div class="sb-grid-item" onclick="openSub('sub-convert'); toggleSidebar();"><i class="fa-solid fa-gift" style="color: #e74c3c;"></i><span class="lang" data-bn="রিওয়ার্ড" data-en="Reward">রিওয়ার্ড</span></div>
-                    <div class="sb-grid-item" onclick="toggleSidebar();"><i class="fa-solid fa-trophy" style="color: #f1c40f;"></i><span class="lang" data-bn="লিডারবোর্ড" data-en="Leaderboard">লিডারবোর্ড</span></div>
-                    <div class="sb-grid-item" onclick="toggleSidebar();"><i class="fa-solid fa-scroll" style="color: #d35400;"></i><span class="lang" data-bn="নিয়মাবলী" data-en="Rules">নিয়মাবলী</span></div>
-                    <div class="sb-grid-item" onclick="openSub('sub-personal'); toggleSidebar();"><i class="fa-solid fa-user-pen" style="color: #06b6d4;"></i><span class="lang" data-bn="তথ্য" data-en="Info">তথ্য</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-refer'); toggleSidebar();"><i class="fa-solid fa-user-group" style="color: #3b82f6;"></i><span class="lang" data-bn="রেফার" data-en="Refer">রেফার</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-personal'); toggleSidebar();"><i class="fa-solid fa-user-pen" style="color: #06b6d4;"></i><span class="lang" data-bn="ব্যক্তিগত তথ্য" data-en="Personal">ব্যক্তিগত তথ্য</span></div>
                     <div class="sb-grid-item" onclick="openSub('sub-security'); toggleSidebar();"><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i><span class="lang" data-bn="নিরাপত্তা" data-en="Security">নিরাপত্তা</span></div>
                     <div class="sb-grid-item" onclick="openSub('sub-settings'); toggleSidebar();"><i class="fa-solid fa-gear" style="color: #64748b;"></i><span class="lang" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-kyc'); toggleSidebar();"><i class="fa-solid fa-id-card" style="color: #eab308;"></i><span class="lang" data-bn="কেওয়াইসি" data-en="KYC">কেওয়াইসি</span></div>
+                    <div class="sb-grid-item" onclick="openSub('sub-withdraw-history'); toggleSidebar();"><i class="fa-solid fa-wallet" style="color: #ef4444;"></i><span class="lang" data-bn="উত্তোলন ম্যানেজমেন্ট" data-en="Withdraw Mgt">উত্তোলন ম্যানেজমেন্ট</span></div>
                 </div>
-                
-                <div class="sb-social-row">
-                    <div class="icon-circle" style="background:#00cec9;"><i class="fa-solid fa-comment-dots"></i></div>
-                    <div class="icon-circle" style="background:#0984e3;"><i class="fa-brands fa-telegram"></i></div>
-                    <div class="icon-circle" style="background:#e84393;"><i class="fa-brands fa-facebook-messenger"></i></div>
+
+                <div class="sb-social-large">
+                    <span style="font-size: 11px; font-weight: bold; color: var(--text-muted); text-align: center;" class="lang" data-bn="সাপোর্ট ও যোগাযোগ" data-en="Support & Contact">সাপোর্ট ও যোগাযোগ</span>
+                    <div class="sb-social-row">
+                        <div class="icon-circle-large" style="background:#00cec9;" onclick="alert('Live Chat')"><i class="fa-solid fa-comment-dots"></i></div>
+                        <div class="icon-circle-large" style="background:#0984e3;" onclick="alert('Telegram Channel')"><i class="fa-brands fa-telegram"></i></div>
+                        <div class="icon-circle-large" style="background:#e84393;" onclick="alert('Messenger Support')"><i class="fa-brands fa-facebook-messenger"></i></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Top Navigation -->
         <header class="top-nav">
             <div class="nav-left">
                 <i class="fa-solid fa-bars" onclick="toggleSidebar()" style="color:var(--primary);"></i>
-                <img src="file_00000000767c82118c9c8b24de45f771.png" class="logo-img" alt="AdsView" onerror="this.src='https://i.ibb.co.com/example/logo.png'">
+                <div class="app-brand">
+                    <span class="brand-title" id="navTitle">AdsView</span>
+                    <span class="brand-tagline" id="navTagline">Watch Ads - Earn Reward</span>
+                </div>
             </div>
             <div class="nav-right">
                 <div class="lang-toggle" onclick="toggleLanguage()"><i class="fa-solid fa-toggle-on" id="langIcon"></i><span id="langText">EN</span></div>
@@ -187,16 +199,13 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
             
-            <!-- ====== HOME PAGE ====== -->
             <section id="home-page" class="page active">
-                
                 <div class="profile-card">
                     <div class="user-info">
                         <div id="homeUserPhoto" class="tg-photo"><i class="fa-regular fa-user"></i></div>
-                        <div class="user-details"><div class="name-row"><strong class="displayFullName">System Error</strong></div><span class="username displayUserName">@kingofkhulna</span></div>
+                        <div class="user-details"><div class="name-row"><strong class="displayFullName">Loading...</strong></div><span class="username displayUserName">@loading</span></div>
                     </div>
                     <div class="balance-section">
                         <div class="bal-item"><i class="fa-solid fa-coins" style="color: #f1c40f;"></i> <span class="val-coins">0</span></div>
@@ -206,7 +215,7 @@
 
                 <div class="announcement">
                     <i class="fa-solid fa-bullhorn" style="color: #f57c00;"></i>
-                    <marquee style="font-size: 11px; color: #e65100; font-weight: 700;" scrollamount="4">AdsView-তে আপনাকে স্বাগতম! বেশি আয় করতে নিচের শর্টকাটগুলো থেকে ডিরেক্ট লিংক এবং রিওয়ার্ড অ্যাডস দেখুন।</marquee>
+                    <marquee id="announcementText" style="font-size: 11px; color: #e65100; font-weight: 700;" scrollamount="4">AdsView-তে আপনাকে স্বাগতম! বেশি আয় করতে নিচের শর্টকাটগুলো থেকে ডিরেক্ট লিংক এবং রিওয়ার্ড অ্যাডস দেখুন।</marquee>
                 </div>
 
                 <div class="shortcut-grid">
@@ -231,7 +240,6 @@
                 <div class="ad-container">
                     <h3 class="lang" data-bn="কয়েন আয় করতে বিজ্ঞাপন দেখুন" data-en="Watch Ads to Earn Coins">কয়েন আয় করতে বিজ্ঞাপন দেখুন</h3>
                     <div class="ad-thumbnail"><i class="fa-regular fa-circle-play"></i></div>
-                    <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> <span class="lang" data-bn="যাচাই করছে..." data-en="Verifying...">যাচাই করছে...</span></div>
                     <button class="btn-ad" id="watchAdBtn" onclick="watchAd('direct', 'watchAdBtn')">
                         <i class="fa-solid fa-play"></i> <span class="lang" data-bn="বিজ্ঞাপন দেখুন" data-en="Watch Ad">বিজ্ঞাপন দেখুন</span>
                     </button>
@@ -247,80 +255,49 @@
                 </div>
             </section>
 
-            <!-- ====== EARNING PAGE (4x2 Cards + 2 Ad Containers + Bottom Styled Ad Container) ====== -->
             <section id="earning-page" class="page">
-                <div class="profile-card" style="margin-bottom: 6px; padding: 8px 12px;">
+                <div class="profile-card" style="margin-bottom: 10px; padding: 12px 15px;">
                     <div class="user-info">
-                        <div class="tg-photo" style="width: 35px; height: 35px; font-size: 14px;"><i class="fa-solid fa-sack-dollar"></i></div>
-                        <div class="user-details"><strong class="lang" data-bn="আর্নিং হাব" data-en="Earning Hub" style="font-size: 13px;">আর্নিং হাব</strong><span class="lang" data-bn="বিজ্ঞাপন দেখে আয় করুন" data-en="Earn by watching ads" style="font-size: 10px;">বিজ্ঞাপন দেখে আয় করুন</span></div>
+                        <div class="tg-photo" style="width: 40px; height: 40px; font-size: 16px;"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="user-details"><strong class="lang" data-bn="আর্নিং হাব" data-en="Earning Hub" style="font-size: 14px;">আর্নিং হাব</strong><span class="lang" data-bn="বিজ্ঞাপন দেখে আয় করুন" data-en="Earn by watching ads" style="font-size: 11px;">বিজ্ঞাপন দেখে আয় করুন</span></div>
                     </div>
                 </div>
 
-                <!-- 4x2 Cards Grid (4 Menu items) -->
-                <div class="earning-grid-4x2">
-                    <div class="earn-card-box" onclick="openSub('sub-ads-direct')">
+                <div class="earn-large-grid">
+                    <div class="earn-card-large" onclick="openSub('sub-ads-direct')">
                         <i class="fa-solid fa-link" style="color: #3b82f6;"></i>
-                        <div>
-                            <h4 class="lang" data-bn="ডিরেক্ট লিংক" data-en="Direct Link">ডিরেক্ট লিংক</h4>
-                            <span class="lang" data-bn="+50 কয়েন" data-en="+50 Coins">+50 কয়েন</span>
-                        </div>
+                        <h4 class="lang" data-bn="ডিরেক্ট লিংক" data-en="Direct Link">ডিরেক্ট লিংক</h4>
+                        <span class="lang" data-bn="+50 কয়েন" data-en="+50 Coins">+50 কয়েন</span>
                     </div>
-                    <div class="earn-card-box" onclick="openSub('sub-ads-reward')">
+                    <div class="earn-card-large" onclick="openSub('sub-ads-reward')">
                         <i class="fa-solid fa-gift" style="color: #eab308;"></i>
-                        <div>
-                            <h4 class="lang" data-bn="রিওয়ার্ড এডস" data-en="Reward Ads">রিওয়ার্ড এডস</h4>
-                            <span class="lang" data-bn="+100 কয়েন" data-en="+100 Coins">+100 কয়েন</span>
-                        </div>
+                        <h4 class="lang" data-bn="রিওয়ার্ড এডস" data-en="Reward Ads">রিওয়ার্ড এডস</h4>
+                        <span class="lang" data-bn="+100 কয়েন" data-en="+100 Coins">+100 কয়েন</span>
                     </div>
-                    <div class="earn-card-box" onclick="openSub('sub-ads-banner')">
+                    <div class="earn-card-large" onclick="openSub('sub-ads-banner')">
                         <i class="fa-solid fa-image" style="color: #10b981;"></i>
-                        <div>
-                            <h4 class="lang" data-bn="ব্যানার এডস" data-en="Banner Ads">ব্যানার এডস</h4>
-                            <span class="lang" data-bn="+30 কয়েন" data-en="+30 Coins">+30 কয়েন</span>
-                        </div>
+                        <h4 class="lang" data-bn="ব্যানার এডস" data-en="Banner Ads">ব্যানার এডস</h4>
+                        <span class="lang" data-bn="+30 কয়েন" data-en="+30 Coins">+30 কয়েন</span>
                     </div>
-                    <div class="earn-card-box" onclick="openSub('sub-ads-popup')">
+                    <div class="earn-card-large" onclick="openSub('sub-ads-popup')">
                         <i class="fa-solid fa-mobile-screen" style="color: #8b5cf6;"></i>
-                        <div>
-                            <h4 class="lang" data-bn="পপআপ এডস" data-en="Popup Ads">পপআপ এডস</h4>
-                            <span class="lang" data-bn="+40 কয়েন" data-en="+40 Coins">+40 কয়েন</span>
-                        </div>
+                        <h4 class="lang" data-bn="পপআপ এডস" data-en="Popup Ads">পপআপ এডস</h4>
+                        <span class="lang" data-bn="+40 কয়েন" data-en="+40 Coins">+40 কয়েন</span>
                     </div>
                 </div>
 
-                <!-- 2 Ad Containers (No Scrolling System inside Earning) -->
-                <div style="display: flex; gap: 6px; margin-bottom: 6px; flex-shrink: 0;">
-                    <div class="ad-container" style="margin-bottom:0; padding:8px;">
-                        <h4 style="margin:0 0 4px; font-size:11px;" class="lang" data-bn="অ্যাড ১" data-en="Ad 1">অ্যাড ১</h4>
-                        <div class="ad-thumbnail" style="min-height: 45px; max-height: 55px; margin-bottom:6px;"><i class="fa-regular fa-circle-play" style="font-size:20px;"></i></div>
-                        <button class="btn-ad" style="padding:6px; font-size:11px;" onclick="watchAd('direct', this)">Watch</button>
-                    </div>
-                    <div class="ad-container" style="margin-bottom:0; padding:8px;">
-                        <h4 style="margin:0 0 4px; font-size:11px;" class="lang" data-bn="অ্যাড ২" data-en="Ad 2">অ্যাড ২</h4>
-                        <div class="ad-thumbnail" style="min-height: 45px; max-height: 55px; margin-bottom:6px; background:linear-gradient(45deg, #064e3b, #059669);"><i class="fa-solid fa-gift" style="font-size:20px; color:#34d399;"></i></div>
-                        <button class="btn-ad" style="padding:6px; font-size:11px; background:linear-gradient(45deg, #10b981, #059669);" onclick="watchAd('reward', this)">Claim</button>
-                    </div>
-                </div>
-
-                <!-- Bottom Thumbnail + Stylish Button Ad Container -->
-                <div class="ad-container" style="padding:8px; margin-bottom:0;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div style="width:50px; height:50px; background:linear-gradient(135deg, #f59e0b, #d97706); border-radius:8px; display:flex; justify-content:center; align-items:center; color:white; font-size:20px; flex-shrink:0;"><i class="fa-solid fa-bolt"></i></div>
-                        <div style="flex:1; text-align:left;">
-                            <h4 style="margin:0 0 2px; font-size:12px;" class="lang" data-bn="স্পেশাল অফার অ্যাড" data-en="Special Offer Ad">স্পেশাল অফার অ্যাড</h4>
-                            <span style="font-size:10px; color:#e11d48; font-weight:bold;" class="lang" data-bn="দ্বিগুণ কয়েন অর্জন করুন!" data-en="Earn Double Coins!">দ্বিগুণ কয়েন অর্জন করুন!</span>
-                        </div>
-                        <button class="btn-ad" style="width:auto; padding:8px 14px; font-size:11px; border-radius:20px;" onclick="watchAd('direct', this)">Start</button>
-                    </div>
+                <div class="earn-bottom-small" onclick="openSub('sub-convert')" style="background: #ffffff; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <i class="fa-solid fa-right-left" style="font-size: 20px; color: #f59e0b;"></i>
+                    <h4 class="lang" data-bn="কয়েন কনভার্ট করুন" data-en="Convert Coins" style="margin:0; font-size:13px; flex:1;">কয়েন কনভার্ট করুন</h4>
+                    <button style="padding: 6px 14px; font-size: 11px; border-radius: 6px; border:none; background:var(--primary); color:white; font-weight:bold; cursor:pointer;" class="lang" data-bn="শুরু" data-en="Go">শুরু</button>
                 </div>
             </section>
 
-            <!-- ====== PROFILE PAGE (4x3 Grid Layout matching Hamburger Menu) ====== -->
             <section id="profile-page" class="page">
                 <div class="profile-card" style="margin-bottom: 8px;">
                     <div class="user-info">
                         <div id="profileUserPhoto" class="tg-photo"><i class="fa-regular fa-user"></i></div>
-                        <div class="user-details"><div class="name-row"><strong class="displayFullName">System Error</strong></div><span class="username displayUserName">@kingofkhulna</span></div>
+                        <div class="user-details"><div class="name-row"><strong class="displayFullName">Loading...</strong></div><span class="username displayUserName">@loading</span></div>
                     </div>
                     <div class="balance-section">
                         <div class="bal-item"><i class="fa-solid fa-coins" style="color: #f1c40f;"></i> <span class="val-coins">0</span></div>
@@ -333,170 +310,146 @@
                     <button class="p-act-btn btn-wd" onclick="openSub('sub-withdraw')"><i class="fa-solid fa-money-bill-transfer"></i> <span class="lang" data-bn="উত্তোলন" data-en="Withdraw">উত্তোলন</span></button>
                 </div>
 
-                <!-- 4x3 Grid Layout matching Hamburger Menu -->
-                <div class="profile-menu-grid-4x3">
-                    <div class="p-menu-item" onclick="openSub('sub-history')"><i class="fa-solid fa-chart-column" style="color:#3498db;"></i><span class="lang" data-bn="ইতিহাস" data-en="History">ইতিহাস</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-withdraw-history')"><i class="fa-solid fa-wallet" style="color:#10b981;"></i><span class="lang" data-bn="উত্তোলন হিস্ট্রি" data-en="Wd History">উত্তোলন হিস্ট্রি</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-refer')"><i class="fa-solid fa-user-group" style="color:#f59e0b;"></i><span class="lang" data-bn="রেফার" data-en="Refer">রেফার</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-notifications')"><i class="fa-solid fa-clipboard-list" style="color:#9b59b6;"></i><span class="lang" data-bn="নোটিশ বোর্ড" data-en="Notice">নোটিশ বোর্ড</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-personal')"><i class="fa-solid fa-user-pen" style="color:#06b6d4;"></i><span class="lang" data-bn="ব্যক্তিগত তথ্য" data-en="Personal">ব্যক্তিগত তথ্য</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-security')"><i class="fa-solid fa-shield-halved" style="color:#2ecc71;"></i><span class="lang" data-bn="নিরাপত্তা" data-en="Security">নিরাপত্তা</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-settings')"><i class="fa-solid fa-gear" style="color:#64748b;"></i><span class="lang" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></div>
-                    <div class="p-menu-item" onclick="openSub('sub-ads-direct')"><i class="fa-solid fa-tv" style="color:#34495e;"></i><span class="lang" data-bn="বিজ্ঞাপন" data-en="Ads">বিজ্ঞাপন</span></div>
-                    <div class="p-menu-item" onclick="confirmLogout()" style="color: #e74c3c;"><i class="fa-solid fa-door-open" style="color: #e74c3c;"></i><span class="lang" data-bn="লগআউট" data-en="Logout">লগআউট</span></div>
+                <div class="profile-menu-list">
+                    <div class="p-list-item" onclick="openSub('sub-personal')">
+                        <div class="p-list-left"><i class="fa-solid fa-user-pen" style="color:#06b6d4;"></i><span>Personal Information</span></div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="p-list-item" onclick="openSub('sub-security')">
+                        <div class="p-list-left"><i class="fa-solid fa-shield-halved" style="color:#2ecc71;"></i><span>Security Centre</span></div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="p-list-item" onclick="openSub('sub-withdraw-history')">
+                        <div class="p-list-left"><i class="fa-solid fa-wallet" style="color:#10b981;"></i><span>Withdraw Management</span></div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="p-list-item" onclick="openSub('sub-kyc')">
+                        <div class="p-list-left"><i class="fa-solid fa-id-card" style="color:#f59e0b;"></i><span>KYC Verification</span></div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="p-list-item" onclick="openSub('sub-settings')">
+                        <div class="p-list-left"><i class="fa-solid fa-gear" style="color:#64748b;"></i><span>Setting</span></div>
+                        <i class="fa-solid fa-chevron-right" style="font-size: 12px; color: var(--text-muted);"></i>
+                    </div>
+                    <div class="p-list-item" onclick="confirmLogout()">
+                        <div class="p-list-left" style="color: #e74c3c;"><i class="fa-solid fa-door-open" style="color: #e74c3c;"></i><span>Sign out</span></div>
+                    </div>
                 </div>
             </section>
 
-            <!-- ====== SUB PAGES ====== -->
-            
+            <!-- Sub Pages -->
             <div id="sub-notifications" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-notifications')"></i><span class="lang" data-bn="নোটিশ বোর্ড" data-en="Notice Board">নোটিশ বোর্ড</span></div>
-                <div class="sub-content">
-                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: var(--shadow); margin-bottom: 12px;">
-                        <h3 style="margin: 0 0 5px 0; font-size: 15px;" class="lang" data-bn="স্বাগতম মেসেজ" data-en="Welcome Message">স্বাগতম মেসেজ</h3>
-                        <p style="margin: 0; font-size: 13px; color: var(--text-muted);" class="lang" data-bn="AdsView অ্যাপে আপনাকে স্বাগতম!" data-en="Welcome to AdsView App!">AdsView অ্যাপে আপনাকে স্বাগতম!</p>
-                    </div>
-                </div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-notifications')"></i><span>Notice Board</span></div>
+                <div class="sub-content"><div style="background: white; padding: 15px; border-radius: 8px;"><h3 id="noticeTitle">স্বাগতম</h3><p id="noticeDesc">অ্যাপে স্বাগতম!</p></div></div>
             </div>
 
             <div id="sub-convert" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-convert')"></i><span class="lang" data-bn="কয়েন রূপান্তর" data-en="Convert Coin">কয়েন রূপান্তর</span></div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-convert')"></i><span>Convert Coin</span></div>
                 <div class="sub-content">
                     <div style="background: white; padding: 20px; border-radius: 12px; text-align:center;">
-                        <h3 class="lang" data-bn="বর্তমান কয়েন" data-en="Current Coins">বর্তমান কয়েন: <span class="val-coins">0</span></h3>
-                        <input type="number" id="convertInput" class="form-control" placeholder="কয়েন পরিমাণ দিন" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ccc; border-radius:8px;">
-                        <button class="btn-ad" onclick="processConvert()" class="lang" data-bn="রূপান্তর করুন" data-en="Convert">রূপান্তর করুন</button>
+                        <h3>বর্তমান কয়েন: <span class="val-coins">0</span></h3>
+                        <input type="number" id="convertInput" placeholder="কয়েন পরিমাণ" oninput="calculateConvertedAmount()" style="width:100%; padding:12px; margin:15px 0; border:1px solid #ccc; border-radius:8px;">
+                        <p>পাবেন: <strong id="previewTk" style="color: #27ae60;">৳0.00</strong></p>
+                        <button class="btn-ad" onclick="processConvert()">রূপান্তর করুন</button>
                     </div>
                 </div>
             </div>
 
             <div id="sub-withdraw" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw')"></i><span class="lang" data-bn="উত্তোলন করুন" data-en="Withdraw">উত্তোলন করুন</span></div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw')"></i><span>Withdraw</span></div>
                 <div class="sub-content">
                     <div style="background: white; padding: 20px; border-radius: 12px;">
-                        <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ (ন্যূনতম ৫০)" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
+                        <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
                         <input type="text" id="wdNumber" placeholder="বিকাশ/নগদ নাম্বার" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
-                        <button class="btn-ad" onclick="processWithdraw()" class="lang" data-bn="উত্তোলন রিকোয়েস্ট পাঠান" data-en="Send Request">উত্তোলন রিকোয়েস্ট পাঠান</button>
+                        <button class="btn-ad" onclick="processWithdraw()">উত্তোলন রিকোয়েস্ট পাঠান</button>
                     </div>
-                </div>
-            </div>
-
-            <div id="sub-ads-direct" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-direct')"></i><span class="lang" data-bn="ডিরেক্ট লিংক অ্যাড" data-en="Direct Link">ডিরেক্ট লিংক অ্যাড</span></div>
-                <div class="sub-content">
-                    <div class="ad-container" style="padding:20px;">
-                        <h3 style="color:#3b82f6;" class="lang" data-bn="ডিরেক্ট লিংক অ্যাডস" data-en="Direct Link Ads">ডিরেক্ট লিংক অ্যাডস</h3>
-                        <div class="ad-thumbnail" style="min-height: 120px;"><i class="fa-solid fa-link"></i></div>
-                        <button class="btn-ad" id="btnDirect" onclick="watchAd('direct', 'btnDirect')"><i class="fa-solid fa-play"></i> <span class="lang" data-bn="বিজ্ঞাপন দেখুন" data-en="Watch Ad">বিজ্ঞাপন দেখুন</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sub-ads-reward" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-reward')"></i><span class="lang" data-bn="রিওয়ার্ড এডস" data-en="Reward Ads">রিওয়ার্ড এডস</span></div>
-                <div class="sub-content">
-                    <div class="ad-container" style="padding:20px;">
-                        <h3 style="color:#eab308;" class="lang" data-bn="রিওয়ার্ড ভিডিও অ্যাডস" data-en="Reward Video Ads">রিওয়ার্ড ভিডিও অ্যাডস</h3>
-                        <div class="ad-thumbnail" style="min-height: 120px; background:#422006;"><i class="fa-solid fa-gift" style="color:#eab308;"></i></div>
-                        <button class="btn-ad" id="btnReward" style="background:#eab308;" onclick="watchAd('reward', 'btnReward')"><i class="fa-solid fa-play"></i> <span class="lang" data-bn="ভিডিও দেখুন" data-en="Watch Video">ভিডিও দেখুন</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sub-ads-banner" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-banner')"></i><span class="lang" data-bn="ব্যানার এডস" data-en="Banner Ads">ব্যানার এডস</span></div>
-                <div class="sub-content">
-                    <div class="ad-container" style="padding:20px;">
-                        <h3 style="color:#10b981;" class="lang" data-bn="ব্যানার অ্যাডস" data-en="Banner Ads">ব্যানার অ্যাডস</h3>
-                        <div class="ad-thumbnail" style="min-height: 120px; background:#064e3b;"><i class="fa-solid fa-image" style="color:#10b981;"></i></div>
-                        <button class="btn-ad" id="btnBanner" style="background:#10b981;" onclick="watchAd('banner', 'btnBanner')"><i class="fa-solid fa-play"></i> <span class="lang" data-bn="ভিউ ব্যানার" data-en="View Banner">ভিউ ব্যানার</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sub-ads-popup" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-popup')"></i><span class="lang" data-bn="পপআপ এডস" data-en="Popup Ads">পপআপ এডস</span></div>
-                <div class="sub-content">
-                    <div class="ad-container" style="padding:20px;">
-                        <h3 style="color:#8b5cf6;" class="lang" data-bn="পপআপ অ্যাডস" data-en="Popup Ads">পপআপ অ্যাডস</h3>
-                        <div class="ad-thumbnail" style="min-height: 120px; background:#2e1065;"><i class="fa-solid fa-mobile-screen" style="color:#8b5cf6;"></i></div>
-                        <button class="btn-ad" id="btnPopup" style="background:#8b5cf6;" onclick="watchAd('popup', 'btnPopup')"><i class="fa-solid fa-play"></i> <span class="lang" data-bn="পপআপ দেখুন" data-en="View Popup">পপআপ দেখুন</span></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sub-refer" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-refer')"></i><span class="lang" data-bn="রেফার এন্ড আর্ন" data-en="Refer & Earn">রেফার এন্ড আর্ন</span></div>
-                <div class="sub-content">
-                    <div style="background: white; padding: 20px; border-radius: 12px; text-align:center;">
-                        <h3>AV-1234</h3>
-                        <p class="lang" data-bn="আপনার রেফার কোড শেয়ার করুন" data-en="Share your refer code">আপনার রেফার কোড শেয়ার করুন</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sub-history" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-history')"></i><span class="lang" data-bn="কাজের ইতিহাস" data-en="Work History">কাজের ইতিহাস</span></div>
-                <div class="sub-content">
-                    <p style="text-align:center; color:#7f8c8d;" class="lang" data-bn="কোনো হিস্ট্রি নেই" data-en="No history found">কোনো হিস্ট্রি নেই</p>
                 </div>
             </div>
 
             <div id="sub-withdraw-history" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw-history')"></i><span class="lang" data-bn="উত্তোলন হিস্ট্রি" data-en="Withdraw History">উত্তোলন হিস্ট্রি</span></div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-withdraw-history')"></i><span>Withdraw Management</span></div>
                 <div class="sub-content">
-                    <p style="text-align:center; color:#7f8c8d;" class="lang" data-bn="কোনো রিকোয়েস্ট নেই" data-en="No requests">কোনো রিকোয়েস্ট নেই</p>
-                </div>
-            </div>
-
-            <div id="sub-personal" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-personal')"></i><span class="lang" data-bn="ব্যক্তিগত তথ্য" data-en="Personal Info">ব্যক্তিগত তথ্য</span></div>
-                <div class="sub-content">
-                    <div style="background:white; padding:15px; border-radius:10px;">
-                        <p><strong>Name:</strong> <span class="displayFullName">System Error</span></p>
-                        <p><strong>Username:</strong> <span class="displayUserName">@kingofkhulna</span></p>
+                    <div class="slider-container" id="savedAccountsSlider">
+                        <div class="slide-card bkash"><strong>bKash</strong><span>01700000000</span></div>
                     </div>
                 </div>
             </div>
 
             <div id="sub-security" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-security')"></i><span class="lang" data-bn="নিরাপত্তা কেন্দ্র" data-en="Security">নিরাপত্তা কেন্দ্র</span></div>
-                <div class="sub-content">
-                    <div style="background:white; padding:15px; border-radius:10px;"><p class="lang" data-bn="আপনার অ্যাকাউন্ট সুরক্ষিত আছে।" data-en="Your account is secure.">আপনার অ্যাকাউন্ট সুরক্ষিত আছে।</p></div>
-                </div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-security')"></i><span>Security Centre</span></div>
+                <div class="sub-content"><div style="background:white; padding:15px; border-radius:12px;"><input type="text" id="secUsername" value="" style="width:100%; padding:8px; margin-bottom:10px;"></div></div>
             </div>
 
             <div id="sub-settings" class="sub-page">
-                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-settings')"></i><span class="lang" data-bn="সেটিংস" data-en="Settings">সেটিংস</span></div>
-                <div class="sub-content">
-                    <div style="background:white; padding:15px; border-radius:10px;"><p class="lang" data-bn="সাউন্ড এবং নোটিফিকেশন অন আছে।" data-en="Sound & Notifications ON.">সাউন্ড এবং নোটিফিকেশন অন আছে।</p></div>
-                </div>
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-settings')"></i><span>Setting</span></div>
+                <div class="sub-content"><div style="background:white; padding:15px; border-radius:12px;"><button onclick="toggleLanguage()">Toggle Language</button></div></div>
+            </div>
+
+            <div id="sub-refer" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-refer')"></i><span>Refer & Earn</span></div>
+                <div class="sub-content"><div style="background: white; padding: 20px; text-align:center;"><h2 id="userReferralCode">AV-01</h2></div></div>
+            </div>
+
+            <div id="sub-kyc" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-kyc')"></i><span>KYC Verification</span></div>
+                <div class="sub-content"><div style="background: white; padding: 20px; text-align:center;"><h3>Verified</h3></div></div>
+            </div>
+
+            <div id="sub-ads-direct" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-direct')"></i><span>Direct Link</span></div>
+                <div class="sub-content"><div class="ad-container" style="padding:20px;"><button class="btn-ad" id="btnDirect" onclick="watchAd('direct', 'btnDirect')">বিজ্ঞাপন দেখুন</button></div></div>
+            </div>
+
+            <div id="sub-ads-reward" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-reward')"></i><span>Reward Ads</span></div>
+                <div class="sub-content"><div class="ad-container" style="padding:20px;"><button class="btn-ad" id="btnReward" onclick="watchAd('reward', 'btnReward')">ভিডিও দেখুন</button></div></div>
+            </div>
+
+            <div id="sub-ads-banner" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-banner')"></i><span>Banner Ads</span></div>
+                <div class="sub-content"><div class="ad-container" style="padding:20px;"><button class="btn-ad" id="btnBanner" onclick="watchAd('banner', 'btnBanner')">ভিউ ব্যানার</button></div></div>
+            </div>
+
+            <div id="sub-ads-popup" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-ads-popup')"></i><span>Popup Ads</span></div>
+                <div class="sub-content"><div class="ad-container" style="padding:20px;"><button class="btn-ad" id="btnPopup" onclick="watchAd('popup', 'btnPopup')">পপআপ দেখুন</button></div></div>
+            </div>
+
+            <div id="sub-history" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-history')"></i><span>History</span></div>
+                <div class="sub-content"><p style="text-align:center;">কোনো হিস্ট্রি নেই</p></div>
+            </div>
+
+            <div id="sub-personal" class="sub-page">
+                <div class="sub-header"><i class="fa-solid fa-arrow-left" onclick="closeTopSub('sub-personal')"></i><span>Personal Information</span></div>
+                <div class="sub-content"><div style="background:white; padding:15px;"><p>Name: <span class="displayFullName">User</span></p></div></div>
             </div>
 
         </main>
 
-        <!-- Bottom Navigation -->
         <footer class="bottom-nav">
-            <div class="nav-item active" onclick="switchPage('home', this)">
-                <i class="fa-solid fa-house"></i>
-                <span class="lang" data-bn="হোম" data-en="Home">হোম</span>
-            </div>
-            
-            <div class="nav-item" onclick="switchPage('earning', this)">
-                <i class="fa-solid fa-sack-dollar" style="font-size:28px; color:#27ae60; padding:8px; margin-top:-25px; background:white; border-radius:50%; box-shadow:0 -2px 5px rgba(0,0,0,0.1);"></i>
-                <span class="lang" data-bn="আর্নিং" data-en="Earning" style="margin-top: 2px;">আর্নিং</span>
-            </div>
-            
-            <div class="nav-item" onclick="switchPage('profile', this)">
-                <i class="fa-solid fa-user"></i>
-                <span class="lang" data-bn="প্রোফাইল" data-en="Profile">প্রোফাইল</span>
-            </div>
+            <div class="nav-item active" onclick="switchPage('home', this)"><i class="fa-solid fa-house"></i><span>হোম</span></div>
+            <div class="nav-item" onclick="switchPage('earning', this)"><i class="fa-solid fa-sack-dollar" style="font-size:28px; color:#27ae60; padding:8px; margin-top:-25px; background:white; border-radius:50%; box-shadow:0 -2px 5px rgba(0,0,0,0.1);"></i><span>আর্নিং</span></div>
+            <div class="nav-item" onclick="switchPage('profile', this)"><i class="fa-solid fa-user"></i><span>প্রোফাইল</span></div>
         </footer>
 
     </div>
 
-    <!-- Logic Scripts -->
+    <!-- Firebase & Dynamic Live Sync Script -->
     <script>
+        // Firebase Configuration (আপনার প্রজেক্টের আসল কনফিগারেশন এখানে যুক্ত করুন)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgoCysMy9TfAg8JtQq6cScIFONZIgprZ8",
+            authDomain: "adsviewbot.firebaseapp.com",
+            projectId: "adsviewbot",
+            storageBucket: "adsviewbot.firebasestorage.app",
+            messagingSenderId: "575329461125",
+            appId: "1:575329461125:web:d6e603e651d611d92d1aec"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
+
         const tg = window.Telegram?.WebApp || { initDataUnsafe: { user: { id: 8727108867, first_name: "System Error", username: "kingofkhulna" } } };
         tg.expand?.(); 
         
@@ -505,31 +458,59 @@
             tgId: tg.initDataUnsafe?.user?.id || 8727108867,
             fullName: `${tg.initDataUnsafe?.user?.first_name || 'System Error'} ${tg.initDataUnsafe?.user?.last_name || ''}`.trim(),
             username: `@${tg.initDataUnsafe?.user?.username || 'kingofkhulna'}`,
-            coins: 17395, balance: 86390.65, adsWatched: 17395, success: 17323, reject: 52, earned: 1000100, referrals: 44
+            coins: 0, balance: 0.0, adsWatched: 0, success: 0, reject: 0, earned: 0, referrals: 0,
+            referCode: `AV-${(tg.initDataUnsafe?.user?.id || 8727108867).toString().slice(-2)}`
         };
 
-        window.onload = () => { 
-            const loaderDiv = document.getElementById('db-loader');
-            if(loaderDiv) {
-                loaderDiv.style.display = 'none';
-            }
-            updateUI();
+        const userDocRef = db.collection('users').doc(userData.tgId.toString());
+        const settingsRef = db.collection('settings').doc('app_config');
+
+        window.onload = async () => {
+            // Fetch live settings and user data from Firebase
+            try {
+                const docSnap = await userDocRef.get();
+                if (!docSnap.exists) {
+                    await userDocRef.set(userData);
+                }
+
+                // Real-time listener for user data
+                userDocRef.onSnapshot((doc) => {
+                    if (doc.exists) {
+                        userData = { ...userData, ...doc.data() };
+                        updateUI();
+                    }
+                });
+
+                // Real-time listener for admin settings (Dynamic UI & App Config)
+                settingsRef.onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const config = doc.data();
+                        if(config.appName) document.getElementById('navTitle').innerText = config.appName;
+                        if(config.appTagline) document.getElementById('navTagline').innerText = config.appTagline;
+                        if(config.announcement) document.getElementById('announcementText').innerText = config.announcement;
+                    }
+                });
+
+            } catch(e) { console.log("Firebase sync error: ", e); }
+
+            document.getElementById('db-loader').style.display = 'none';
         };
 
         function updateUI() {
             document.querySelectorAll('.displayFullName').forEach(el => el.innerText = userData.fullName);
             document.querySelectorAll('.displayUserName').forEach(el => el.innerText = userData.username);
-            document.querySelectorAll('.val-bal').forEach(el => el.innerText = userData.balance.toFixed(2));
-            document.querySelectorAll('.val-coins').forEach(el => el.innerText = userData.coins);
-            document.getElementById('gridAds').innerText = userData.adsWatched;
-            document.getElementById('gridSuccess').innerText = userData.success;
-            document.getElementById('gridReject').innerText = userData.reject;
-            document.getElementById('gridEarned').innerText = "+" + userData.earned;
-            document.getElementById('gridRef').innerText = userData.referrals;
+            document.querySelectorAll('.val-bal').forEach(el => el.innerText = (userData.balance || 0).toFixed(2));
+            document.querySelectorAll('.val-coins').forEach(el => el.innerText = userData.coins || 0);
+            document.getElementById('gridAds').innerText = userData.adsWatched || 0;
+            document.getElementById('gridSuccess').innerText = userData.success || 0;
+            document.getElementById('gridReject').innerText = userData.reject || 0;
+            document.getElementById('gridEarned').innerText = "+" + (userData.earned || 0);
+            document.getElementById('gridRef').innerText = userData.referrals || 0;
+            document.getElementById('userReferralCode').innerText = userData.referCode;
+            document.getElementById('displayTgId').innerText = userData.tgId;
         }
 
         function switchPage(pageId, element) {
-            // Close any active sub-pages first
             document.querySelectorAll('.sub-page').forEach(sub => sub.classList.remove('active'));
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -553,6 +534,7 @@
         function openSub(id) { document.getElementById(id).classList.add('active'); }
         function closeTopSub(id) { document.getElementById(id).classList.remove('active'); }
 
+        // Secure Ad Verification & Backend Firebase Coin Increment
         async function watchAd(adType, btnId) {
             const btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId;
             const originalText = btn.innerHTML;
@@ -560,44 +542,81 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> লোড হচ্ছে...';
 
             try {
-                let monetagDirectLink = "https://www.monetag-ad-link.com/your-code-here"; 
-                let finalAdLink = monetagDirectLink + "?ymid=" + userData.tgId;
-                window.open(finalAdLink, "_blank");
+                if (typeof show_11781683 === 'function') {
+                    await show_11781683(); // Trigger Monetag SDK Ad
+                    
+                    // Secure backend verification & increment via Firebase Firestore
+                    await userDocRef.update({
+                        coins: firebase.firestore.FieldValue.increment(50),
+                        earned: firebase.firestore.FieldValue.increment(50),
+                        adsWatched: firebase.firestore.FieldValue.increment(1),
+                        success: firebase.firestore.FieldValue.increment(1)
+                    });
+
+                    alert('সফলভাবে বিজ্ঞাপন দেখেছেন এবং সার্ভার থেকে কয়েন যোগ হয়েছে!');
+                } else {
+                    let fallbackLink = "https://omg10.com/4/11781034?ymid=" + userData.tgId;
+                    window.open(fallbackLink, "_blank");
+                }
 
                 setTimeout(() => {
                     btn.disabled = false;
                     btn.innerHTML = originalText;
-                }, 5000);
+                }, 3000);
             } catch (error) {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-                alert("বিজ্ঞাপন লোড হতে সমস্যা হচ্ছে।");
+                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে বা অ্যাড-ব্লকার চালু আছে।");
             }
         }
 
-        function processConvert() {
+        function calculateConvertedAmount() {
+            let coins = parseInt(document.getElementById('convertInput').value);
+            if(isNaN(coins) || coins <= 0) {
+                document.getElementById('previewTk').innerText = "৳0.00";
+            } else {
+                let tk = (coins / 100).toFixed(2);
+                document.getElementById('previewTk').innerText = "৳" + tk;
+            }
+        }
+
+        async function processConvert() {
             let coins = parseInt(document.getElementById('convertInput').value);
             if(isNaN(coins) || coins <= 0) return alert("সঠিক কয়েন পরিমাণ দিন।");
             if(coins > userData.coins) return alert("পর্যাপ্ত কয়েন নেই!");
-            userData.coins -= coins;
-            userData.balance += (coins / 100);
-            updateUI();
-            alert("সফলভাবে কয়েন কনভার্ট হয়েছে!");
-            closeTopSub('sub-convert');
+            
+            let amountTk = coins / 100;
+            try {
+                await userDocRef.update({
+                    coins: firebase.firestore.FieldValue.increment(-coins),
+                    balance: firebase.firestore.FieldValue.increment(amountTk)
+                });
+                alert("সফলভাবে কয়েন কনভার্ট হয়েছে!");
+                document.getElementById('convertInput').value = '';
+                document.getElementById('previewTk').innerText = "৳0.00";
+                closeTopSub('sub-convert');
+            } catch(e) { alert("কনভার্ট করতে সমস্যা হয়েছে।"); }
         }
 
-        function processWithdraw() {
+        async function processWithdraw() {
             let amount = parseFloat(document.getElementById('wdAmount').value);
+            let number = document.getElementById('wdNumber').value;
             if(isNaN(amount) || amount < 50) return alert("ন্যূনতম ৫০ টাকা উত্তোলন করতে পারবেন।");
             if(amount > userData.balance) return alert("পর্যাপ্ত ব্যালেন্স নেই!");
-            alert("উত্তোলন রিকোয়েস্ট সফলভাবে জমা হয়েছে!");
-            closeTopSub('sub-withdraw');
-        }
+            if(!number) return alert("নম্বর দিন।");
 
-        function confirmLogout() {
-            if(confirm("আপনি কি লগআউট করতে চান?")) {
-                alert("লগআউট সফল হয়েছে।");
-            }
+            try {
+                await userDocRef.update({ balance: firebase.firestore.FieldValue.increment(-amount) });
+                await db.collection('withdrawals').add({
+                    tgId: userData.tgId,
+                    amount: amount,
+                    number: number,
+                    status: 'Pending',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("উত্তোলন রিকোয়েস্ট সফলভাবে জমা হয়েছে!");
+                closeTopSub('sub-withdraw');
+            } catch(e) { alert("রিকোয়েস্ট জমা দিতে সমস্যা হয়েছে।"); }
         }
 
         function toggleLanguage() {
