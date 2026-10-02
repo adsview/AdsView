@@ -240,6 +240,7 @@
                 <div class="ad-container">
                     <h3 class="lang" data-bn="কয়েন আয় করতে বিজ্ঞাপন দেখুন" data-en="Watch Ads to Earn Coins">কয়েন আয় করতে বিজ্ঞাপন দেখুন</h3>
                     <div class="ad-thumbnail"><i class="fa-regular fa-circle-play"></i></div>
+                    <!-- SECURE WATCH AD BUTTON -->
                     <button class="btn-ad" id="watchAdBtn" onclick="watchAd('direct', 'watchAdBtn')">
                         <i class="fa-solid fa-play"></i> <span class="lang" data-bn="বিজ্ঞাপন দেখুন" data-en="Watch Ad">বিজ্ঞাপন দেখুন</span>
                     </button>
@@ -437,7 +438,6 @@
 
     <!-- Firebase & Dynamic Live Sync Script -->
     <script>
-        // Firebase Configuration (আপনার প্রজেক্টের আসল কনফিগারেশন এখানে যুক্ত করুন)
         const firebaseConfig = {
             apiKey: "AIzaSyCgoCysMy9TfAg8JtQq6cScIFONZIgprZ8",
             authDomain: "adsviewbot.firebaseapp.com",
@@ -466,14 +466,12 @@
         const settingsRef = db.collection('settings').doc('app_config');
 
         window.onload = async () => {
-            // Fetch live settings and user data from Firebase
             try {
                 const docSnap = await userDocRef.get();
                 if (!docSnap.exists) {
                     await userDocRef.set(userData);
                 }
 
-                // Real-time listener for user data
                 userDocRef.onSnapshot((doc) => {
                     if (doc.exists) {
                         userData = { ...userData, ...doc.data() };
@@ -481,7 +479,6 @@
                     }
                 });
 
-                // Real-time listener for admin settings (Dynamic UI & App Config)
                 settingsRef.onSnapshot((doc) => {
                     if (doc.exists) {
                         const config = doc.data();
@@ -507,7 +504,6 @@
             document.getElementById('gridEarned').innerText = "+" + (userData.earned || 0);
             document.getElementById('gridRef').innerText = userData.referrals || 0;
             document.getElementById('userReferralCode').innerText = userData.referCode;
-            document.getElementById('displayTgId').innerText = userData.tgId;
         }
 
         function switchPage(pageId, element) {
@@ -534,18 +530,22 @@
         function openSub(id) { document.getElementById(id).classList.add('active'); }
         function closeTopSub(id) { document.getElementById(id).classList.remove('active'); }
 
-        // Secure Ad Verification & Backend Firebase Coin Increment
+        // =========================================================================
+        // SECURE AD VERIFICATION (ফিক্স করা হয়েছে: বিজ্ঞাপন শেষ না হলে পয়েন্ট বাড়বে না)
+        // =========================================================================
         async function watchAd(adType, btnId) {
             const btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId;
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> লোড হচ্ছে...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> বিজ্ঞাপন চলছে...';
 
             try {
                 if (typeof show_11781683 === 'function') {
-                    await show_11781683(); // Trigger Monetag SDK Ad
+                    // ইউজার বিজ্ঞাপন সম্পূর্ণ না দেখে ব্যাক করলে বা কেটে দিলে এই প্রমিস ফুলফিল হবে না 
+                    // এবং catch ব্লকে চলে যাবে।
+                    await show_11781683(); 
                     
-                    // Secure backend verification & increment via Firebase Firestore
+                    // বিজ্ঞাপন দেখা সম্পূর্ণ নিশ্চিত হলেই কেবল ব্যাকএন্ডে কয়েন বা পয়েন্ট যোগ হবে
                     await userDocRef.update({
                         coins: firebase.firestore.FieldValue.increment(50),
                         earned: firebase.firestore.FieldValue.increment(50),
@@ -553,20 +553,16 @@
                         success: firebase.firestore.FieldValue.increment(1)
                     });
 
-                    alert('সফলভাবে বিজ্ঞাপন দেখেছেন এবং সার্ভার থেকে কয়েন যোগ হয়েছে!');
+                    alert('সফলভাবে বিজ্ঞাপন দেখেছেন! আপনার অ্যাকাউন্টে কয়েন যোগ হয়েছে।');
                 } else {
-                    let fallbackLink = "https://omg10.com/4/11781034?ymid=" + userData.tgId;
-                    window.open(fallbackLink, "_blank");
+                    alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে বা অ্যাড-ব্লকার চালু আছে।");
                 }
-
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                }, 3000);
             } catch (error) {
+                // ইউজার মাঝপথে বিজ্ঞাপন কেটে দিলে বা ব্যাক করলে কোনো পয়েন্ট যোগ হবে না
+                alert("বিজ্ঞাপন দেখা সম্পন্ন হয়নি, তাই কোনো পয়েন্ট বা কয়েন যোগ করা হয়নি।");
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-                alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে বা অ্যাড-ব্লকার চালু আছে।");
             }
         }
 
