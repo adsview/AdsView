@@ -240,7 +240,7 @@
                 <div class="ad-container">
                     <h3 class="lang" data-bn="কয়েন আয় করতে বিজ্ঞাপন দেখুন" data-en="Watch Ads to Earn Coins">কয়েন আয় করতে বিজ্ঞাপন দেখুন</h3>
                     <div class="ad-thumbnail"><i class="fa-regular fa-circle-play"></i></div>
-                    <!-- SECURE WATCH AD BUTTON -->
+                    <!-- SECURE AD WATCH BUTTON -->
                     <button class="btn-ad" id="watchAdBtn" onclick="watchAd('direct', 'watchAdBtn')">
                         <i class="fa-solid fa-play"></i> <span class="lang" data-bn="বিজ্ঞাপন দেখুন" data-en="Watch Ad">বিজ্ঞাপন দেখুন</span>
                     </button>
@@ -531,7 +531,7 @@
         function closeTopSub(id) { document.getElementById(id).classList.remove('active'); }
 
         // =========================================================================
-        // SECURE AD VERIFICATION (ফিক্স করা হয়েছে: বিজ্ঞাপন শেষ না হলে পয়েন্ট বাড়বে না)
+        // SECURE AD VERIFICATION (বিজ্ঞাপন শেষ না হলে পয়েন্ট বা কয়েন যোগ হবে না)
         // =========================================================================
         async function watchAd(adType, btnId) {
             const btn = typeof btnId === 'string' ? document.getElementById(btnId) : btnId;
@@ -539,13 +539,19 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> বিজ্ঞাপন চলছে...';
 
+            let adCompleted = false;
+
             try {
                 if (typeof show_11781683 === 'function') {
-                    // ইউজার বিজ্ঞাপন সম্পূর্ণ না দেখে ব্যাক করলে বা কেটে দিলে এই প্রমিস ফুলফিল হবে না 
-                    // এবং catch ব্লকে চলে যাবে।
+                    // ইউজার বিজ্ঞাপন সম্পূর্ণ শেষ না করলে বা মাঝপথে ক্লোজ করলে প্রমিস ফুলফিল হবে না
                     await show_11781683(); 
-                    
-                    // বিজ্ঞাপন দেখা সম্পূর্ণ নিশ্চিত হলেই কেবল ব্যাকএন্ডে কয়েন বা পয়েন্ট যোগ হবে
+                    adCompleted = true;
+                } else {
+                    throw new Error("Ad SDK missing");
+                }
+
+                // শুধুমাত্র অ্যাড সফলভাবে দেখা শেষ হলেই ফায়ারবেজে কয়েন যোগ হবে[span_0](start_span)[span_0](end_span)
+                if (adCompleted) {
                     await userDocRef.update({
                         coins: firebase.firestore.FieldValue.increment(50),
                         earned: firebase.firestore.FieldValue.increment(50),
@@ -553,13 +559,11 @@
                         success: firebase.firestore.FieldValue.increment(1)
                     });
 
-                    alert('সফলভাবে বিজ্ঞাপন দেখেছেন! আপনার অ্যাকাউন্টে কয়েন যোগ হয়েছে।');
-                } else {
-                    alert("বিজ্ঞাপন লোড হতে সমস্যা হয়েছে বা অ্যাড-ব্লকার চালু আছে।");
+                    alert('সফলভাবে বিজ্ঞাপন দেখেছেন এবং সার্ভার থেকে কয়েন যোগ হয়েছে!');
                 }
             } catch (error) {
-                // ইউজার মাঝপথে বিজ্ঞাপন কেটে দিলে বা ব্যাক করলে কোনো পয়েন্ট যোগ হবে না
-                alert("বিজ্ঞাপন দেখা সম্পন্ন হয়নি, তাই কোনো পয়েন্ট বা কয়েন যোগ করা হয়নি।");
+                // বিজ্ঞাপন মাঝপথে কেটে দিলে এখানে আসবে এবং কোনো কয়েন বাড়বে না
+                alert('বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি, তাই কোনো কয়েন যোগ করা হয়নি।');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
