@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#0b5cff">
+<title>AdsView Admin Panel</title>
+
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase SDK (v8 Compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --primary:#0b5cff;
+  --primary2:#1649c7;
+  --bg:#ffffff; /* হোমপেজ ও ব্যাকগ্রাউন্ড সাদা */
+  --card:#ffffff;
+  --text:#172033;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --sidebar:#ffffff;
+  --sidebar-text:#172033;
+  --green:#12b76a;
+  --red:#ef4444;
+  --orange:#f59e0b;
+  --purple:#8b5cf6;
+  --shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+
+body{
+  font-family:Arial,"Noto Sans Bengali",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  height:100vh;
+  overflow:hidden;
+}
+
+button,input,select,textarea{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  width:100%;
+  height:100vh;
+  display:flex;
+  overflow:hidden;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:260px;
+  height:100vh;
+  background:var(--sidebar);
+  color:var(--sidebar-text);
+  flex-shrink:0;
+  overflow-y:auto;
+  transition:.3s;
+  z-index:50;
+  border-right: 1px solid var(--border);
+  box-shadow: 2px 0 15px rgba(0,0,0,0.05);
+  padding-bottom: 20px;
+}
+
+.brand{
+  height:70px;
+  display:flex;
+  align-items:center;
+  padding:0 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.brand-icon{
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:linear-gradient(135deg,#0b5cff,#6c8dff);
+  color: #fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  margin-right:10px;
+}
+
+.brand-text strong{
+  display:block;
+  font-size:15px;
+}
+
+.brand-text small{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.menu-title{
+  color:var(--muted);
+  font-size:10px;
+  padding:15px 15px 5px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+.sidebar-grid-2x2{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:6px;
+  padding: 0 10px;
+}
+
+.menu-item{
+  background: #f8fafc;
+  min-height:55px;
+  padding:8px;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content: center;
+  gap:4px;
+  border-radius:9px;
+  color:var(--text);
+  font-size:11px;
+  text-align: center;
+  transition:.2s;
+  border: 1px solid var(--border);
+}
+
+.menu-item:hover,
+.menu-item.active{
+  background:rgba(11, 92, 255, 0.1);
+  color:var(--primary);
+  border-color: var(--primary);
+}
+
+.menu-icon{
+  font-size:16px;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  flex:1;
+  min-width:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.topbar{
+  height:65px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+  flex-shrink:0;
+}
+
+.topbar-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  background: #f1f4fa;
+  border-radius: 10px;
+  position: relative;
+  transition: 0.2s;
+}
+.topbar-item:hover {
+  background: #e2e8f0;
+}
+
+.topbar-item.blink {
+  animation: iconBlink 1.2s infinite;
+  background: #eff6ff;
+  color: var(--primary);
+}
+@keyframes iconBlink {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(11, 92, 255, 0.4); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(11, 92, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(11, 92, 255, 0); }
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  padding:12px 18px 15px;
+  background: #ffffff;
+}
+
+.page{
+  display:none;
+  height:100%;
+  overflow:hidden;
+}
+
+.page.active{
+  display:block;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* Number Blinking Animations */
+@keyframes blinkGreen { 0% { color: #12b76a; } 50% { color: #022c22; transform: scale(1.05); } 100% { color: #12b76a; } }
+@keyframes blinkRed { 0% { color: #ef4444; } 50% { color: #450a0a; transform: scale(1.05); } 100% { color: #ef4444; } }
+@keyframes blinkPurple { 0% { color: #8b5cf6; } 50% { color: #2e1065; transform: scale(1.05); } 100% { color: #8b5cf6; } }
+@keyframes blinkBlue { 0% { color: #0b5cff; } 50% { color: #1e3a8a; transform: scale(1.05); } 100% { color: #0b5cff; } }
+@keyframes blinkOrange { 0% { color: #f59e0b; } 50% { color: #78350f; transform: scale(1.05); } 100% { color: #f59e0b; } }
+
+.blink-num-1 { animation: blinkGreen 1.5s infinite; }
+.blink-num-2 { animation: blinkRed 1.5s infinite; }
+.blink-num-3 { animation: blinkPurple 1.5s infinite; }
+.blink-num-4 { animation: blinkBlue 1.5s infinite; }
+.blink-num-5 { animation: blinkOrange 1.5s infinite; }
+
+/* 1. System Monitoring Box (White Background, Distinct Color Shape) */
+.monitor-box{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  padding:12px 14px;
+  flex-shrink:0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.monitor-title{
+  text-align:center;
+  color:#334155;
+  font-size:10px;
+  margin-bottom:8px;
+  font-weight:bold;
+}
+
+.monitor-circles{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+}
+
+.monitor-item{
+  text-align:center;
+  cursor: pointer;
+}
+
+.monitor-circle{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:3px solid;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:bold;
+  background: #ffffff;
+  margin:auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.monitor-item:nth-child(1) .monitor-circle{ border-color:#12b76a; }
+.monitor-item:nth-child(2) .monitor-circle{ border-color:#ef4444; }
+.monitor-item:nth-child(3) .monitor-circle{ border-color:#8b5cf6; }
+
+.monitor-item small{
+  display:block;
+  font-size:9px;
+  color:#64748b;
+  margin-top:4px;
+  font-weight: bold;
+}
+
+/* 2. Project Analysis Box (Distinct Color Shape) */
+.project-analysis-box {
+  background: #faf5ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.pa-title {
+  text-align: center;
+  color: #7e22ce;
+  font-size: 10px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.pa-circles {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pa-item {
+  text-align: center;
+  cursor: pointer;
+  flex: 1;
+}
+
+.pa-circle {
+  width: 100%;
+  height: 56px;
+  border-radius: 10px;
+  border: 2px solid #d8b4fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: #ffffff;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+}
+
+.pa-item small {
+  display: block;
+  font-size: 9px;
+  color: #6b21a8;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+/* 3. 6 Menus Container (Distinct Color Shape) */
+.pa-menus-wrapper {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.pa-menu-title {
+  text-align: center;
+  color: #166534;
+  font-size: 9px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.pa-grid-6 {
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+}
+
+.pa-menu-item {
+  text-align: center;
+  cursor: pointer;
+}
+
+.pa-menu-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #86efac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #15803d;
+  background: #ffffff;
+  margin: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.03);
+}
+
+.pa-menu-item small {
+  display: block;
+  font-size: 7px;
+  color: #166534;
+  margin-top: 3px;
+  font-weight: bold;
+}
+
+/* ================= LIVE ACTIVITY ================= */
+
+.live-box{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:10px 12px;
+  box-shadow: var(--shadow);
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.live-head{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+  margin-bottom:6px;
+}
+
+.live-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#12b76a;
+}
+
+.live-head h3{
+  font-size:11px;
+}
+
+.live-head span{
+  font-size:8px;
+  color:#12b76a;
+  margin-left:auto;
+}
+
+.live-window{
+  flex:1;
+  min-height:0;
+  border:1px solid #dfe6f1;
+  border-radius:8px;
+  overflow:hidden;
+  position:relative;
+  background:#fbfcff;
+}
+
+.live-scroll{
+  position:absolute;
+  width:100%;
+  top:0;
+  animation:activityScroll 18s linear infinite;
+}
+
+.live-row{
+  min-height:36px;
+  border-bottom:1px solid #edf0f5;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 8px;
+  font-size:9px;
+  background:#fff;
+}
+
+.live-avatar{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#edf3ff;
+  flex-shrink:0;
+  font-size:9px;
+}
+
+.live-text{
+  flex:1;
+  min-width:0;
+}
+
+.live-text strong{
+  display:block;
+  font-size:9px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.live-text small{
+  color:var(--muted);
+  font-size:7px;
+}
+
+.live-status{
+  font-size:7px;
+  white-space:nowrap;
+  padding:3px 5px;
+  border-radius:4px;
+  background:#edf9f3;
+  color:#12a663;
+}
+
+@keyframes activityScroll{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-50%)}
+}
+
+/* ================= OTHER PANELS ================= */
+
+.panel{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:13px;
+  padding:16px;
+  box-shadow:var(--shadow);
+  height:100%;
+  overflow:auto;
+}
+
+.panel-title{
+  font-size:17px;
+  margin-bottom:14px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:14px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.form-group{
+  margin-bottom:10px;
+}
+
+.form-group.full{
+  grid-column:1/-1;
+}
+
+.form-group label{
+  display:block;
+  font-size:11px;
+  font-weight:bold;
+  margin-bottom:5px;
+}
+
+input,select,textarea{
+  width:100%;
+  border:1px solid #dfe5ef;
+  border-radius:8px;
+  padding:9px 10px;
+  outline:none;
+  font-size:12px;
+  background:#fff;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
+}
+
+.btn{
+  padding:9px 14px;
+  border-radius:8px;
+  background:var(--primary);
+  color:#fff;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.btn.green{background:var(--green)}
+.btn.red{background:var(--red)}
+.btn.orange{background:var(--orange)}
+.btn.gray{background:#eef1f6;color:#344054}
+
+.table-wrap{
+  width: 100%;
+  overflow-x: hidden;
+  border:1px solid var(--border);
+  border-radius:9px;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th,td{
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+th{
+  background:#f7f9fc;
+  font-weight:bold;
+}
+
+.badge{
+  display:inline-block;
+  padding:3px 6px;
+  border-radius:5px;
+  font-size:9px;
+}
+.badge.green{background:#eafaf2;color:#0b9d5b;}
+.badge.orange{background:#fff6df;color:#b97900;}
+.badge.red{background:#fff0f0;color:#d63030;}
+.badge.gray{background:#f1f5f9;color:#64748b;}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 10px;
+}
+.modal-box {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
+  overflow-y: auto;
+}
+.modal-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  background: #f1f4fa;
+  border: none;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-grid-4x4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+  margin-bottom: 15px;
+}
+.user-grid-cell {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 4px;
+  text-align: center;
+}
+.user-grid-cell small {
+  display: block;
+  font-size: 8px;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.user-grid-cell strong {
+  font-size: 10px;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.search-box-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.search-box-wrap input {
+  padding-right: 30px;
+}
+.search-clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+}
+
+.mobile-nav{
+  display:none;
+}
+
+body.dark{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --sidebar:#1e293b;
+  --sidebar-text:#f8fafc;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --border:#334155;
+  --shadow:0 5px 20px rgba(0,0,0,.3);
+}
+
+body.dark .topbar,
+body.dark .monitor-box,
+body.dark .project-analysis-box,
+body.dark .pa-menus-wrapper,
+body.dark .live-box,
+body.dark .panel,
+body.dark .card,
+body.dark .pa-circle,
+body.dark .monitor-circle,
+body.dark .pa-menu-circle,
+body.dark .live-row,
+body.dark input,
+body.dark select,
+body.dark textarea,
+body.dark .modal-box,
+body.dark .user-grid-cell,
+body.dark .menu-item{
+  background:#1e293b;
+  color:#f8fafc;
+}
+
+body.dark .live-window{
+  background:#0f172a;
+  border-color:#334155;
+}
+
+body.dark th{
+  background:#334155;
+}
+
+@media(max-width:900px){
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    top:0;
+    bottom:0;
+  }
+  .sidebar.open{
+    left:0;
+  }
+  .content{
+    padding:10px;
+  }
+}
+
+@media(max-width:650px){
+  .topbar{
+    height:55px;
+    padding:0 10px;
+  }
+  .page-title{
+    font-size:13px;
+  }
+  .content{
+    padding:6px;
+    padding-bottom:60px;
+  }
+  .dashboard{
+    gap:4px;
+  }
+  .monitor-circles{
+    gap:25px;
+  }
+  .monitor-circle{
+    width:42px;
+    height:42px;
+    font-size:11px;
+  }
+  .pa-circles {
+    gap: 12px;
+  }
+  .pa-circle {
+    height: 48px;
+    font-size: 12px;
+  }
+  .pa-menu-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+  .mobile-nav{
+    display:flex;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:55px;
+    background:#fff;
+    border-top:1px solid var(--border);
+    z-index:100;
+    justify-content:space-around;
+  }
+  .mobile-nav button{
+    background:transparent;
+    color:#7c879b;
+    font-size:9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    min-width:55px;
+  }
+  .mobile-nav button span{
+    font-size:16px;
+  }
+  .mobile-nav button.active{
+    color:var(--primary);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-icon">💎</div>
+    <div class="brand-text">
+      <strong>AdsView Admin</strong>
+      <small>TELEGRAM MINI APP</small>
+    </div>
+  </div>
+
+  <div class="menu-title" data-i18n="dash_title">ড্যাশবোর্ড</div>
+  <div style="padding:0 10px; margin-bottom:8px;">
+    <div class="menu-item active" data-page="dashboard" style="width:100%; min-height:45px; flex-direction:row; justify-content:flex-start; padding-left:15px;">
+      <span class="menu-icon">🏠</span> <span data-i18n="dashboard">ড্যাশবোর্ড</span>
+    </div>
+  </div>
+
+  <div class="menu-title" data-i18n="main_menu">MAIN</div>
+  <div class="sidebar-grid-2x2">
+    <div class="menu-item" data-page="users">
+      <span class="menu-icon">👥</span> <span data-i18n="users">ইউজার</span>
+    </div>
+    <div class="menu-item" data-page="livechat">
+      <span class="menu-icon">💬</span> <span data-i18n="livechat">লাইভ চ্যাট</span>
+    </div>
+    <div class="menu-item" data-page="rules">
+      <span class="menu-icon">📜</span> <span data-i18n="rules">রুলস</span>
+    </div>
+    <div class="menu-item" data-page="withdraw">
+      <span class="menu-icon">💸</span> <span data-i18n="withdraw">উত্তোলন</span>
+    </div>
+  </div>
+
+  <div class="menu-title" data-i18n="monetization">MONETIZATION</div>
+  <div class="sidebar-grid-2x2">
+    <div class="menu-item" data-page="ads">
+      <span class="menu-icon">📢</span> <span data-i18n="ads_manager">Ads Manager</span>
+    </div>
+    <div class="menu-item" data-page="reports">
+      <span class="menu-icon">📊</span> <span data-i18n="reports">Reports</span>
+    </div>
+  </div>
+
+  <div class="menu-title" data-i18n="system">SYSTEM</div>
+  <div class="sidebar-grid-2x2">
+    <div class="menu-item" data-page="bot">
+      <span class="menu-icon">🤖</span> <span data-i18n="bot">Telegram Bot</span>
+    </div>
+    <div class="menu-item" data-page="miniapp">
+      <span class="menu-icon">📱</span> <span data-i18n="miniapp">Mini App</span>
+    </div>
+    <div class="menu-item" data-page="settings" style="grid-column: span 2;">
+      <span class="menu-icon">⚙️</span> <span data-i18n="settings">Settings</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+<header class="topbar">
+  <div class="topbar-item" id="menuToggle" title="Menu">
+    <i class="fa-solid fa-bars"></i>
+  </div>
+  <div class="topbar-item" id="topChatBtn" onclick="openPage('livechat')" title="Live Chat" style="width: auto; padding: 0 12px; gap: 6px; font-size: 13px; font-weight: bold; background: #0b5cff; color: #fff;">
+    <i class="fa-solid fa-comments"></i>
+    <span data-i18n="livechat">লাইভ চ্যাট</span>
+    <span id="topUnreadBadge" style="background:#ef4444; color:#fff; padding:1px 5px; border-radius:10px; font-size:9px;">0</span>
+  </div>
+  <div class="topbar-item" onclick="toggleLanguage()" title="Change Language">
+    <i class="fa-solid fa-globe"></i>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<section class="page active" id="dashboard">
+<div class="dashboard">
+
+<!-- 1. SYSTEM MONITORING BOX (Only Numbers Blinking) -->
+<div class="monitor-box">
+  <div class="monitor-title" data-i18n="sys_monitoring">SYSTEM MONITORING (REAL-TIME DB)</div>
+  <div class="monitor-circles">
+    <div class="monitor-item" onclick="openPage('users')">
+      <div class="monitor-circle"><span class="blink-num-1" id="monitorActiveUsers">0</span></div>
+      <small data-i18n="active_users">Active Users</small>
+    </div>
+    <div class="monitor-item">
+      <div class="monitor-circle"><span class="blink-num-2" id="monitorDupIp">0</span></div>
+      <small data-i18n="dup_ip">Duplicate IP</small>
+    </div>
+    <div class="monitor-item" onclick="openPage('reports')">
+      <div class="monitor-circle"><span class="blink-num-3" id="monitorProcess">100%</span></div>
+      <small data-i18n="db_sync">Database Sync</small>
+    </div>
+  </div>
+</div>
+
+<!-- 2. PROJECT ANALYSIS BOX (Only Numbers Blinking) -->
+<div class="project-analysis-box">
+  <div class="pa-title" data-i18n="project_analysis">PROJECT ANALYSIS & REWARD METRICS</div>
+  <div class="pa-circles">
+    <div class="pa-item" onclick="openPage('reports')">
+      <div class="pa-circle"><span class="blink-num-4" id="analyticsAdCount">0</span></div>
+      <small data-i18n="ad_views">Ad Views</small>
+    </div>
+    <div class="pa-item" onclick="openPage('users')">
+      <div class="pa-circle"><span class="blink-num-1" id="analyticsRefCount" style="color:#059669;">0</span></div>
+      <small data-i18n="referrals">Referrals</small>
+    </div>
+    <div class="pa-item" onclick="openPage('withdraw')">
+      <div class="pa-circle"><span class="blink-num-5" id="analyticsWithdrawCount" style="color:#d97706;">0</span></div>
+      <small data-i18n="withdrawals">Withdrawals</small>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 6 MENUS CONTAINER (Only Numbers Blinking) -->
+<div class="pa-menus-wrapper">
+  <div class="pa-menu-title" data-i18n="menu_breakdown">PROJECT METRICS BREAKDOWN</div>
+  <div class="pa-grid-6">
+    <div class="pa-menu-item" onclick="openPage('users')">
+      <div class="pa-menu-circle"><i class="fa-solid fa-users"></i></div>
+      <strong class="blink-num-1" id="paTotalUser" style="font-size:10px; display:block; margin-top:2px;">0</strong>
+      <small data-i18n="total_user">Total User</small>
+    </div>
+    <div class="pa-menu-item" onclick="openPage('reports')">
+      <div class="pa-menu-circle" style="color:#2563eb;"><i class="fa-solid fa-rectangle-ad"></i></div>
+      <strong class="blink-num-2" id="paTotalAds" style="font-size:10px; display:block; margin-top:2px;">0</strong>
+      <small data-i18n="total_ads">Total Ads</small>
+    </div>
+    <div class="pa-menu-item" onclick="openActiveAdsModal()">
+      <div class="pa-menu-circle" style="color:#e11d48;"><i class="fa-solid fa-tower-broadcast"></i></div>
+      <strong class="blink-num-3" id="paLiveAds" style="font-size:10px; display:block; margin-top:2px;">0</strong>
+      <small data-i18n="live_ads">Live Ads</small>
+    </div>
+    <div class="pa-menu-item" onclick="openPage('reports')">
+      <div class="pa-menu-circle" style="color:#d97706;"><i class="fa-solid fa-sack-dollar"></i></div>
+      <strong class="blink-num-4" id="paTotalEarn" style="font-size:10px; display:block; margin-top:2px;">৳0</strong>
+      <small data-i18n="total_earn">Total Earn</small>
+    </div>
+    <div class="pa-menu-item" onclick="openPage('reports')">
+      <div class="pa-menu-circle" style="color:#0284c7;"><i class="fa-solid fa-eye"></i></div>
+      <strong class="blink-num-5" id="paTotalViews" style="font-size:10px; display:block; margin-top:2px;">0</strong>
+      <small data-i18n="total_views">Total Views</small>
+    </div>
+    <div class="pa-menu-item" onclick="openPage('withdraw')">
+      <div class="pa-menu-circle" style="color:#7e22ce;"><i class="fa-solid fa-money-bill-transfer"></i></div>
+      <strong class="blink-num-1" id="paTotalWd" style="font-size:10px; display:block; margin-top:2px;">৳0</strong>
+      <small data-i18n="total_withdraw">Total Withdraw</small>
+    </div>
+  </div>
+</div>
+
+<!-- 4. LIVE ACTIVITY -->
+<div class="live-box">
+  <div class="live-head">
+    <div class="live-dot"></div>
+    <h3 data-i18n="live_activity">Live Activity (Firestore Feed)</h3>
+    <span>● LIVE</span>
+  </div>
+  <div class="live-window">
+    <div class="live-scroll" id="liveScrollContainer">
+      <div class="live-row">
+        <div class="live-avatar">🔄</div>
+        <div class="live-text">
+          <strong>Connecting to Firebase live feed...</strong>
+          <small>Please wait</small>
+        </div>
+        <div class="live-status">Sync</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</section>
+
+<!-- USERS (Coin Balance instead of Number column) -->
+<section class="page" id="users">
+<div class="panel">
+  <h2 class="panel-title" data-i18n="user_mgt">👥 Users Management</h2>
+
+  <div style="display:flex; gap:6px; margin-bottom:10px;">
+    <button class="btn" style="flex:1; font-size:10px; padding:6px;" onclick="filterUserList('total')" data-i18n="f_total">টোটাল ইউজার</button>
+    <button class="btn green" style="flex:1; font-size:10px; padding:6px;" onclick="filterUserList('active')" data-i18n="f_active">একটিভ ইউজার</button>
+    <button class="btn red" style="flex:1; font-size:10px; padding:6px;" onclick="filterUserList('blocked')" data-i18n="f_blocked">ব্লক/সাসপেন্ড</button>
+  </div>
+
+  <div class="search-box-wrap">
+    <input id="userSearch" placeholder="🔎 Search user..." oninput="searchUsers()" autocomplete="off">
+    <button class="search-clear-btn" id="searchClearBtn" onclick="clearUserSearch()">×</button>
+  </div>
+
+  <div class="table-wrap">
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th style="width:25%; background:#e0f2fe; color:#0369a1;" data-i18n="col_id">ID</th>
+        <th style="width:30%; background:#d1fae5; color:#065f46;" data-i18n="col_name">Name</th>
+        <th style="width:25%; background:#fef3c7; color:#b45309;" data-i18n="col_balance">Balance</th>
+        <th style="width:20%; background:#f3e8ff; color:#6b21a8;">Coin Bal</th>
+      </tr>
+    </thead>
+    <tbody id="usersTableBody">
+      <tr><td colspan="4" style="text-align:center;">Loading users...</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- LIVE CHAT -->
+<section class="page" id="livechat">
+<div class="panel">
+  <h2 class="panel-title" data-i18n="livechat_panel">💬 Live Chat Management</h2>
+  <div style="display:flex; gap:5px; margin-bottom:12px; flex-wrap:wrap;">
+    <button class="btn" style="font-size:10px; padding:5px 8px;" onclick="filterChat('all')" data-i18n="chat_all">সব মেসেজ</button>
+    <button class="btn orange" style="font-size:10px; padding:5px 8px;" onclick="filterChat('unread')" data-i18n="chat_unread">অপঠিত</button>
+    <button class="btn green" style="font-size:10px; padding:5px 8px;" onclick="filterChat('conversation')" data-i18n="chat_conv">কথোপকথন</button>
+    <button class="btn gray" style="font-size:10px; padding:5px 8px;" onclick="filterChat('resolved')" data-i18n="chat_resolved">সমাধান</button>
+  </div>
+  <div id="chatMessagesList" style="display:flex; flex-direction:column; gap:8px;">
+    <p style="text-align:center; color:var(--muted);">কোনো মেসেজ নেই।</p>
+  </div>
+</div>
+</section>
+
+<!-- RULES -->
+<section class="page" id="rules">
+<div class="panel">
+  <h2 class="panel-title" data-i18n="rules_panel">📜 Rules & Coin Configuration</h2>
+  <div style="display:flex; gap:5px; margin-bottom:12px;">
+    <button class="btn" style="font-size:10px;" onclick="switchRuleTab('rules')" data-i18n="r_rules">নিয়ম</button>
+    <button class="btn gray" style="font-size:10px;" onclick="switchRuleTab('refer')" data-i18n="r_refer">রেফার</button>
+    <button class="btn gray" style="font-size:10px;" onclick="switchRuleTab('ads')" data-i18n="r_ads">বিজ্ঞাপন</button>
+    <button class="btn gray" style="font-size:10px;" onclick="switchRuleTab('reward')" data-i18n="r_reward">রিওয়ার্ড</button>
+  </div>
+  <div id="ruleTabContent" style="background:#fff; border:2px solid var(--primary); border-radius:10px; padding:12px;">
+    <h4 style="margin-bottom:8px; font-size:13px;" data-i18n="edit_rules">নিয়মকানুন ও কয়েন নির্ধারণ</h4>
+    <div class="form-group">
+      <label data-i18n="lbl_coin_rate">প্রতি বিজ্ঞাপন কয়েন রেট</label>
+      <input id="ruleCoinRate" type="number" value="50">
+    </div>
+    <div class="form-group">
+      <label data-i18n="lbl_terms">মূল নিয়মকানুন বিবরণ</label>
+      <textarea id="ruleTerms" placeholder="অ্যাপের নিয়মাবলী...">প্রতিদিন নিয়মিত বিজ্ঞাপন দেখে রিওয়ার্ড অর্জন করুন।</textarea>
+    </div>
+    <button class="btn" onclick="saveRulesConfig()" data-i18n="btn_save_rules">সঞ্চয় করুন</button>
+  </div>
+</div>
+</section>
+
+<!-- WITHDRAW -->
+<section class="page" id="withdraw">
+<div class="panel">
+  <h2 class="panel-title" data-i18n="withdraw_mgt">💸 Withdrawal Management</h2>
+  <div style="display:flex; gap:6px; margin-bottom:12px;">
+    <button class="btn" style="flex:1; font-size:10px; padding:6px;" onclick="filterWithdrawTab('all')" data-i18n="w_req">রিকুয়েষ্ট</button>
+    <button class="btn orange" style="flex:1; font-size:10px; padding:6px;" onclick="filterWithdrawTab('Pending')" data-i18n="w_pen">পেন্ডিং</button>
+    <button class="btn red" style="flex:1; font-size:10px; padding:6px;" onclick="filterWithdrawTab('Rejected')" data-i18n="w_rej">রিজেক্ট</button>
+  </div>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:20%;" data-i18n="col_reqid">Req ID</th>
+        <th style="width:25%;" data-i18n="col_user">User</th>
+        <th style="width:20%;" data-i18n="col_amount">Amount</th>
+        <th style="width:15%;" data-i18n="col_status">Status</th>
+        <th style="width:15%;" data-i18n="col_action">Action</th>
+      </tr>
+    </thead>
+    <tbody id="withdrawBody">
+      <tr><td colspan="5" style="text-align:center;">Loading requests...</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- ADS MANAGER -->
+<section class="page" id="ads">
+<div class="panel">
+  <h2 class="panel-title" data-i18n="ads_mgr">📢 Ads Manager</h2>
+  <div style="display:flex; gap:8px; margin-bottom:12px;">
+    <button class="btn" id="adsTabListBtn" onclick="switchAdsSubTab('list')" data-i18n="ads_list">বিজ্ঞাপন তালিকা</button>
+    <button class="btn gray" id="adsTabNewBtn" onclick="switchAdsSubTab('new')" data-i18n="ads_new">নতুন বিজ্ঞাপন</button>
+  </div>
+  <div id="adsSubTabList">
+    <div class="ad-list" id="adList"><p style="text-align:center; color:var(--muted);">বিজ্ঞাপন লোড হচ্ছে...</p></div>
+  </div>
+  <div id="adsSubTabNew" style="display:none;">
+    <form id="adForm">
+      <div class="form-grid">
+        <div class="form-group"><label>Ad Network</label><input id="networkName" value="Monetag" readonly></div>
+        <div class="form-group"><label>Ad Title</label><input id="adTitle" placeholder="যেমন: Watch & Earn"></div>
+        <div class="form-group full"><label>Targeted / Direct URL</label><input id="directUrl" placeholder="https://..."></div>
+        <div class="form-group full"><label>Banner / Image URL</label><input id="imageUrl" placeholder="https://..."></div>
+        <div class="form-group full"><label>Ad Code / SDK Script</label><textarea id="codeJs" placeholder="JavaScript SDK..." style="min-height:50px;"></textarea></div>
+        <div class="form-group"><label>Status</label><select id="adStatus"><option value="active">Active (Live)</option><option value="paused">Paused (Hide)</option></select></div>
+      </div>
+      <button class="btn" type="submit" data-i18n="save_ad">💾 Save & Publish Ad</button>
+    </form>
+  </div>
+</div>
+</section>
+
+<!-- REPORTS & SETTINGS -->
+<section class="page" id="reports"><div class="panel"><h2 class="panel-title" data-i18n="reports">📊 Reports & Analytics</h2><p>Analytics reports.</p></div></section>
+<section class="page" id="bot"><div class="panel"><h2 class="panel-title">🤖 Telegram Bot</h2><p>Bot configuration.</p></div></section>
+<section class="page" id="miniapp"><div class="panel"><h2 class="panel-title">📱 Telegram Mini App</h2><p>Mini app settings.</p></div></section>
+<section class="page" id="settings"><div class="panel"><h2 class="panel-title">⚙️ System Settings</h2>
+  <div class="form-group"><label>Night/Day Mode Toggle</label><button class="btn gray" id="settingDarkBtn">Toggle Night/Day Mode</button></div>
+</div></section>
+
+</div>
+</main>
+
+</div>
+
+<!-- MODAL USER DETAILS -->
+<div class="modal-overlay" id="userModal" onclick="checkBackdropClose(event, 'userModal')">
+  <div class="modal-box" id="userModalBox">
+    <button class="modal-close" onclick="closeUserModal()">×</button>
+    <h3 style="margin-bottom:8px; font-size:14px; color:var(--primary);">👤 User Full Information</h3>
+    <div class="modal-body" id="modalUserContent"></div>
+    <div style="margin-top:12px; display:flex; gap:6px;">
+      <button class="btn green" style="flex:1;" onclick="updateUserStatusModal('Active')">Active</button>
+      <button class="btn orange" style="flex:1;" onclick="updateUserStatusModal('Suspended')">Suspend</button>
+      <button class="btn red" style="flex:1;" onclick="updateUserStatusModal('Blocked')">Block</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL WITHDRAW REVIEW -->
+<div class="modal-overlay" id="withdrawModal" onclick="checkBackdropClose(event, 'withdrawModal')">
+  <div class="modal-box" id="withdrawModalBox">
+    <button class="modal-close" onclick="closeWithdrawModal()">×</button>
+    <h3 style="margin-bottom:8px; font-size:14px; color:var(--primary);">💸 Withdraw Review & Action</h3>
+    <div class="modal-body" id="modalWithdrawContent"></div>
+    <div style="margin-top:10px;">
+      <label style="font-size:11px; font-weight:bold;">রিজেক্ট বা পেন্ডিংয়ের কারণ (Reason):</label>
+      <input id="wdReasonInput" class="form-control" placeholder="কারণ লিখুন..." style="margin-top:4px;">
+    </div>
+    <div style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">
+      <button class="btn green" style="flex:1;" onclick="setWithdrawStatusAction('Paid')">Approve (সবুজ)</button>
+      <button class="btn gray" style="flex:1; background:#94a3b8; color:#fff;" onclick="setWithdrawStatusAction('Processing')">Processing (এশ)</button>
+      <button class="btn orange" style="flex:1;" onclick="setWithdrawStatusAction('Pending')">Pending (হলুদ)</button>
+      <button class="btn red" style="flex:1;" onclick="setWithdrawStatusAction('Rejected')">Reject (লাল)</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACTIVE ADS -->
+<div class="modal-overlay" id="activeAdsModal" onclick="checkBackdropClose(event, 'activeAdsModal')">
+  <div class="modal-box" id="activeAdsModalBox" style="max-width: 450px; max-height: 80vh; overflow-y: auto;">
+    <button class="modal-close" onclick="closeActiveAdsModal()">×</button>
+    <h3 style="margin-bottom:12px; font-size:15px; color:var(--primary);">📢 Live Active Ads List</h3>
+    <div class="modal-body" id="modalActiveAdsContent"><p>Loading...</p></div>
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav">
+<button class="active" data-page="dashboard"><span>🏠</span>Home</button>
+<button data-page="ads"><span>📢</span>Ads</button>
+<button data-page="settings"><span>⚙️</span>Interface</button>
+</nav>
+
+<!-- JAVASCRIPT & FIREBASE SYNC -->
+<script>
+let currentLang = 'bn';
+const translations = {
+  bn: {
+    dash_title: "ড্যাশবোর্ড", dashboard: "ড্যাশবোর্ড", main_menu: "MAIN", users: "ইউজার", livechat: "লাইভ চ্যাট", rules: "রুলস", withdraw: "উত্তোলন", monetization: "MONETIZATION", ads_manager: "Ads Manager", reports: "Reports", system: "SYSTEM", bot: "Telegram Bot", miniapp: "Mini App", settings: "Settings", project_analysis: "PROJECT ANALYSIS & REWARD METRICS", menu_breakdown: "PROJECT METRICS BREAKDOWN", total_user: "Total User", total_ads: "Total Ads", live_ads: "Live Ads", total_earn: "Total Earn", total_views: "Total Views", total_withdraw: "Total Withdraw", sys_monitoring: "SYSTEM MONITORING (REAL-TIME DB)", active_users: "Active Users", dup_ip: "Duplicate IP", db_sync: "Database Sync", live_activity: "Live Activity (Firestore Feed)", user_mgt: "👥 Users Management", f_total: "টোটাল ইউজার", f_active: "একটিভ ইউজার", f_blocked: "ব্লক/সাসপেন্ড", col_id: "ID", col_name: "Name", col_balance: "Balance", col_number: "Coin Bal", livechat_panel: "💬 Live Chat Management", chat_all: "সব মেসেজ", chat_unread: "অপঠিত", chat_conv: "কথোপকথন", chat_resolved: "সমাধান", rules_panel: "📜 Rules & Coin Configuration", r_rules: "নিয়ম", r_refer: "রেফার", r_ads: "বিজ্ঞাপন", r_reward: "রিওয়ার্ড", edit_rules: "নিয়মকানুন ও কয়েন নির্ধারণ", lbl_coin_rate: "প্রতি বিজ্ঞাপন কয়েন রেট", lbl_terms: "মূল নিয়মকানুন বিবরণ", btn_save_rules: "সঞ্চয় করুন", withdraw_mgt: "💸 Withdrawal Management", w_req: "রিকুয়েষ্ট", w_pen: "পেন্ডিং", w_rej: "রিজেক্ট", col_reqid: "Req ID", col_user: "User", col_amount: "Amount", col_status: "Status", col_action: "Action", ads_mgr: "📢 Ads Manager", ads_list: "বিজ্ঞাপন তালিকা", ads_new: "নতুন বিজ্ঞাপন", save_ad: "💾 Save & Publish Ad", reports: "📊 Reports & Analytics", total_earnings: "Total Earnings", reg_users: "Registered Users", ad_comps: "Ad Completions"
+  },
+  en: {
+    dash_title: "Dashboard", dashboard: "Dashboard", main_menu: "MAIN", users: "Users", livechat: "Live Chat", rules: "Rules", withdraw: "Withdraw", monetization: "MONETIZATION", ads_manager: "Ads Manager", reports: "Reports", system: "SYSTEM", bot: "Telegram Bot", miniapp: "Mini App", settings: "Settings", project_analysis: "PROJECT ANALYSIS & REWARD METRICS", menu_breakdown: "PROJECT METRICS BREAKDOWN", total_user: "Total User", total_ads: "Total Ads", live_ads: "Live Ads", total_earn: "Total Earn", total_views: "Total Views", total_withdraw: "Total Withdraw", sys_monitoring: "SYSTEM MONITORING (REAL-TIME DB)", active_users: "Active Users", dup_ip: "Duplicate IP", db_sync: "Database Sync", live_activity: "Live Activity (Firestore Feed)", user_mgt: "👥 Users Management", f_total: "Total Users", f_active: "Active Users", f_blocked: "Blocked/Suspended", col_id: "ID", col_name: "Name", col_balance: "Balance", col_number: "Coin Bal", livechat_panel: "💬 Live Chat Management", chat_all: "All Messages", chat_unread: "Unread", chat_conv: "Conversation", chat_resolved: "Resolved", rules_panel: "📜 Rules & Coin Configuration", r_rules: "Rules", r_refer: "Referral", r_ads: "Ads", r_reward: "Reward", edit_rules: "Rules & Coin Setup", lbl_coin_rate: "Coin Rate Per Ad", lbl_terms: "Terms Description", btn_save_rules: "Save Rules", withdraw_mgt: "💸 Withdrawal Management", w_req: "Requests", w_pen: "Pending", w_rej: "Rejected", col_reqid: "Req ID", col_user: "User", col_amount: "Amount", col_status: "Status", col_action: "Action", ads_mgr: "📢 Ads Manager", ads_list: "Ads List", ads_new: "New Ad", save_ad: "💾 Save & Publish Ad", reports: "📊 Reports & Analytics", total_earnings: "Total Earnings", reg_users: "Registered Users", ad_comps: "Ad Completions"
+  }
+};
+
+function toggleLanguage() {
+  currentLang = currentLang === 'bn' ? 'en' : 'bn';
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    let key = el.getAttribute("data-i18n");
+    if(translations[currentLang][key]) {
+      el.textContent = translations[currentLang][key];
+    }
+  });
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCgoCysMy9TfAg8JtQq6cScIFONZIgprZ8",
+  authDomain: "adsviewbot.firebaseapp.com",
+  projectId: "adsviewbot",
+  storageBucket: "adsviewbot.firebasestorage.app",
+  messagingSenderId: "575329461125",
+  appId: "1:575329461125:web:d6e603e651d611d92d1aec"
+};
+
+if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+const db = firebase.firestore();
+
+let activeSelectedDocId = null;
+let activeSelectedWdId = null;
+let rawUsersCache = [];
+let rawWithdrawalsCache = [];
+let rawChatsCache = [];
+
+function initLiveSync() {
+  db.collection("users").onSnapshot((snapshot) => {
+    let totalUsers = snapshot.size;
+    let activeUsers = 0;
+    let totalEarned = 0;
+    let totalAds = 0;
+    rawUsersCache = [];
+
+    snapshot.forEach((doc) => {
+      let u = doc.data();
+      u.docId = doc.id;
+      rawUsersCache.push(u);
+      let ads = u.adsWatched || 0;
+      let earned = u.earned || 0;
+      if ((u.status || "Active") === "Active" && ads > 0) activeUsers++;
+      totalEarned += earned;
+      totalAds += ads;
+    });
+
+    document.getElementById("paTotalUser").textContent = totalUsers.toLocaleString();
+    document.getElementById("monitorActiveUsers").textContent = activeUsers;
+    document.getElementById("reportEarnings").textContent = "৳" + totalEarned.toLocaleString();
+    document.getElementById("reportUsers").textContent = totalUsers;
+    document.getElementById("reportAds").textContent = totalAds.toLocaleString();
+    document.getElementById("paTotalAds").textContent = totalAds.toLocaleString();
+    document.getElementById("paTotalViews").textContent = totalAds.toLocaleString();
+    document.getElementById("paTotalEarn").textContent = "৳" + totalEarned.toLocaleString();
+    document.getElementById("analyticsAdCount").textContent = totalAds;
+    document.getElementById("analyticsRefCount").textContent = totalUsers;
+
+    renderUserTable(rawUsersCache);
+  }, (error) => {
+    console.error("Firebase user sync error:", error);
+    document.getElementById("usersTableBody").innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">ডেটা লোড করতে সমস্যা হয়েছে।</td></tr>`;
+  });
+
+  db.collection("withdrawals").onSnapshot((snapshot) => {
+    let totalWithdraw = 0;
+    let withdrawCount = 0;
+    rawWithdrawalsCache = [];
+
+    snapshot.forEach((doc) => {
+      let w = doc.data();
+      w.docId = doc.id;
+      rawWithdrawalsCache.push(w);
+      if(w.status === "Paid") totalWithdraw += (w.amount || 0);
+      withdrawCount++;
+    });
+
+    document.getElementById("paTotalWd").textContent = "৳" + totalWithdraw.toLocaleString();
+    document.getElementById("analyticsWithdrawCount").textContent = withdrawCount;
+
+    renderWithdrawTable(rawWithdrawalsCache);
+  });
+
+  db.collection("live_chats").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+    let unreadCount = 0;
+    rawChatsCache = [];
+    let chatHtml = "";
+
+    snapshot.forEach((doc) => {
+      let c = doc.data();
+      c.docId = doc.id;
+      rawChatsCache.push(c);
+      if(!c.readMark) unreadCount++;
+
+      chatHtml += `
+        <div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong>${c.name || 'User'} (${c.subject || 'General'})</strong><br>
+            <small style="color:var(--muted);">Time: ${c.time || 'Just now'}</small>
+            <p style="font-size:11px; margin-top:4px;">${c.message || ''}</p>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <button class="btn green" style="font-size:9px; padding:4px;" onclick="markChatRead('${c.docId}', true)">Read Mark</button>
+            <button class="btn orange" style="font-size:9px; padding:4px;" onclick="replyChatPrompt('${c.docId}')">Reply</button>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById("topUnreadBadge").textContent = unreadCount;
+    let topChatBtn = document.getElementById("topChatBtn");
+    if(unreadCount > 0) {
+      topChatBtn.classList.add("blink");
+    } else {
+      topChatBtn.classList.remove("blink");
+    }
+    document.getElementById("chatMessagesList").innerHTML = chatHtml || '<p style="text-align:center; color:var(--muted);">কোনো মেসেজ নেই।</p>';
+  });
+
+  db.collection("ads_manager").onSnapshot((snapshot) => {
+    let activeCount = 0;
+    let adsListHtml = "";
+    snapshot.forEach((doc) => {
+      let ad = doc.data();
+      let docId = doc.id;
+      if(ad.status === "active") activeCount++;
+
+      adsListHtml += `
+        <div class="ad-item">
+          <div style="display:flex; align-items:center;">
+            <img src="${ad.image || 'https://via.placeholder.com/40'}" style="width:35px; height:35px; object-fit:cover; border-radius:5px; margin-right:8px;">
+            <div>
+              <strong>${escapeHtml(ad.title || "Ad")}</strong>
+              <small>${ad.network || 'Monetag'} • Active</small>
+            </div>
+          </div>
+          <div style="display:flex;gap:5px">
+            <button class="btn gray" onclick="toggleAdStatus('${docId}', '${ad.status}')">${ad.status==="active"?"Hide":"Show"}</button>
+            <button class="btn red" onclick="deleteAdFirestore('${docId}')">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+    document.getElementById("activeAds").textContent = activeCount;
+    document.getElementById("paLiveAds").textContent = activeCount;
+    document.getElementById("adList").innerHTML = adsListHtml || "<p style='text-align:center; color:var(--muted);'>কোনো বিজ্ঞাপন নেই।</p>";
+    window.cachedActiveAdsHtml = adsListHtml || "<p>কোনো লাইভ এড নেই।</p>";
+  });
+
+  db.collection("withdrawals").orderBy("timestamp", "desc").limit(10).onSnapshot((snapshot) => {
+    let feedHtml = "";
+    snapshot.forEach((doc) => {
+      let w = doc.data();
+      feedHtml += `
+        <div class="live-row">
+          <div class="live-avatar">💸</div>
+          <div class="live-text">
+            <strong>User #${w.tgId || 'Unknown'} withdrawal request ৳${w.amount}</strong>
+            <small>Status: ${w.status || 'Pending'}</small>
+          </div>
+          <div class="live-status">${w.status || 'Pending'}</div>
+        </div>
+      `;
+    });
+    document.getElementById("liveScrollContainer").innerHTML = feedHtml ? (feedHtml + feedHtml) : `<div class="live-row"><div class="live-avatar">ℹ️</div><div class="live-text"><strong>No live activity</strong></div></div>`;
+  });
+}
+
+function renderUserTable(users) {
+  let tableHtml = "";
+  users.forEach((u) => {
+    let uid = u.tgId || u.docId;
+    let name = u.fullName || "User";
+    let bal = u.balance || 0;
+    let coinBal = u.coins || 0; // Coin balance instead of number
+
+    tableHtml += `
+      <tr style="cursor:pointer;" onclick='showUserModal("${u.docId}", ${JSON.stringify(u)})'>
+        <td style="background:#e0f2fe; color:#0369a1; font-weight:bold;">${uid}</td>
+        <td style="background:#d1fae5; color:#065f46;">${name}</td>
+        <td style="background:#fef3c7; color:#b45309;">৳${bal.toFixed(2)}</td>
+        <td style="background:#f3e8ff; color:#6b21a8; font-weight:bold;">${coinBal}</td>
+      </tr>
+    `;
+  });
+  document.getElementById("usersTableBody").innerHTML = tableHtml || `<tr><td colspan="4" style="text-align:center;">কোনো ইউজার পাওয়া যায়নি।</td></tr>`;
+}
+
+function filterUserList(type) {
+  openPage('users');
+  if (type === 'total') {
+    renderUserTable(rawUsersCache);
+  } else if (type === 'active') {
+    let filtered = rawUsersCache.filter(u => (u.adsWatched || 0) > 0 && (!u.status || u.status === 'Active'));
+    renderUserTable(filtered);
+  } else if (type === 'blocked') {
+    let filtered = rawUsersCache.filter(u => u.status === 'Blocked' || u.status === 'Suspended');
+    renderUserTable(filtered);
+  }
+}
+
+function renderWithdrawTable(withdrawals) {
+  let html = "";
+  withdrawals.forEach((w) => {
+    let statusBg = w.status === 'Paid' ? 'green' : w.status === 'Processing' ? 'gray' : w.status === 'Pending' ? 'orange' : 'red';
+    html += `
+      <tr>
+        <td>${w.docId.slice(-6)}</td>
+        <td>${w.tgId || "User"}</td>
+        <td>৳${w.amount || 0}</td>
+        <td><span class="badge ${statusBg}">${w.status || "Pending"}</span></td>
+        <td><button class="btn gray" onclick='showWithdrawModal(${JSON.stringify(w)})'>Review</button></td>
+      </tr>
+    `;
+  });
+  document.getElementById("withdrawBody").innerHTML = html || `<tr><td colspan="5" style="text-align:center;">কোনো রিকোয়েস্ট নেই।</td></tr>`;
+}
+
+function filterWithdrawTab(status) {
+  openPage('withdraw');
+  if(status === 'all') {
+    renderWithdrawTable(rawWithdrawalsCache);
+  } else {
+    let filtered = rawWithdrawalsCache.filter(w => w.status === status);
+    renderWithdrawTable(filtered);
+  }
+}
+
+function showUserModal(docId, u) {
+  activeSelectedDocId = docId;
+  let gridHtml = `
+    <div class="user-grid-4x4">
+      <div class="user-grid-cell"><small>Full Name</small><strong>${u.fullName || 'N/A'}</strong></div>
+      <div class="user-grid-cell"><small>Username</small><strong>${u.username || 'N/A'}</strong></div>
+      <div class="user-grid-cell"><small>Telegram Id</small><strong>${u.tgId || 'N/A'}</strong></div>
+      <div class="user-grid-cell"><small>Phone Number</small><strong>${u.phone || u.number || 'N/A'}</strong></div>
+      <div class="user-grid-cell"><small>Coin Balance</small><strong>${u.coins || 0}</strong></div>
+      <div class="user-grid-cell"><small>Taka Balance</small><strong>৳${(u.balance || 0).toFixed(2)}</strong></div>
+      <div class="user-grid-cell"><small>Total Work Time</small><strong>${u.workTime || '0h'}</strong></div>
+      <div class="user-grid-cell"><small>Active Status</small><strong>${u.status || 'Active'}</strong></div>
+      <div class="user-grid-cell"><small>Last Active Time</small><strong>${u.lastActive || 'Now'}</strong></div>
+      <div class="user-grid-cell"><small>Total Ads View</small><strong>${u.adsWatched || 0}</strong></div>
+      <div class="user-grid-cell"><small>Success Ads View</small><strong>${u.success || 0}</strong></div>
+      <div class="user-grid-cell"><small>Rejected Ads View</small><strong>${u.reject || 0}</strong></div>
+      <div class="user-grid-cell"><small>Total Earn Coin</small><strong>${u.earned || 0}</strong></div>
+      <div class="user-grid-cell"><small>Total Withdraw</small><strong>${u.totalWithdraw || '৳0'}</strong></div>
+      <div class="user-grid-cell"><small>Ip Address</small><strong>${u.ip || '192.168.1.1'}</strong></div>
+      <div class="user-grid-cell"><small>Network Info</small><strong>${u.network || 'LTE'}</strong></div>
+    </div>
+  `;
+  document.getElementById("modalUserContent").innerHTML = gridHtml;
+  document.getElementById("userModal").style.display = "flex";
+}
+
+function closeUserModal() { document.getElementById("userModal").style.display = "none"; }
+
+function checkBackdropClose(event, modalId) {
+  if (event.target.id === modalId) {
+    document.getElementById(modalId).style.display = "none";
+  }
+}
+
+function updateUserStatusModal(st) {
+  if(!activeSelectedDocId) return;
+  db.collection("users").doc(activeSelectedDocId).update({ status: st }).then(() => {
+    showToast("Status updated"); closeUserModal();
+  });
+}
+
+function showWithdrawModal(w) {
+  activeSelectedWdId = w.docId;
+  let content = `
+    <p><strong>User ID:</strong> ${w.tgId || 'N/A'}</p>
+    <p><strong>Name:</strong> ${w.name || 'User'}</p>
+    <p><strong>Amount:</strong> ৳${w.amount || 0}</p>
+    <p><strong>Method/Number:</strong> ${w.number || 'bKash'}</p>
+    <p><strong>Duplicate IP:</strong> <span style="color:var(--red); font-weight:bold;">${w.dupIp || 'No'}</span></p>
+  `;
+  document.getElementById("modalWithdrawContent").innerHTML = content;
+  document.getElementById("withdrawModal").style.display = "flex";
+}
+function closeWithdrawModal() { document.getElementById("withdrawModal").style.display = "none"; }
+
+function setWithdrawStatusAction(status) {
+  if(!activeSelectedWdId) return;
+  let reason = document.getElementById("wdReasonInput").value;
+  db.collection("withdrawals").doc(activeSelectedWdId).update({ status: status, reason: reason }).then(() => {
+    showToast("Withdrawal updated to " + status);
+    closeWithdrawModal();
+  });
+}
+
+function markChatRead(docId, mark) {
+  db.collection("live_chats").doc(docId).update({ readMark: mark }).then(() => { showToast("Marked"); });
+}
+function replyChatPrompt(docId) {
+  let r = prompt("রিপ্লাই লিখুন:");
+  if(r) { db.collection("live_chats").doc(docId).update({ reply: r, readMark: true }).then(() => { showToast("Replied"); }); }
+}
+
+function saveRulesConfig() {
+  let rate = document.getElementById("ruleCoinRate").value;
+  db.collection("settings").doc("rules_config").set({ coinRate: rate }).then(() => { showToast("Rules saved"); });
+}
+
+function switchAdsSubTab(tab) {
+  document.getElementById("adsSubTabList").style.display = tab === 'list' ? "block" : "none";
+  document.getElementById("adsSubTabNew").style.display = tab === 'new' ? "block" : "none";
+}
+
+document.getElementById("adForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  const ad = {
+    title: document.getElementById("adTitle").value,
+    url: document.getElementById("directUrl").value,
+    image: document.getElementById("imageUrl").value,
+    js: document.getElementById("codeJs").value,
+    status: document.getElementById("adStatus").value,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  db.collection("ads_manager").add(ad).then(() => {
+    showToast("Ad published live!");
+    document.getElementById("adForm").reset();
+    switchAdsSubTab('list');
+  });
+});
+
+function deleteAdFirestore(docId) { db.collection("ads_manager").doc(docId).delete().then(() => { showToast("Deleted"); }); }
+function toggleAdStatus(docId, cur) {
+  db.collection("ads_manager").doc(docId).update({ status: cur === 'active' ? 'paused' : 'active' }).then(() => { showToast("Updated"); });
+}
+
+function openActiveAdsModal() {
+  document.getElementById("modalActiveAdsContent").innerHTML = window.cachedActiveAdsHtml || "<p>কোনো লাইভ এড নেই।</p>";
+  document.getElementById("activeAdsModal").style.display = "flex";
+}
+function closeActiveAdsModal() { document.getElementById("activeAdsModal").style.display = "none"; }
+
+window.addEventListener("DOMContentLoaded", () => { initLiveSync(); });
+
+const pages = document.querySelectorAll(".page");
+const menuItems = document.querySelectorAll(".menu-item");
+const mobileItems = document.querySelectorAll(".mobile-nav button");
+
+function openPage(page){
+  pages.forEach(p=>p.classList.remove("active"));
+  const target=document.getElementById(page);
+  if(target) target.classList.add("active");
+
+  menuItems.forEach(item=>item.classList.toggle("active", item.dataset.page===page));
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+menuItems.forEach(item=>{ item.addEventListener("click",()=>{ openPage(item.dataset.page); }); });
+mobileItems.forEach(item=>{ item.addEventListener("click",()=>{ openPage(item.dataset.page); }); });
+
+document.getElementById("menuToggle").onclick=()=>{ document.getElementById("sidebar").classList.toggle("open"); };
+
+document.getElementById("settingDarkBtn").onclick=()=>{
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+};
+if(localStorage.getItem("darkMode")==="true"){ document.body.classList.add("dark"); }
+
+function showToast(message){
+  let old=document.querySelector(".toast");
+  if(old) old.remove();
+  const toast=document.createElement("div");
+  toast.className="toast";
+  toast.textContent=message;
+  toast.style.cssText=`position:fixed; left:50%; bottom:75px; transform:translateX(-50%); background:#101828; color:#fff; padding:10px 16px; border-radius:8px; font-size:11px; z-index:9999;`;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ toast.remove(); },2200);
+}
+
+function searchUsers(){
+  const input = document.getElementById("userSearch");
+  const clearBtn = document.getElementById("searchClearBtn");
+  const value = input.value.toLowerCase();
+  clearBtn.style.display = value.length > 0 ? "block" : "none";
+  document.querySelectorAll("#usersTable tbody tr").forEach(row=>{
+    row.style.display = row.textContent.toLowerCase().includes(value) ? "" : "none";
+  });
+}
+function clearUserSearch() {
+  document.getElementById("userSearch").value = "";
+  document.getElementById("searchClearBtn").style.display = "none";
+  searchUsers();
+}
+</script>
+
+</body>
+</html>
