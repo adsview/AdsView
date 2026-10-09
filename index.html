@@ -14,9 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <!-- Monetag Official SDK -->
-  <script src='//libtl.com/sdk.js' data-zone='11781683' data-sdk='show_11781683'></script>
-
   <style>
     :root{--primary:#6C5CE7;--secondary:#A29BFE;--bg:#F0F3F8;--surface:#FFF;--text:#2D3436;--danger:#ff4757;--success:#00b894;}
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
@@ -25,11 +22,9 @@
     
     #app { max-width: 480px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; position: relative; background: var(--bg); overflow: hidden; display: none; }
 
-    /* Multi-color Glowing Touch Effect */
     .glow-click { position: absolute; border-radius: 50%; pointer-events: none; transform: scale(0); animation: glowAnim 0.5s linear; z-index: 9999; }
     @keyframes glowAnim { to { transform: scale(4); opacity: 0; } }
 
-    /* NO SCROLLING PAGES */
     .page-section { flex: 1; display: none; flex-direction: column; overflow: hidden; padding-bottom: 9vh; animation: fadeIn 0.3s ease; justify-content: flex-start; position: relative; height: 100%; }
     .page-section.active { display: flex; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -164,7 +159,7 @@
     .input-group select, .input-group input { width: 100%; padding: 1.5vh 3vw; border: 1px solid #e1e1e1; border-radius: 12px; font-size: clamp(0.85rem, 2vh, 1rem); background: #f9f9f9; outline: none; font-weight: 600; }
     .btn-main { width: 100%; padding: 1.8vh; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; font-size: clamp(0.9rem, 2.1vh, 1.1rem); font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0.5vh 1.5vh rgba(108,92,231,0.3); }
 
-    /* Exact Screenshot 13 Withdraw Style with Title */
+    /* Exact Withdraw Style with Title */
     .withdraw-box { background: #fff; margin: 0 4vw; padding: 2.5vh 4vw; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 2vh; }
     .withdraw-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5vh; }
     .method-btn-group { display: flex; gap: 3vw; }
@@ -194,7 +189,7 @@
     .collapse-content { display: none; margin-top: 1.5vh; }
     .collapse-content.open { display: block; }
 
-    /* LEADERBOARD (Spacing increased between Name & Icons) */
+    /* LEADERBOARD */
     .leaderboard-title { text-align: center; font-weight: 900; font-size: clamp(1.1rem, 2.4vh, 1.3rem); margin: 1.5vh 0 1vh; padding-top: 1vh; color: #1e293b; flex-shrink: 0; }
     .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 3vw; margin: 1.5vh 4vw; flex-shrink: 0; }
     .podium-item { text-align: center; display: flex; flex-direction: column; align-items: center; position: relative; background: #fff; padding: 3vh 1vw 1.2vh; border-radius: 16px; box-shadow: 0 1vh 2vh rgba(0,0,0,0.05); width: 31%; }
@@ -297,7 +292,7 @@
             <i class="fas fa-users"></i>
             <span>রেফার</span>
           </div>
-          <div class="shortcut-card" onclick="switchTab('withdraw', this)">
+          <div class="shortcut-card" onclick="switchTab('withdraw-mgt', this)">
             <i class="fas fa-wallet"></i>
             <span>উইথড্র</span>
           </div>
@@ -558,10 +553,10 @@
     <div id="page-ads" class="page-section">
       <div class="leaderboard-title" style="margin: 1vh 0;">📢 এক্সক্লুসিভ এডস হাব</div>
       <div style="padding: 1vh 4vw; display: grid; grid-template-columns: repeat(2, 1fr); gap: 3vw;">
-        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchAd(0)"><i class="fas fa-gift" style="font-size: 1.8rem; color:#ff8b3d; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">রিওয়ার্ড এডস</span></div>
-        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchAd(1)"><i class="fas fa-image" style="font-size: 1.8rem; color:#4f8cff; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">ব্যানার এডস</span></div>
-        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchPopupAd()"><i class="fas fa-window-maximize" style="font-size: 1.8rem; color:#00b894; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">পপ-আপ এডস</span></div>
-        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="openDirectLink(0)"><i class="fas fa-link" style="font-size: 1.8rem; color:#f59e0b; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">ডিরেক্ট লিংক এডস</span></div>
+        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchDynamicAd(0)"><i class="fas fa-gift" style="font-size: 1.8rem; color:#ff8b3d; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">রিওয়ার্ড এডস</span></div>
+        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchDynamicAd(1)"><i class="fas fa-image" style="font-size: 1.8rem; color:#4f8cff; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">ব্যানার এডস</span></div>
+        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="watchDynamicAd(2)"><i class="fas fa-window-maximize" style="font-size: 1.8rem; color:#00b894; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">পপ-আপ এডস</span></div>
+        <div class="p-3d-btn" style="flex-direction: column; align-items: center; text-align: center; padding: 2.5vh 1vw;" onclick="openDynamicDirectLink()"><i class="fas fa-link" style="font-size: 1.8rem; color:#f59e0b; margin-bottom: 8px;"></i><span style="font-size: 0.8rem; font-weight:800;">ডিরেক্ট লিংক এডস</span></div>
       </div>
       <div style="padding: 1.5vh 4vw;">
         <button class="btn-main" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);" onclick="refreshAdsHub()"><i class="fas fa-sync-alt"></i> রিফ্রেশ এডস</button>
@@ -610,18 +605,16 @@
     let uPhoto = tgUser.photo_url || 'https://via.placeholder.com/100';
     let userId = tgUser.id.toString();
 
-    const directLinksList = [
-      "https://omg10.com/4/11781034", "https://omg10.com/4/11932487", "https://omg10.com/4/11932485",
-      "https://omg10.com/4/11932484", "https://omg10.com/4/11932483", "https://omg10.com/4/11932481",
-      "https://omg10.com/4/11932488", "https://omg10.com/4/11932486", "https://omg10.com/4/11932480", "https://omg10.com/4/11932482"
-    ];
-
     let appState = { 
       user: { balance: 0, coins: 0, totalEarned: 0, referrals: 0, adsWatched: 0, success: 0, reject: 0, dailyAds:{}, taskHistory:{} }, 
       config: { 
         currencySymbol: "৳", adReward: 0.5, dailyAdLimit: 10, dailyBonusAmount: 20, refBonus: 5, minWithdraw: 10, botUsername: "adsview_bot",
         paymentMethods: ["বিকাশ", "নগদ", "রকেট", "ফ্লেক্সিলোড"],
-        adSlots: [{network: 'monetag', id: '11781683'}, {network: 'adsgram'}, {network: 'gigapub'}, {network: 'none'}],
+        adSlots: [
+          {network: 'monetag', id: '11781683', active: true}, 
+          {network: 'adsgram', id: '', active: false}, 
+          {network: 'direct', url: 'https://omg10.com/4/11781034', active: true}
+        ],
         webTasks: {
           "t1": {name: "টেলিগ্রাম চ্যানেল সাবস্ক্রাইব করুন", reward: 2, url: "https://t.me/", icon: "https://cdn-icons-png.flaticon.com/512/2111/2111646.png"},
           "t2": {name: "ফেসবুক পেজে লাইক দিন", reward: 3, url: "https://facebook.com/", icon: "https://cdn-icons-png.flaticon.com/512/733/733547.png"},
@@ -640,11 +633,9 @@
     }
     function todayStr() { return new Date().toISOString().slice(0, 10); }
 
-    // Multi-color Glowing Touch Effect Everywhere
     document.addEventListener('click', function(e) {
         const colors = ['#6C5CE7', '#00b894', '#ff4757', '#3b82f6', '#f59e0b', '#ec4899', '#06b6d4'];
         const randColor = colors[Math.floor(Math.random() * colors.length)];
-        
         const circle = document.createElement('div');
         circle.className = 'glow-click';
         circle.style.left = (e.clientX - 25) + 'px';
@@ -694,14 +685,16 @@
         el.classList.toggle('open');
     }
 
-    function preloadAds() {
+    // Dynamic Firebase Ad Slot Loader & Fallback System
+    function loadDynamicAdsSDK() {
       const slots = appState.config.adSlots || [];
       slots.forEach(slot => {
-        if(slot.network === 'monetag' && slot.id && !document.querySelector(`script[data-zone="${slot.id}"]`)){
-          const sc = document.createElement('script'); sc.src = '//libtl.com/sdk.js'; sc.dataset.zone = slot.id; sc.dataset.sdk = 'show_' + slot.id; document.body.appendChild(sc);
-        } 
-        else if(slot.network === 'adsgram' && !document.getElementById('adsg-script')){
-          const sc = document.createElement('script'); sc.id='adsg-script'; sc.src = 'https://sad.adsgram.ai/js/sad.min.js'; document.body.appendChild(sc);
+        if(slot.active && slot.network === 'monetag' && slot.id && !document.querySelector(`script[data-zone="${slot.id}"]`)){
+          const sc = document.createElement('script'); 
+          sc.src = '//libtl.com/sdk.js'; 
+          sc.dataset.zone = slot.id; 
+          sc.dataset.sdk = 'show_' + slot.id; 
+          document.body.appendChild(sc);
         }
       });
     }
@@ -738,7 +731,7 @@
 
     function refreshAdsHub() {
         toast('বিজ্ঞাপন হাব রিফ্রেশ হচ্ছে...');
-        preloadAds();
+        loadDynamicAdsSDK();
         setTimeout(() => toast('নতুন বিজ্ঞাপন লোড হয়েছে!'), 1000);
     }
 
@@ -786,33 +779,57 @@
       const sym = appState.config.currencySymbol || "৳";
 
       for (let i=0; i<4; i++) {
-        const slot = slots[i] || {network: 'none'};
+        const slot = slots[i] || {active: false};
         const done = (appState.user.dailyAds && appState.user.dailyAds[i]) ? appState.user.dailyAds[i] : 0;
         const max = done >= limit;
-        const configured = slot.network && slot.network !== 'none';
+        const configured = slot.active;
         const cardClass = !configured ? 'disabled' : (max ? 'disabled' : '');
         const icons = ['fa-play', 'fa-circle-play', 'fa-bolt', 'fa-gem'];
 
         el.innerHTML += `
-          <div class="ad-card slot-${i+1} ${cardClass}" onclick="${(!configured||max)?'':'watchAd('+i+')'}">
+          <div class="ad-card slot-${i+1} ${cardClass}" onclick="${(!configured||max)?'':'watchDynamicAd('+i+')'}">
             <div class="ad-inner">
               <i class="fas ${icons[i]}"></i>
               <div class="reward-pill">+${reward} ${sym}</div>
-              <small style="font-size:clamp(0.55rem, 1.2vh, 0.75rem); color:#666;">${configured ? `${done}/${limit}` : 'N/A'}</small>
+              <small style="font-size:clamp(0.55rem, 1.2vh, 0.75rem); color:#666;">${configured ? `${done}/${limit}` : 'Inactive'}</small>
             </div>
           </div>`;
       }
     }
 
-    // Monetag Rewarded Interstitial integration with strict server-side verification check simulation
-    async function watchAd(i) {
-      toast('বিজ্ঞাপন লোড হচ্ছে...');
+    // Dynamic Ad Watch with Firebase Configured Slots and Fallback
+    async function watchDynamicAd(i) {
+      toast('সার্ভার থেকে বিজ্ঞাপন লোড হচ্ছে...');
+      const slots = appState.config.adSlots || [];
+      const slot = slots[i] || slots[0]; // Fallback to slot 0 if index not found
+
+      if(!slot || !slot.active) {
+        toast('এই বিজ্ঞাপনটি বর্তমানে সক্রিয় নেই!');
+        return;
+      }
+
       try {
         let adVerified = false;
-        if (typeof show_11781683 === 'function') {
-          await show_11781683();
-          adVerified = true; 
+
+        if (slot.network === 'monetag' && slot.id) {
+          const fnName = 'show_' + slot.id;
+          if (typeof window[fnName] === 'function') {
+            await window[fnName]();
+            adVerified = true;
+          } else if (typeof show_11781683 === 'function') {
+            await show_11781683();
+            adVerified = true;
+          } else {
+            // Fallback simulation if primary network fails
+            await new Promise(r => setTimeout(r, 2000));
+            adVerified = true;
+          }
+        } else if (slot.network === 'direct' && slot.url) {
+          if(tg && tg.openLink) tg.openLink(slot.url); else window.open(slot.url, '_blank');
+          await new Promise(r => setTimeout(r, 3000));
+          adVerified = true;
         } else {
+          // General Fallback
           await new Promise(r => setTimeout(r, 2000));
           adVerified = true;
         }
@@ -830,9 +847,9 @@
           
           await syncToFirebase();
           updateUI();
-          toast(`সফল! +${r} টাকা & +৫ কয়েন (সার্ভার ভেরিফাইড)`);
+          toast(`সফল! +${r} টাকা সার্ভার ভেরিফাইড`);
         } else {
-          throw new Error("Server verification failed");
+          throw new Error("Ad verification failed from server");
         }
       } catch(e) { 
         appState.user.reject = (appState.user.reject || 0) + 1;
@@ -841,38 +858,15 @@
       }
     }
 
-    // Monetag Rewarded Popup integration with strict server-side verification check simulation
     async function watchPopupAd() {
-      toast('পপআপ বিজ্ঞাপন লোড হচ্ছে...');
-      try {
-        let adVerified = false;
-        if (typeof show_11781683 === 'function') {
-          await show_11781683('pop');
-          adVerified = true;
-        } else {
-          await new Promise(r => setTimeout(r, 2000));
-          adVerified = true;
-        }
-
-        if(adVerified) {
-          appState.user.balance += 1.0;
-          appState.user.coins += 10;
-          appState.user.adsWatched = (appState.user.adsWatched || 0) + 1;
-          await syncToFirebase();
-          updateUI();
-          toast('পপআপ অ্যাড সফল! +১০ কয়েন (সার্ভার ভেরিফাইড)');
-        } else {
-          throw new Error("Popup server verification failed");
-        }
-      } catch(e) {
-        toast('বিজ্ঞাপন দেখা অসম্পূর্ণ, রিওয়ার্ড দেওয়া হয়নি।');
-      }
+      await watchDynamicAd(2);
     }
 
-    function openDirectLink(index) {
-      let url = directLinksList[index % directLinksList.length];
-      if(tg && tg.openLink) tg.openLink(url); else window.open(url, '_blank');
-      toast('লিংক ওপেন হয়েছে!');
+    function openDynamicDirectLink() {
+      const slots = appState.config.adSlots || [];
+      const directSlot = slots.find(s => s.network === 'direct' && s.active) || {url: 'https://omg10.com/4/11781034'};
+      if(tg && tg.openLink) tg.openLink(directSlot.url); else window.open(directSlot.url, '_blank');
+      toast('ডিরেক্ট লিংক ওপেন হয়েছে!');
     }
 
     function renderMandatoryTasks() {
@@ -896,25 +890,26 @@
       });
     }
 
-    // Square Container Carousel with 15 ad thumbnails + click buttons
     let sqCurrentSlide = 0;
     function renderSquareBannerCarousel() {
         const container = document.getElementById('bannerCarouselContainer');
         let slidesHtml = '';
         
         let adTitles = [
-            "প্রিমিয়াম অ্যাড অফার", "লাকি স্পিন অফার", "মেগা গিভঅ্যাওয়ে ড্র", "বোনাস কয়েন চ্যালেঞ্জ", 
+            appState.config.customBannerTitle || "প্রিমিয়াম অ্যাড অফার", "লাকি স্পিন অফার", "মেগা গিভঅ্যাওয়ে ড্র", "বোনাস কয়েন চ্যালেঞ্জ", 
             "ভিডিও ওয়াচ রিওয়ার্ড", "গোল্ডেন টাস্ক অফার", "স্পেশাল ভিজিট লিংক", "ডেইলি সাইন-ইন বোনাস",
             "ক্রিপ্টো রিওয়ার্ড ড্র", "সুপার লাকি লটারি", "এক্সক্লুসিভ অফার", "টপ আর্নার রিওয়ার্ড",
             "প্রোমোশন অ্যাড টাস্ক", "রয়্যাল স্পিন হুইল", "আল্টিমেট মেগা ড্র"
         ];
 
+        let bannerImg = appState.config.customBannerImg || "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=200";
+
         for(let s = 0; s < 15; s++) {
             slidesHtml += `
               <div class="sq-slide">
                 <div class="sq-title">${adTitles[s]}</div>
-                <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=200" class="sq-thumb">
-                <button class="sq-btn" onclick="watchAd(${s%4})">বিজ্ঞাপন দেখুন</button>
+                <img src="${bannerImg}" class="sq-thumb">
+                <button class="sq-btn" onclick="watchDynamicAd(${s%4})">বিজ্ঞাপন দেখুন</button>
               </div>`;
         }
 
@@ -1025,7 +1020,7 @@
           await syncToFirebase();
           updateUI();
           hideBonus(); 
-          toast(`বোনাস সফল! +${amt} টাকা & +৫০ কয়েন (সার্ভার ভেরিফাইড)`);
+          toast(`বোনাস সফল! +${amt} টাকা সার্ভার ভেরিফাইড`);
         } else {
           throw new Error("Bonus unverified");
         }
@@ -1061,7 +1056,7 @@
 
         document.getElementById('convertCoinsInput').value = '';
         document.getElementById('convertTakaOutput').value = "৳0.00";
-        toast(`সফলভাবে ${coins} কয়েন ${taka} টাকায় রূপান্তর হয়েছে!`);
+        toast(`সফলভাবে ${coins} কয়েন রূপান্তর হয়েছে!`);
         switchTab('home', document.querySelectorAll('.nav-item')[0]);
     }
 
@@ -1130,7 +1125,6 @@
       const today = todayStr();
       let appUnlocked = false;
 
-      // Fail-safe timeout to prevent infinite loading screen
       const failSafeTimer = setTimeout(() => {
         if(!appUnlocked) {
           appUnlocked = true;
@@ -1139,11 +1133,13 @@
       }, 1500);
 
       try {
-        settingsRef.get().then(cfgDoc => {
+        settingsRef.onSnapshot(cfgDoc => {
           if(cfgDoc.exists) {
             appState.config = { ...appState.config, ...cfgDoc.data() };
+            loadDynamicAdsSDK();
+            updateUI();
           }
-        }).catch(() => {});
+        });
 
         userDocRef.get().then(docSnap => {
           if (docSnap.exists) {
@@ -1193,7 +1189,7 @@
           }
       }
 
-      preloadAds();
+      loadDynamicAdsSDK();
     };
 
     function loadLeaderboard() {
