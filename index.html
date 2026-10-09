@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AdsView</title>
+  <title>adsview fronted-1</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   
@@ -106,7 +106,7 @@
     .sq-dot.active { background: #fff; width: 14px; border-radius: 3px; }
 
     /* Mandatory Page 3x3 Grid 3D Cards */
-    .mand-container { padding: 1vh 4vw; display: flex; flex-direction: column; gap: 0.8vh; height: 100%; overflow: hidden; }
+    .mand-container { padding: 1vh 4vw; display: flex; flex-direction: column; gap: 1vh; height: 100%; overflow: hidden; }
     .mand-grid-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; margin-top: 0.4vh; }
     .mand-card-33 { background: #fff; border-radius: 14px; padding: 1.5vh 1vw; text-align: center; box-shadow: 0 6px 15px rgba(0,0,0,0.05), inset 0 2px 4px rgba(255,255,255,0.9); border: 2px solid #edf2f7; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6vh; transition: transform 0.2s; }
     .mand-card-33:active { transform: scale(0.96); }
@@ -165,17 +165,17 @@
     .btn-main { width: 100%; padding: 1.8vh; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; font-size: clamp(0.9rem, 2.1vh, 1.1rem); font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0.5vh 1.5vh rgba(108,92,231,0.3); }
 
     /* Screenshot 8 Exact Withdraw Style */
-    .withdraw-box { background: #fff; margin: 0 4vw; padding: 2.5vh 4vw; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 2vh; }
-    .withdraw-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5vh; }
-    .method-btn-group { display: flex; gap: 3vw; }
-    .method-pill { flex: 1; padding: 1.4vh 0; text-align: center; border-radius: 12px; font-weight: 800; font-size: 0.9rem; color: #fff; cursor: pointer; border: 3px solid transparent; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; }
+    .withdraw-box { background: #fff; margin: 0 4vw; padding: 2vh 4vw; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 1.5vh; }
+    .withdraw-title { font-size: 1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.2vh; }
+    .method-btn-group { display: flex; gap: 2.5vw; }
+    .method-pill { flex: 1; padding: 1.2vh 0; text-align: center; border-radius: 10px; font-weight: 800; font-size: 0.85rem; color: #fff; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: 0.2s; }
     .method-pill.bkash { background: #e91e63; }
     .method-pill.nagad { background: #ff9800; }
     .method-pill.rocket { background: #9c27b0; }
-    .method-pill.active { border-color: #1e293b; transform: scale(1.03); }
-    .wd-input { width: 100%; padding: 1.6vh 4vw; border: 1px solid #e2e8f0; border-radius: 14px; background: #f8fafc; font-size: 0.9rem; font-weight: 600; color: #1e293b; outline: none; }
-    .wd-submit-btn { width: 100%; padding: 1.8vh; border-radius: 14px; background: linear-gradient(135deg, #8b5cf6, #6c5ce7); color: #fff; border: none; font-weight: 800; font-size: 1rem; box-shadow: 0 6px 20px rgba(108,92,231,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .wd-history-btn { width: 100%; padding: 1.8vh; border-radius: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: 800; font-size: 1rem; box-shadow: 0 6px 20px rgba(245,158,11,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .method-pill.active { border-color: #1e293b; transform: scale(1.02); }
+    .wd-input { width: 100%; padding: 1.4vh 3.5vw; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-size: 0.85rem; font-weight: 600; color: #1e293b; outline: none; }
+    .wd-submit-btn { width: 100%; padding: 1.6vh; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #6c5ce7); color: #fff; border: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 5px 15px rgba(108,92,231,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .wd-history-btn { width: 100%; padding: 1.6vh; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 5px 15px rgba(245,158,11,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
     /* 3D Profile Menu Cards */
     .profile-menu-container { padding: 1.5vh 4vw; display: flex; flex-direction: column; gap: 1.2vh; }
@@ -315,7 +315,7 @@
       <div id="bannerCarouselContainer"></div>
     </div>
     
-    <!-- ================= TAB: MANDATORY (বাধ্যতামূলক - Titles removed, compact layout) ================= -->
+    <!-- ================= TAB: MANDATORY (বাধ্যতামূলক) ================= -->
     <div id="page-mandatory" class="page-section">
       <div class="mand-container" style="padding-top: 1vh;">
           <button class="btn-main" onclick="showBonus()" style="background: linear-gradient(135deg, #00b894, #00cec9); padding: 1vh;"><i class="fas fa-box-open"></i> দৈনিক বোনাস নিন</button>
@@ -411,9 +411,9 @@
       </div>
     </div>
 
-    <!-- ================= TAB: WITHDRAW (Screenshot 8 Exact Style) ================= -->
+    <!-- ================= TAB: WITHDRAW (Screenshot 11 Exact Style without title) ================= -->
     <div id="page-withdraw" class="page-section">
-      <div class="withdraw-box" style="margin-top: 3vh;">
+      <div class="withdraw-box" style="margin-top: 1.5vh;">
         <div class="withdraw-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> পেমেন্ট মেথড সিলেক্ট করুন</div>
         <div class="method-btn-group">
             <div onclick="selectWdMethod('Bkash', this)" class="method-pill bkash active">বিকাশ</div>
@@ -422,7 +422,10 @@
         </div>
         <div>
             <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">ডিফল্ট কার্ড / একাউন্ট নম্বর</label>
-            <input type="text" id="wd-acc-num" class="wd-input" placeholder="017XXXXXXXX (সেভ করা কার্ড বা নতুন নম্বর)">
+            <select id="wd-acc-dropdown" class="wd-input" onchange="document.getElementById('wd-acc-num').value=this.value;" style="margin-bottom: 6px;">
+                <option value="">-- সেভ করা কার্ড সিলেক্ট করুন --</option>
+            </select>
+            <input type="text" id="wd-acc-num" class="wd-input" placeholder="সঠিক নাম্বার লিখুন">
         </div>
         <div>
             <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">উত্তোলনের পরিমাণ</label>
@@ -483,27 +486,22 @@
       </div>
     </div>
 
-    <!-- ================= TAB: PERSONAL INFO (2x2 Grid View, 3D Card Design with 10 Options in different colors) ================= -->
+    <!-- ================= TAB: PERSONAL INFO (Screenshot 10 Exact Style: Shifted Upward, No Title) ================= -->
     <div id="page-personal" class="page-section">
-      <div class="hist-header" style="margin-bottom: 1vh;">
-        <i class="fas fa-arrow-left" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[2])"></i>
-        <h2>ব্যক্তিগত তথ্য</h2>
-        <div style="width:35px;"></div>
-      </div>
-      <div style="padding: 0 4vw;">
-        <div style="background: #fff; border-radius: 20px; padding: 2vh 3vw; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 1vh;">
-            <div style="text-align: center; font-weight: 900; font-size: 0.95rem; color: #1e293b; margin-bottom: 2px;"><i class="fas fa-id-card" style="color:var(--primary);"></i> প্রোফাইল ডিটেইলস</div>
+      <div style="padding: 0.2vh 4vw 0;">
+        <div style="background: #fff; border-radius: 18px; padding: 1.5vh 3vw; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.8vh; margin-top: 0.2vh;">
+            <div style="text-align: center; font-weight: 900; font-size: 0.9rem; color: #1e293b; margin-bottom: 2px;"><i class="fas fa-id-card" style="color:var(--primary);"></i> প্রোফাইল ডিটেইলস</div>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2vw;">
-                <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 5px solid #3b82f6; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(59,130,246,0.15);"><small style="font-size: 10px; font-weight: 700; color: #1d4ed8;">পুরো নাম</small><div id="pi-name" style="font-size: 12px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
-                <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 5px solid #10b981; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(16,185,129,0.15);"><small style="font-size: 10px; font-weight: 700; color: #047857;">ইউজারনেম</small><div id="pi-uname" style="font-size: 12px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
-                <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 5px solid #f59e0b; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(245,158,11,0.15);"><small style="font-size: 10px; font-weight: 700; color: #b45309;">টেলিগ্রাম আইডি</small><div id="pi-id" style="font-size: 12px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
-                <div style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 5px solid #ef4444; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(239,68,68,0.15);"><small style="font-size: 10px; font-weight: 700; color: #b91c1c;">মোবাইল নাম্বার</small><div style="font-size: 12px; font-weight: 900; color: #1e293b;">+88017XXX</div></div>
-                <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-left: 5px solid #8b5cf6; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(139,92,246,0.15);"><small style="font-size: 10px; font-weight: 700; color: #6d28d9;">ইমেইল এড্রেস</small><div style="font-size: 11px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">user@gmail.com</div></div>
-                <div style="background: linear-gradient(135deg, #ecfeff, #cffafe); border-left: 5px solid #06b6d4; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(6,182,212,0.15);"><small style="font-size: 10px; font-weight: 700; color: #0e7490;">যোগদানের তারিখ</small><div style="font-size: 12px; font-weight: 900; color: #1e293b;">12 Sep 2026</div></div>
-                <div style="background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-left: 5px solid #ec4899; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(236,72,153,0.15);"><small style="font-size: 10px; font-weight: 700; color: #be185d;">মোট দেখা বিজ্ঞাপন</small><div id="pi-ads" style="font-size: 12px; font-weight: 900; color: #ec4899;">0</div></div>
-                <div style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border-left: 5px solid #f97316; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(249,115,22,0.15);"><small style="font-size: 10px; font-weight: 700; color: #c2410c;">মোট উপার্জন কয়েন</small><div id="pi-coins" style="font-size: 12px; font-weight: 900; color: #f97316;">0</div></div>
-                <div style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); border-left: 5px solid #a855f7; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(168,85,247,0.15);"><small style="font-size: 10px; font-weight: 700; color: #7e22ce;">নিরাপত্তা স্ট্যাটাস</small><div style="font-size: 12px; font-weight: 900; color: #7e22ce;">ভেরিফাইপড</div></div>
-                <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 5px solid #22c55e; padding: 1vh 2vw; border-radius: 12px; box-shadow: 0 4px 10px rgba(34,197,94,0.15);"><small style="font-size: 10px; font-weight: 700; color: #15803d;">মোট টাকা আয়</small><div id="pi-taka" style="font-size: 13px; font-weight: 900; color: #15803d;">৳0.00</div></div>
+                <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 5px solid #3b82f6; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(59,130,246,0.12);"><small style="font-size: 9px; font-weight: 700; color: #1d4ed8;">পুরো নাম</small><div id="pi-name" style="font-size: 11px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
+                <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 5px solid #10b981; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(16,185,129,0.12);"><small style="font-size: 9px; font-weight: 700; color: #047857;">ইউজারনেম</small><div id="pi-uname" style="font-size: 11px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
+                <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 5px solid #f59e0b; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(245,158,11,0.12);"><small style="font-size: 9px; font-weight: 700; color: #b45309;">টেলিগ্রাম আইডি</small><div id="pi-id" style="font-size: 11px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</div></div>
+                <div style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-left: 5px solid #ef4444; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(239,68,68,0.12);"><small style="font-size: 9px; font-weight: 700; color: #b91c1c;">মোবাইল নাম্বার</small><div style="font-size: 11px; font-weight: 900; color: #1e293b;">+88017XXX</div></div>
+                <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-left: 5px solid #8b5cf6; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(139,92,246,0.12);"><small style="font-size: 9px; font-weight: 700; color: #6d28d9;">ইমেইল এড্রেস</small><div style="font-size: 10px; font-weight: 900; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">user@gmail.com</div></div>
+                <div style="background: linear-gradient(135deg, #ecfeff, #cffafe); border-left: 5px solid #06b6d4; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(6,182,212,0.12);"><small style="font-size: 9px; font-weight: 700; color: #0e7490;">যোগদানের তারিখ</small><div style="font-size: 11px; font-weight: 900; color: #1e293b;">12 Sep 2026</div></div>
+                <div style="background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-left: 5px solid #ec4899; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(236,72,153,0.12);"><small style="font-size: 9px; font-weight: 700; color: #be185d;">মোট দেখা বিজ্ঞাপন</small><div id="pi-ads" style="font-size: 11px; font-weight: 900; color: #ec4899;">0</div></div>
+                <div style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border-left: 5px solid #f97316; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(249,115,22,0.12);"><small style="font-size: 9px; font-weight: 700; color: #c2410c;">মোট উপার্জন কয়েন</small><div id="pi-coins" style="font-size: 11px; font-weight: 900; color: #f97316;">0</div></div>
+                <div style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); border-left: 5px solid #a855f7; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(168,85,247,0.12);"><small style="font-size: 9px; font-weight: 700; color: #7e22ce;">নিরাপত্তা স্ট্যাটাস</small><div style="font-size: 11px; font-weight: 900; color: #7e22ce;">ভেরিফাইপড</div></div>
+                <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 5px solid #22c55e; padding: 0.8vh 2vw; border-radius: 10px; box-shadow: 0 3px 8px rgba(34,197,94,0.12);"><small style="font-size: 9px; font-weight: 700; color: #15803d;">মোট টাকা আয়</small><div id="pi-taka" style="font-size: 12px; font-weight: 900; color: #15803d;">৳0.00</div></div>
             </div>
         </div>
       </div>
@@ -539,6 +537,23 @@
         <div class="p-3d-btn logout" onclick="toast('সফলভাবে লগ আউট হয়েছে!')">
             <div class="p-3d-left"><i class="fas fa-door-open"></i><span>লগ আউট করুন</span></div>
         </div>
+        
+        <!-- 1x1 3D Card Style Banner with Shadow Circles & Icons (Live Chat, Telegram Support, Call Request) -->
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 1.5vh 3vw; margin-top: 0.5vh; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.15); display: flex; justify-content: space-around; align-items: center; color: #fff;">
+            <div onclick="toast('লাইভ চ্যাট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(59,130,246,0.5);"><i class="fas fa-headset" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">লাইভ চ্যাট</span>
+            </div>
+            <div onclick="toast('টেলিগ্রাম সাপোর্ট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(14,165,233,0.5);"><i class="fab fa-telegram-plane" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">টেলিগ্রাম সাপোর্ট</span>
+            </div>
+            <div onclick="toast('কল রিকোয়েস্ট পাঠানো হয়েছে!')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(16,185,129,0.5);"><i class="fas fa-phone-alt" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">কল রিকুয়েষ্ট</span>
+            </div>
+        </div>
+
       </div>
     </div>
 
@@ -767,6 +782,12 @@
       document.getElementById('ref-link-text').innerText = `https://t.me/${appState.config.botUsername||"adsview_bot"}?start=${userId}`;
       document.getElementById('ref-bonus-txt').innerText = (appState.config.refBonus||5) + " " + sym;
       document.getElementById('bonusAmt').innerText = appState.config.dailyBonusAmount || 20;
+
+      let savedNum = localStorage.getItem('default_wd_num');
+      let dropdown = document.getElementById('wd-acc-dropdown');
+      if(dropdown && savedNum) {
+          dropdown.innerHTML = `<option value="">-- সেভ করা কার্ড সিলেক্ট করুন --</option><option value="${savedNum}">${savedNum} (ডিফল্ট)</option>`;
+      }
 
       renderAds(); renderMandatoryTasks(); renderSquareBannerCarousel();
     }
@@ -1130,8 +1151,9 @@
       document.getElementById('app').style.display='flex';
       
       let savedNum = localStorage.getItem('default_wd_num');
-      if(savedNum && document.getElementById('wd-acc-num')) {
-          document.getElementById('wd-acc-num').value = savedNum;
+      let dropdown = document.getElementById('wd-acc-dropdown');
+      if(dropdown && savedNum) {
+          dropdown.innerHTML = `<option value="">-- সেভ করা কার্ড সিলেক্ট করুন --</option><option value="${savedNum}">${savedNum} (ডিফল্ট)</option>`;
       }
       updateUI();
     }
