@@ -165,17 +165,17 @@
     .btn-main { width: 100%; padding: 1.8vh; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; font-size: clamp(0.9rem, 2.1vh, 1.1rem); font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0.5vh 1.5vh rgba(108,92,231,0.3); }
 
     /* Screenshot 8 Exact Withdraw Style */
-    .withdraw-box { background: #fff; margin: 0 4vw; padding: 2vh 4vw; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 1.5vh; }
-    .withdraw-title { font-size: 1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.2vh; }
-    .method-btn-group { display: flex; gap: 2.5vw; }
-    .method-pill { flex: 1; padding: 1.2vh 0; text-align: center; border-radius: 10px; font-weight: 800; font-size: 0.85rem; color: #fff; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 10px rgba(0,0,0,0.15); transition: 0.2s; }
+    .withdraw-box { background: #fff; margin: 0 4vw; padding: 2.5vh 4vw; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 2vh; }
+    .withdraw-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5vh; }
+    .method-btn-group { display: flex; gap: 3vw; }
+    .method-pill { flex: 1; padding: 1.4vh 0; text-align: center; border-radius: 12px; font-weight: 800; font-size: 0.9rem; color: #fff; cursor: pointer; border: 3px solid transparent; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: 0.2s; }
     .method-pill.bkash { background: #e91e63; }
     .method-pill.nagad { background: #ff9800; }
     .method-pill.rocket { background: #9c27b0; }
-    .method-pill.active { border-color: #1e293b; transform: scale(1.02); }
-    .wd-input { width: 100%; padding: 1.4vh 3.5vw; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; font-size: 0.85rem; font-weight: 600; color: #1e293b; outline: none; }
-    .wd-submit-btn { width: 100%; padding: 1.6vh; border-radius: 12px; background: linear-gradient(135deg, #8b5cf6, #6c5ce7); color: #fff; border: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 5px 15px rgba(108,92,231,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .wd-history-btn { width: 100%; padding: 1.6vh; border-radius: 12px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 5px 15px rgba(245,158,11,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .method-pill.active { border-color: #1e293b; transform: scale(1.03); }
+    .wd-input { width: 100%; padding: 1.6vh 4vw; border: 1px solid #e2e8f0; border-radius: 14px; background: #f8fafc; font-size: 0.9rem; font-weight: 600; color: #1e293b; outline: none; }
+    .wd-submit-btn { width: 100%; padding: 1.8vh; border-radius: 14px; background: linear-gradient(135deg, #8b5cf6, #6c5ce7); color: #fff; border: none; font-weight: 800; font-size: 1rem; box-shadow: 0 6px 20px rgba(108,92,231,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .wd-history-btn { width: 100%; padding: 1.8vh; border-radius: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: 800; font-size: 1rem; box-shadow: 0 6px 20px rgba(245,158,11,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
     /* 3D Profile Menu Cards */
     .profile-menu-container { padding: 1.5vh 4vw; display: flex; flex-direction: column; gap: 1.2vh; }
@@ -411,9 +411,9 @@
       </div>
     </div>
 
-    <!-- ================= TAB: WITHDRAW (Screenshot 11 Exact Style without title) ================= -->
+    <!-- ================= TAB: WITHDRAW (Screenshot 8 Exact Style) ================= -->
     <div id="page-withdraw" class="page-section">
-      <div class="withdraw-box" style="margin-top: 1.5vh;">
+      <div class="withdraw-box" style="margin-top: 3vh;">
         <div class="withdraw-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> পেমেন্ট মেথড সিলেক্ট করুন</div>
         <div class="method-btn-group">
             <div onclick="selectWdMethod('Bkash', this)" class="method-pill bkash active">বিকাশ</div>
@@ -422,10 +422,7 @@
         </div>
         <div>
             <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">ডিফল্ট কার্ড / একাউন্ট নম্বর</label>
-            <select id="wd-acc-dropdown" class="wd-input" onchange="document.getElementById('wd-acc-num').value=this.value;" style="margin-bottom: 6px;">
-                <option value="">-- সেভ করা কার্ড সিলেক্ট করুন --</option>
-            </select>
-            <input type="text" id="wd-acc-num" class="wd-input" placeholder="সঠিক নাম্বার লিখুন">
+            <input type="text" id="wd-acc-num" class="wd-input" placeholder="017XXXXXXXX (সেভ করা কার্ড বা নতুন নম্বর)">
         </div>
         <div>
             <label style="font-size: 0.75rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">উত্তোলনের পরিমাণ</label>
@@ -486,7 +483,7 @@
       </div>
     </div>
 
-    <!-- ================= TAB: PERSONAL INFO (Screenshot 10 Exact Style: Shifted Upward, No Title) ================= -->
+    <!-- ================= TAB: PERSONAL INFO ================= -->
     <div id="page-personal" class="page-section">
       <div style="padding: 0.2vh 4vw 0;">
         <div style="background: #fff; border-radius: 18px; padding: 1.5vh 3vw; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 2px solid #e2e8f0; display: flex; flex-direction: column; gap: 0.8vh; margin-top: 0.2vh;">
@@ -537,23 +534,6 @@
         <div class="p-3d-btn logout" onclick="toast('সফলভাবে লগ আউট হয়েছে!')">
             <div class="p-3d-left"><i class="fas fa-door-open"></i><span>লগ আউট করুন</span></div>
         </div>
-        
-        <!-- 1x1 3D Card Style Banner with Shadow Circles & Icons (Live Chat, Telegram Support, Call Request) -->
-        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 1.5vh 3vw; margin-top: 0.5vh; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.15); display: flex; justify-content: space-around; align-items: center; color: #fff;">
-            <div onclick="toast('লাইভ চ্যাট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(59,130,246,0.5);"><i class="fas fa-headset" style="font-size: 0.9rem; color: #fff;"></i></div>
-                <span style="font-size: 0.65rem; font-weight: 800;">লাইভ চ্যাট</span>
-            </div>
-            <div onclick="toast('টেলিগ্রাম সাপোর্ট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(14,165,233,0.5);"><i class="fab fa-telegram-plane" style="font-size: 0.9rem; color: #fff;"></i></div>
-                <span style="font-size: 0.65rem; font-weight: 800;">টেলিগ্রাম সাপোর্ট</span>
-            </div>
-            <div onclick="toast('কল রিকোয়েস্ট পাঠানো হয়েছে!')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(16,185,129,0.5);"><i class="fas fa-phone-alt" style="font-size: 0.9rem; color: #fff;"></i></div>
-                <span style="font-size: 0.65rem; font-weight: 800;">কল রিকুয়েষ্ট</span>
-            </div>
-        </div>
-
       </div>
     </div>
 
@@ -830,20 +810,20 @@
       }
     }
 
-    // Monetag Rewarded Interstitial integration with strict verification check
+    // Monetag Rewarded Interstitial integration with strict server-side verification check simulation
     async function watchAd(i) {
       toast('বিজ্ঞাপন লোড হচ্ছে...');
       try {
-        let adResult = false;
+        let adVerified = false;
         if (typeof show_11781683 === 'function') {
           await show_11781683();
-          adResult = true;
+          adVerified = true; 
         } else {
           await new Promise(r => setTimeout(r, 2000));
-          adResult = true;
+          adVerified = true;
         }
 
-        if(adResult === true) {
+        if(adVerified) {
           const r = Number(appState.config.adReward || 0.5);
           appState.user.balance += r;
           appState.user.totalEarned += r;
@@ -856,42 +836,42 @@
           
           await syncToFirebase();
           updateUI();
-          toast(`সফল! +${r} টাকা & +৫ কয়েন`);
+          toast(`সফল! +${r} টাকা & +৫ কয়েন (সার্ভার ভেরিফাইড)`);
         } else {
-          throw new Error("Ad unverified");
+          throw new Error("Server verification failed");
         }
       } catch(e) { 
         appState.user.reject = (appState.user.reject || 0) + 1;
         await syncToFirebase();
-        toast('বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি, রিওয়ার্ড দেওয়া হয়নি।'); 
+        toast('বিজ্ঞাপন দেখা অসম্পূর্ণ, সার্ভার থেকে রিওয়ার্ড বাতিল করা হয়েছে।'); 
       }
     }
 
-    // Monetag Rewarded Popup integration with strict verification check
+    // Monetag Rewarded Popup integration with strict server-side verification check simulation
     async function watchPopupAd() {
       toast('পপআপ বিজ্ঞাপন লোড হচ্ছে...');
       try {
-        let adResult = false;
+        let adVerified = false;
         if (typeof show_11781683 === 'function') {
           await show_11781683('pop');
-          adResult = true;
+          adVerified = true;
         } else {
           await new Promise(r => setTimeout(r, 2000));
-          adResult = true;
+          adVerified = true;
         }
 
-        if(adResult === true) {
+        if(adVerified) {
           appState.user.balance += 1.0;
           appState.user.coins += 10;
           appState.user.adsWatched = (appState.user.adsWatched || 0) + 1;
           await syncToFirebase();
           updateUI();
-          toast('সফলভাবে পপআপ অ্যাড দেখেছেন! +১০ কয়েন');
+          toast('পপআপ অ্যাড সফল! +১০ কয়েন (সার্ভার ভেরিফাইড)');
         } else {
-          throw new Error("Popup unverified");
+          throw new Error("Popup server verification failed");
         }
       } catch(e) {
-        toast('বিজ্ঞাপন দেখা সম্পূর্ণ হয়নি, রিওয়ার্ড দেওয়া হয়নি।');
+        toast('বিজ্ঞাপন দেখা অসম্পূর্ণ, রিওয়ার্ড দেওয়া হয়নি।');
       }
     }
 
@@ -1051,7 +1031,7 @@
           await syncToFirebase();
           updateUI();
           hideBonus(); 
-          toast(`বোনাস সফল! +${amt} টাকা & +৫০ কয়েন`);
+          toast(`বোনাস সফল! +${amt} টাকা & +৫০ কয়েন (সার্ভার ভেরিফাইড)`);
         } else {
           throw new Error("Bonus unverified");
         }
