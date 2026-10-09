@@ -164,7 +164,7 @@
     .input-group select, .input-group input { width: 100%; padding: 1.5vh 3vw; border: 1px solid #e1e1e1; border-radius: 12px; font-size: clamp(0.85rem, 2vh, 1rem); background: #f9f9f9; outline: none; font-weight: 600; }
     .btn-main { width: 100%; padding: 1.8vh; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; font-size: clamp(0.9rem, 2.1vh, 1.1rem); font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0.5vh 1.5vh rgba(108,92,231,0.3); }
 
-    /* Screenshot 8 Exact Withdraw Style */
+    /* Exact Screenshot 13 Withdraw Style with Title */
     .withdraw-box { background: #fff; margin: 0 4vw; padding: 2.5vh 4vw; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #edf2f7; display: flex; flex-direction: column; gap: 2vh; }
     .withdraw-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; margin-bottom: 0.5vh; }
     .method-btn-group { display: flex; gap: 3vw; }
@@ -411,9 +411,9 @@
       </div>
     </div>
 
-    <!-- ================= TAB: WITHDRAW (Screenshot 8 Exact Style) ================= -->
+    <!-- ================= TAB: WITHDRAW (Screenshot 13 Exact Style with title) ================= -->
     <div id="page-withdraw" class="page-section">
-      <div class="withdraw-box" style="margin-top: 3vh;">
+      <div class="withdraw-box" style="margin-top: 2vh;">
         <div class="withdraw-title"><i class="fas fa-wallet" style="color:var(--primary);"></i> পেমেন্ট মেথড সিলেক্ট করুন</div>
         <div class="method-btn-group">
             <div onclick="selectWdMethod('Bkash', this)" class="method-pill bkash active">বিকাশ</div>
@@ -534,6 +534,23 @@
         <div class="p-3d-btn logout" onclick="toast('সফলভাবে লগ আউট হয়েছে!')">
             <div class="p-3d-left"><i class="fas fa-door-open"></i><span>লগ আউট করুন</span></div>
         </div>
+        
+        <!-- 1x1 3D Card Style Banner with Shadow Circles & Icons (Live Chat, Telegram Support, Call Request) -->
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px; padding: 1.5vh 3vw; margin-top: 0.5vh; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 2px solid rgba(255,255,255,0.15); display: flex; justify-content: space-around; align-items: center; color: #fff;">
+            <div onclick="toast('লাইভ চ্যাট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(59,130,246,0.5);"><i class="fas fa-headset" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">লাইভ চ্যাট</span>
+            </div>
+            <div onclick="toast('টেলিগ্রাম সাপোর্ট চালু হচ্ছে...')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #0ea5e9; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(14,165,233,0.5);"><i class="fab fa-telegram-plane" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">টেলিগ্রাম সাপোর্ট</span>
+            </div>
+            <div onclick="toast('কল রিকোয়েস্ট পাঠানো হয়েছে!')" style="display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;">
+                <div style="width: 38px; height: 38px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(16,185,129,0.5);"><i class="fas fa-phone-alt" style="font-size: 0.9rem; color: #fff;"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800;">কল রিকুয়েষ্ট</span>
+            </div>
+        </div>
+
       </div>
     </div>
 
