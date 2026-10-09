@@ -1123,11 +1123,6 @@
     function unlockApp() {
       document.getElementById('loader').style.display='none';
       document.getElementById('app').style.display='flex';
-      
-      let savedNum = localStorage.getItem('default_wd_num');
-      if(savedNum && document.getElementById('wd-acc-num')) {
-          document.getElementById('wd-acc-num').value = savedNum;
-      }
       updateUI();
     }
 
@@ -1135,7 +1130,8 @@
       const today = todayStr();
       let appUnlocked = false;
 
-      const instantTimer = setTimeout(() => {
+      // Fail-safe timeout to prevent infinite loading screen
+      const failSafeTimer = setTimeout(() => {
         if(!appUnlocked) {
           appUnlocked = true;
           unlockApp();
@@ -1171,13 +1167,13 @@
 
           if(!appUnlocked) {
             appUnlocked = true;
-            clearTimeout(instantTimer);
+            clearTimeout(failSafeTimer);
             unlockApp();
           }
         }).catch(() => {
           if(!appUnlocked) {
             appUnlocked = true;
-            clearTimeout(instantTimer);
+            clearTimeout(failSafeTimer);
             unlockApp();
           }
         });
@@ -1189,10 +1185,10 @@
             }
         });
 
-      }atch(e) {
+      } catch(e) {
           if(!appUnlocked) {
             appUnlocked = true;
-            clearTimeout(instantTimer);
+            clearTimeout(failSafeTimer);
             unlockApp();
           }
       }
